@@ -102,6 +102,9 @@ $(BINARY): $(OBJS)
 
 run-env: $(BINARY) $(DIFF_REF_SO)
 
+$(DIFF_REF_SO):
+	$(MAKE) -C $(DIFF_REF_PATH) $(MKFLAGS)
+
 run: run-env
 	$(call git_commit, "run")
 	$(NEMU_EXEC)
@@ -110,8 +113,6 @@ gdb: run-env
 	$(call git_commit, "gdb")
 	gdb -s $(BINARY) --args $(NEMU_EXEC)
 
-$(DIFF_REF_SO):
-	$(MAKE) -C $(DIFF_REF_PATH) $(MKFLAGS)
 
 clean:
 	-rm -rf $(BUILD_DIR)
