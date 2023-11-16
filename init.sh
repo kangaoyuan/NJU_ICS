@@ -1,5 +1,4 @@
 #!/bin/bash
-
 version=ics2020
 
 function init() {
@@ -11,6 +10,7 @@ function init() {
   while [ ! -d $1 ]; do
     git clone -b $version git@github.com:NJU-ProjectN/$1.git
   done
+
   log="$1 `cd $1 && git log --oneline --no-abbrev-commit -n1`"$'\n'
   rm -rf $1/.git
 
@@ -36,6 +36,7 @@ function init_no_git() {
   while [ ! -d $1 ]; do
     git clone -b $version git@github.com:NJU-ProjectN/$1.git
   done
+
   log="$1 `cd $1 && git log --oneline --no-abbrev-commit -n1`"$'\n'
 
   sed -i -e "/^\/$1/d" .gitignore
