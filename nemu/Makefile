@@ -74,6 +74,7 @@ SRCS += $(shell find src/engine/$(ENGINE) -name "*.c")
 OBJS = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
 
 # Compilation patterns
+# If the first rule in your Makefile is a pattern rule, it won't be used as the default rule. Instead, the first non-pattern rule will become the default.
 $(OBJ_DIR)/%.o: src/%.c
 	@echo + CC $<
 	@mkdir -p $(dir $@)
