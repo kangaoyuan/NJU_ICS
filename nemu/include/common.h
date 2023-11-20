@@ -1,7 +1,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-//#define DEBUG
+#define DEBUG
 //#define DIFF_TEST
 
 #ifdef __ISA_riscv64__
@@ -18,8 +18,8 @@
 //#define HAS_IOE
 
 #include <stdint.h>
-#include <assert.h>
 #include <string.h>
+#include <assert.h>
 
 typedef uint8_t bool;
 
