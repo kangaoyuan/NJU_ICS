@@ -114,6 +114,7 @@ again:
 
     // 0xe8 opcode execting call, which width is 0 depending on operand prefix
     IDEX(0xe8, J, call)
+    IDEX(0x50, r, push)
 
     IDEXW(0xf6, E, gp3, 1)
     IDEX (0xf7, E, gp3)
