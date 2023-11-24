@@ -54,7 +54,9 @@ static inline def_DopHelper(SI) {
    *
    operand_imm(s, op, load_val, ???, op->width);
    */
-  TODO();
+  word_t imm = instr_fetch(&s->seq_pc, op->width);
+  rtl_sext(s, &imm, &imm, op->width);
+  operand_imm(s, op, load_val, imm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
