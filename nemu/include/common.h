@@ -17,11 +17,10 @@
 /* You will define this macro in PA2 */
 //#define HAS_IOE
 
-#include <stdint.h>
 #include <string.h>
 #include <assert.h>
-
-typedef uint8_t bool;
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef ISA64
 typedef uint64_t word_t;
