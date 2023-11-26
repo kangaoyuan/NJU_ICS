@@ -26,16 +26,10 @@ void strcatf(char* buf, const char* fmt, ...) {
 }
 
 void asm_print(vaddr_t this_pc, int instr_len, bool print_flag) {
-    if(strcmp("invalid opcode", log_asmbuf) == 0) {
-        snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc,
-                 log_bytebuf, 50 - (12 + 3 * instr_len), "", log_asmbuf);
-    } else {
-        snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc,
-                 log_bytebuf, 50 - (12 + 3 * instr_len), "", log_asmbuf);
-    }
-    _Log("=-=-=-=-=-=-asm_print(0x%x, %d)=-=-=-=-=-=-\n", this_pc, instr_len);
+    snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc,
+             log_bytebuf, 50 - (12 + 3 * instr_len), "", log_asmbuf);
     log_write("%s\n", tempbuf);
-    if (print_flag) 
+    if (print_flag)
         puts(tempbuf);
 
     log_bytebuf[0] = '\0';

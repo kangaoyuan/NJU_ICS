@@ -1,6 +1,7 @@
 #include <cpu/exec.h>
 #include <monitor/monitor.h>
 #include <monitor/difftest.h>
+#include <monitor/log.h>
 
 def_EHelper(nop) {
     print_asm("nop");
@@ -19,7 +20,10 @@ def_EHelper(nemu_trap) {
 /* invalid opcode */
 def_EHelper(inv) {
     uint32_t temp[2];
+    extern char log_bytebuf[80];
+
     s->seq_pc = cpu.pc;
+    log_bytebuf[0] = '\0';
     temp[0] = instr_fetch(&s->seq_pc, 4);
     temp[1] = instr_fetch(&s->seq_pc, 4);
 
