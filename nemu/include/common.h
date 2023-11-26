@@ -5,7 +5,7 @@
 //#define DIFF_TEST
 
 #ifdef __ISA_riscv64__
-# define ISA64
+#define ISA64
 #endif
 
 #if _SHARE
@@ -37,8 +37,8 @@ typedef word_t vaddr_t;
 typedef uint32_t paddr_t;
 typedef uint16_t ioaddr_t;
 
-#define false 0
 #define true 1
+#define false 0
 
 #include <debug.h>
 #include <macro.h>

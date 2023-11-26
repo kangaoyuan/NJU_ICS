@@ -1,4 +1,5 @@
 #include <isa.h>
+#include <monitor/log.h>
 #include <monitor/monitor.h>
 #include <monitor/difftest.h>
 #include <stdlib.h>
