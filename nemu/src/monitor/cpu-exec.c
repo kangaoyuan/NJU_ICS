@@ -55,8 +55,8 @@ void display_inv_msg(vaddr_t pc) {
            "1. The instruction at PC = " FMT_WORD " is not implemented.\n"
            "2. Something is implemented incorrectly.\n",
            pc);
-    printf("Find this PC(" FMT_WORD ") in the disassembling result to \
-            distinguish which case it is.\n\n",
+    printf("Find this PC(" FMT_WORD ") in the disassembling result to "
+           "distinguish which case it is.\n\n",
            pc);
     printf("\33[1;31mIf it is the first case, see\n%s\nfor more "
            "details.\n\nIf it is the second case, remember:\n"

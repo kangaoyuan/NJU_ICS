@@ -26,7 +26,6 @@ static inline uint32_t instr_fetch(vaddr_t* pc, int len) {
     for (int i = 0; i < len; i++) {
         extern char log_bytebuf[];
         strcatf(log_bytebuf, "%02x ", p_instr[i]);
-        log_write("%s\n", log_bytebuf);
     }
 #endif
     (*pc) += len;
