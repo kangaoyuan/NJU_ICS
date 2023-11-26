@@ -19,21 +19,22 @@
 #define EX(idx, ex)           EXW(idx, ex, 0)
 #define EMPTY(idx)            EX(idx, inv)
 
-static inline uint32_t instr_fetch(vaddr_t *pc, int len) {
-  uint32_t instr = vaddr_ifetch(*pc, len);
+static inline uint32_t instr_fetch(vaddr_t* pc, int len) {
+    uint32_t instr = vaddr_ifetch(*pc, len);
 #ifdef DEBUG
-  uint8_t *p_instr = (uint8_t *)(void *)&instr;
-  for (int i = 0; i < len; i ++) {
-    extern char log_bytebuf[];
-    strcatf(log_bytebuf, "%02x ", p_instr[i]);
-  }
+    uint8_t* p_instr = (uint8_t*)(void*)&instr;
+    for (int i = 0; i < len; i++) {
+        extern char log_bytebuf[];
+        strcatf(log_bytebuf, "%02x ", p_instr[i]);
+        log_write("%s\n", log_bytebuf);
+    }
 #endif
-  (*pc) += len;
-  return instr;
+    (*pc) += len;
+    return instr;
 }
 
-static inline void update_pc(DecodeExecState *s) {
-  cpu.pc = (s->is_jmp ? s->jmp_pc : s->seq_pc);
+static inline void update_pc(DecodeExecState* s) {
+    cpu.pc = (s->is_jmp ? s->jmp_pc : s->seq_pc);
 }
 
 #ifdef DEBUG

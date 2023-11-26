@@ -1,6 +1,6 @@
 #include <cpu/exec.h>
-#include "../local-include/decode.h"
 #include "all-instr.h"
+#include "../local-include/decode.h"
 
 static inline void set_width(DecodeExecState *s, int width) {
   if (width == -1) return;
@@ -133,13 +133,13 @@ again:
 }
 
 vaddr_t isa_exec_once() {
-  DecodeExecState s;
-  s.is_jmp = 0;
-  s.isa = (ISADecodeInfo) { 0 };
-  s.seq_pc = cpu.pc;
+    DecodeExecState s;
+    s.is_jmp = 0;
+    s.isa = (ISADecodeInfo){0};
+    s.seq_pc = cpu.pc;
 
-  fetch_decode_exec(&s);
-  update_pc(&s);
+    fetch_decode_exec(&s);
+    update_pc(&s);
 
-  return s.seq_pc;
+    return s.seq_pc;
 }

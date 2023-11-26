@@ -4,6 +4,7 @@
 #ifndef __RTL_RTL_H__
 #error "Should be only included by <rtl/rtl.h>"
 #endif
+#include <rtl/rtl.h> // only for the declaration and jump.
 
 /* RTL pseudo instructions */
 

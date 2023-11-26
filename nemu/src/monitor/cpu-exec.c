@@ -23,15 +23,19 @@ bool check_wp();
 void asm_print(vaddr_t this_pc, int instr_len, bool print_flag);
 
 
-int is_exit_status_bad() {
-    int good = (nemu_state.state == NEMU_END && nemu_state.halt_ret == 0) ||
-               (nemu_state.state == NEMU_QUIT);
-    return !good;
+bool log_enable() {
+    return (g_nr_guest_instr >= LOG_START) && (g_nr_guest_instr <= LOG_END);
 }
 
 void rtl_exit(int state, vaddr_t halt_pc, uint32_t halt_ret) {
     nemu_state = (NEMUState){
         .state = state, .halt_pc = halt_pc, .halt_ret = halt_ret};
+}
+
+int is_exit_status_bad() {
+    int good = (nemu_state.state == NEMU_END && nemu_state.halt_ret == 0) ||
+               (nemu_state.state == NEMU_QUIT);
+    return !good;
 }
 
 void monitor_statistic() {
@@ -43,10 +47,6 @@ void monitor_statistic() {
     else
         Log("Finish running in less than 1 ms and can not calculate the "
             "simulation frequency");
-}
-
-bool log_enable() {
-    return (g_nr_guest_instr >= LOG_START) && (g_nr_guest_instr <= LOG_END);
 }
 
 void display_inv_msg(vaddr_t pc) {
