@@ -11,6 +11,7 @@
 #define LOG_END   (1024 * 1024 * 50)
 // The assembly code of instructions executed is only output to the screen
 #define MAX_INSTR_TO_PRINT 10
+#pragma GCC diagnostic ignored "-Wunused-const-variable"
 
 CPU_state cpu = {};
 const rtlreg_t rzero = 0;
