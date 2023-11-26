@@ -29,10 +29,11 @@ void asm_print(vaddr_t this_pc, int instr_len, bool print_flag) {
     if(strcmp("invalid opcode", log_asmbuf) == 0) {
         snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc,
                  log_bytebuf, 50 - (12 + 3 * instr_len), "", log_asmbuf);
-     } else {
+    } else {
         snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc,
                  log_bytebuf, 50 - (12 + 3 * instr_len), "", log_asmbuf);
     }
+    _Log("=-=-=-=-=-=-asm_print(%d, %d)=-=-=-=-=-=-", this_pc, instr_len);
     log_write("%s\n", tempbuf);
     if (print_flag) 
         puts(tempbuf);
