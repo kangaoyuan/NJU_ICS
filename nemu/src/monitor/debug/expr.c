@@ -97,7 +97,8 @@ static bool make_token(char* e) {
                 case '/':
                     tokens[nr_token].type = rules[i].token_type;
                     break;
-                case TK_NUM:
+                //case TK_NUM:
+                default:
                     tokens[nr_token].type = rules[i].token_type;
                     if (substr_len >= 32)
                         assert(0);
