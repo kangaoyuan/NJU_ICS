@@ -19,7 +19,7 @@ enum {
     TK_DEREF,
 };
 static struct rule {
-    char* regex;
+    const char* regex;
     int   token_type;
 } rules[] = {
     /* TODO: Add more rules.
@@ -212,6 +212,8 @@ uint32_t eval(int p, int q) {
          * For now this token should be a number.
          * Return the value of the number. */
         char* ptr;
+        word_t res;
+        bool   success;
         /* If endptr is not NULL, strtol(nptr, endptr, base);, which stores the
          * address of the first invalid character in *endptr. */
         switch (tokens[p].type) {
@@ -220,8 +222,7 @@ uint32_t eval(int p, int q) {
         case TK_HEX:
             return strtol(tokens[p].str, &ptr, 16);
         case TK_REG:
-            bool   success;
-            word_t res = isa_reg_str2val(tokens[p].str, &success);
+            res = isa_reg_str2val(tokens[p].str, &success);
             if (success)
                 return res;
             else
@@ -257,7 +258,7 @@ uint32_t eval(int p, int q) {
         case TK_AND:
             return val1 && val2;
         case TK_DEREF: {
-            uint8_t* base = guest_to_host(val2);
+            uint8_t* base = (uint8_t*)guest_to_host(val2);
             uint32_t res = 0;
             for (int i = 3; i >= 0; --i)
                 res = res * 256 + (*(base + i));
