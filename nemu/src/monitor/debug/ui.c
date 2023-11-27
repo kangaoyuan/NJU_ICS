@@ -89,7 +89,8 @@ static int cmd_x(char* args) {
     uint32_t val = expr(token, &success);
     assert(success == true);
     for (int i = 0; i < n; i++) {
-        printf("0x%08x\t%08x\n", val + i * 4, vaddr_read(val + i * 4, 4));
+        word_t content = vaddr_read(val + i * 4, 4);
+        printf("addr:0x%08x\t0x%08x\t%d\n", val + i * 4, content, content);
     }
     return 0;
 }
@@ -98,7 +99,7 @@ static int cmd_p(char* args) {
     bool success;
     uint32_t val = expr(args, &success);
     assert(success == true);
-    printf("%u\n", val);
+    printf("%s:\t0x%08x\t%d\n", args, val, val);
     return 0;
 }
 
