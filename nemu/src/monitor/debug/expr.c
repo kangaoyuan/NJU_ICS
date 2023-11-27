@@ -222,7 +222,7 @@ uint32_t eval(int p, int q) {
         case TK_HEX:
             return strtol(tokens[p].str, &ptr, 16);
         case TK_REG:
-            res = isa_reg_str2val(tokens[p].str, &success);
+            res = isa_reg_str2val(tokens[p].str + 1, &success);
             if (success)
                 return res;
             else
