@@ -20,7 +20,14 @@ def_EHelper(nemu_trap) {
 /* invalid opcode */
 def_EHelper(inv) {
     uint32_t temp[2];
+    char tempbuf[256] = {};
     extern char log_bytebuf[80];
+
+    snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", cpu.pc,
+             log_bytebuf, 50 - (12 + 3 * (s->seq_pc - cpu.pc)), "",
+             "error occured");
+    puts(tempbuf);
+    log_write("%s\n", tempbuf);
 
     s->seq_pc = cpu.pc;
     log_bytebuf[0] = '\0';
