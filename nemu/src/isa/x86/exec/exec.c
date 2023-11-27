@@ -124,6 +124,7 @@ again:
     IDEX(0x57, r, push)
     IDEX(0x68, push_SI, push)
     IDEXW(0x6a, push_SI, push, 1)
+    IDEX(0x8d, lea_M2G, lea)
 
     IDEXW(0xf6, E, gp3, 1)
     IDEX (0xf7, E, gp3)

@@ -297,10 +297,15 @@ static inline def_DHelper(out_a2dx) {
   operand_reg(s, id_dest, true, R_DX, 2);
 }
 
-static inline void operand_write(DecodeExecState *s, Operand *op, rtlreg_t* src) {
-  if (op->type == OP_TYPE_REG) { rtl_sr(s, op->reg, src, op->width); }
-  else if (op->type == OP_TYPE_MEM) { rtl_sm(s, s->isa.mbase, s->isa.moff, src, op->width); }
-  else { assert(0); }
+static inline void operand_write(DecodeExecState* s, Operand* op,
+                                 rtlreg_t* src) {
+    if (op->type == OP_TYPE_REG) {
+        rtl_sr(s, op->reg, src, op->width);
+    } else if (op->type == OP_TYPE_MEM) {
+        rtl_sm(s, s->isa.mbase, s->isa.moff, src, op->width);
+    } else {
+        assert(0);
+    }
 }
 
 #endif
