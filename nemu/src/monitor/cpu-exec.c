@@ -125,7 +125,7 @@ void cpu_exec(uint64_t n) {
         break;
     case NEMU_END:
     case NEMU_ABORT:
-        Log("nemu: %s\33[0m at pc = " FMT_WORD "\n\n",
+        Log("nemu: %s\33[0m at pc = " FMT_WORD "\n",
             (nemu_state.state == NEMU_ABORT
                  ? "\33[1;31mABORT"
                  : (nemu_state.halt_ret == 0 ? "\33[1;32mHIT GOOD TRAP"
