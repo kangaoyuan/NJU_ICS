@@ -2,6 +2,7 @@
 #define __C_OP_H__
 
 #include <common.h>
+#include <rtl/rtl_.h>
 
 #ifdef ISA64
 #define c_shift_mask 0x3f
@@ -47,6 +48,7 @@
 #define c_idiv_q(a, b) ((sword_t)(a) / (sword_t)(b))
 #define c_idiv_r(a, b)  ((sword_t)(a) % (sword_t)(b))
 
+__attribute__((unused))
 static inline bool interpret_relop(uint32_t relop, const rtlreg_t src1, const rtlreg_t src2) {
   switch (relop) {
     case RELOP_FALSE: return false;

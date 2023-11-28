@@ -2,7 +2,9 @@
 #define __RTL_BASIC_H__
 
 #include "c_op.h"
+#include <cpu/decode.h>
 #include <memory/vaddr.h>
+#pragma GCC diagnostic ignored "-Wunused-function"
 
 /* RTL basic instructions */
 
@@ -23,6 +25,7 @@
 
 // compute
 
+    
 def_rtl_compute_reg_imm(add)
 def_rtl_compute_reg_imm(sub)
 def_rtl_compute_reg_imm(and)

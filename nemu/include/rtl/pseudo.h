@@ -1,10 +1,13 @@
 #ifndef __RTL_PSEUDO_H__
 #define __RTL_PSEUDO_H__
 
-#ifndef __RTL_RTL_H__
-#error "Should be only included by <rtl/rtl.h>"
-#endif
-#include <rtl/rtl.h> // only for the declaration and jump.
+//#ifndef __RTL_RTL_H__
+//#error "Should be only included by <rtl/rtl.h>"
+//#endif
+#include <rtl/rtl_.h> 
+#include <rtl-basic.h> 
+#include <cpu/decode.h>
+#pragma GCC diagnostic ignored "-Wunused-function"
 
 /* RTL pseudo instructions */
 
