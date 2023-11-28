@@ -1,17 +1,24 @@
 #include "cc.h"
+#include "../local-include/decode.h"
 
 static inline def_EHelper(add) {
-  TODO();
+  rtl_add(s, s0, ddest, dsrc1);
+  rtl_is_add_overflow(s, s1, s0, ddest, dsrc1, id_dest->width);
+  rtl_set_OF(s, s1);
+  rtl_is_add_carry(s, s1, ddest, dsrc1);
+  rtl_set_CF(s, s1);
+  rtl_update_ZFSF(s, s0, id_dest->width);
+  operand_write(s, id_dest, s0);
   print_asm_template2(add);
 }
 
 static inline def_EHelper(sub) {
   rtl_sub(s, s0, ddest, dsrc1);
-  rtl_update_ZFSF(s, s0, id_dest->width);
   rtl_is_sub_overflow(s, s1, s0, ddest, dsrc1, id_dest->width);
   rtl_set_OF(s, s1);
   rtl_is_sub_carry(s, s1, ddest, dsrc1);
   rtl_set_CF(s, s1);
+  rtl_update_ZFSF(s, s0, id_dest->width);
   operand_write(s, id_dest, s0);
   print_asm_template2(sub);
 }
@@ -95,6 +102,7 @@ static inline def_EHelper(mul) {
 
 // imul with one operand
 static inline def_EHelper(imul1) {
+  rtlreg_t *pdest = ddest;
   switch (id_dest->width) {
     case 1:
       rtl_lr(s, s0, R_EAX, 1);
@@ -109,7 +117,6 @@ static inline def_EHelper(imul1) {
       rtl_sr(s, R_DX, s1, 2);
       break;
     case 4:
-      ; rtlreg_t *pdest = ddest;
       if (ddest == &cpu.edx) {
         rtl_mv(s, s0, ddest);
         pdest = s0;
@@ -146,6 +153,7 @@ static inline def_EHelper(imul3) {
 }
 
 static inline def_EHelper(div) {
+  rtlreg_t *pdest = ddest;
   switch (id_dest->width) {
     case 1:
       rtl_lr(s, s0, R_AX, 2);
@@ -165,7 +173,6 @@ static inline def_EHelper(div) {
       rtl_sr(s, R_DX, s1, 2);
       break;
     case 4:
-      ; rtlreg_t *pdest = ddest;
       if (ddest == &cpu.eax) pdest = s0;
       rtl_mv(s, s0, &cpu.eax);
       rtl_div64_q(s, &cpu.eax, &cpu.edx, s0, pdest);
@@ -178,6 +185,7 @@ static inline def_EHelper(div) {
 }
 
 static inline def_EHelper(idiv) {
+  rtlreg_t *pdest = ddest;
   switch (id_dest->width) {
     case 1:
       rtl_lr(s, s0, R_AX, 2);
@@ -197,7 +205,6 @@ static inline def_EHelper(idiv) {
       rtl_sr(s, R_DX, s1, 2);
       break;
     case 4:
-      ; rtlreg_t *pdest = ddest;
       if (ddest == &cpu.eax) pdest = s0;
       rtl_mv(s, s0, &cpu.eax);
       rtl_idiv64_q(s, &cpu.eax, &cpu.edx, s0, pdest);
