@@ -113,6 +113,13 @@ again:
     EX   (0xd6, nemu_trap)
 
     // 0xe8 opcode execting call, which width is 0 depending on operand prefix
+    
+    IDEXW(0x30, G2E, xor, 1)
+    IDEX(0x31, G2E, xor)
+    IDEXW(0x32, E2G, xor, 1)
+    IDEX(0x33, E2G, xor)
+    IDEXW(0x34, I2a, xor, 1)
+    IDEX(0x35, I2a, xor)
     IDEX(0xe8, J, call)
     IDEX(0x50, r, push)
     IDEX(0x51, r, push)

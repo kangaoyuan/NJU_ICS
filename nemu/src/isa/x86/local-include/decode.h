@@ -38,36 +38,34 @@ static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, w
 
 /* Ib, Iv */
 static inline def_DopHelper(I) {
-  /* pc here is pointing to the immediate */
-  word_t imm = instr_fetch(&s->seq_pc, op->width);
-  operand_imm(s, op, load_val, imm, op->width);
+    /* pc here is pointing to the immediate */
+    word_t imm = instr_fetch(&s->seq_pc, op->width);
+    operand_imm(s, op, load_val, imm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation, but it is different from
  * the one above from the view of implementation. So we use another helper
- * function to decode it.
- */
+ * function to decode it.  */
 /* sign immediate */
 static inline def_DopHelper(SI) {
-  assert(op->width == 1 || op->width == 4);
+    assert(op->width == 1 || op->width == 4);
 
-  /* TODO: Use instr_fetch() to read `op->width' bytes of memory
-   * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
-   * and call `operand_imm()` as following.
-   *
-   operand_imm(s, op, load_val, ???, op->width);
-   */
-  word_t imm = instr_fetch(&s->seq_pc, op->width);
-  rtl_sext(s, &imm, &imm, op->width);
-  operand_imm(s, op, load_val, imm, op->width);
+    /* TODO: Use instr_fetch() to read `op->width' bytes of memory
+     * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
+     * and call `operand_imm()` as following.
+
+     * operand_imm(s, op, load_val, ???, op->width); */
+
+    word_t imm = instr_fetch(&s->seq_pc, op->width);
+    rtl_sext(s, &imm, &imm, op->width);
+    operand_imm(s, op, load_val, imm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
- * It is convenient to merge them into a single helper function.
- */
+ * It is convenient to merge them into a single helper function. */
 /* AL/eAX */
 static inline def_DopHelper(a) {
-  operand_reg(s, op, load_val, R_EAX, op->width);
+    operand_reg(s, op, load_val, R_EAX, op->width);
 }
 
 /* This helper function is use to decode register encoded in the opcode. */
@@ -79,17 +77,17 @@ static inline def_DopHelper(r) {
 }
 
 /* I386 manual does not contain this abbreviation.
- * We decode everything of modR/M byte in one time.
- */
+ * We decode everything of modR/M byte in one time. */
 /* Eb, Ew, Ev
  * Gb, Gv
  * Cd,
  * M
  * Rd
- * Sw
- */
-static inline void operand_rm(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val) {
-  read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
+ * Sw */
+static inline void operand_rm(DecodeExecState* s,
+                              Operand* rm, bool load_rm_val,
+                              Operand* reg, bool load_reg_val) {
+    read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
 }
 
 /* Ob, Ov */
@@ -106,37 +104,34 @@ static inline def_DopHelper(O) {
 }
 
 /* Eb <- Gb
- * Ev <- Gv
- */
+ * Ev <- Gv  */
 static inline def_DHelper(G2E) {
-  operand_rm(s, id_dest, true, id_src1, true);
+    operand_rm(s, id_dest, true, id_src1, true);
 }
 
 static inline def_DHelper(mov_G2E) {
-  operand_rm(s, id_dest, false, id_src1, true);
+    operand_rm(s, id_dest, false, id_src1, true);
 }
 
 /* Gb <- Eb
- * Gv <- Ev
- */
+ * Gv <- Ev */
 static inline def_DHelper(E2G) {
-  operand_rm(s, id_src1, true, id_dest, true);
+    operand_rm(s, id_src1, true, id_dest, true);
 }
 
 static inline def_DHelper(mov_E2G) {
-  operand_rm(s, id_src1, true, id_dest, false);
+    operand_rm(s, id_src1, true, id_dest, false);
 }
 
 static inline def_DHelper(lea_M2G) {
-  operand_rm(s, id_src1, false, id_dest, false);
+    operand_rm(s, id_src1, false, id_dest, false);
 }
 
 /* AL <- Ib
- * eAX <- Iv
- */
+ * eAX <- Iv */
 static inline def_DHelper(I2a) {
-  decode_op_a(s, id_dest, true);
-  decode_op_I(s, id_src1, true);
+    decode_op_a(s, id_dest, true);
+    decode_op_I(s, id_src1, true);
 }
 
 /* Gv <- EvIb
