@@ -93,7 +93,12 @@ override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += --diff=$(DIFF_REF_SO)
 
 # Command to execute NEMU
+# /home/gaoyuankan/2020/am-kernels/tests/cpu-tests/build/add-longlong-x86-nemu.bin
+ifdef TEST
+IMG := $(addprefix /home/gaoyuankan/2020/am-kernels/tests/cpu-tests/build/, $(addsuffix -nemu.bin, $(TEST)-$(ISA)))
+else
 IMG :=
+endif
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 
 $(BINARY): $(OBJS)
