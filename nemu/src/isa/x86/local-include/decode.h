@@ -151,8 +151,7 @@ static inline def_DHelper(I_E2G) {
 }
 
 /* Eb <- Ib
- * Ev <- Iv
- */
+ * Ev <- Iv */
 static inline def_DHelper(I2E) {
   operand_rm(s, id_dest, true, NULL, false);
   decode_op_I(s, id_src1, true);
@@ -202,15 +201,12 @@ static inline def_DHelper(test_I) {
   decode_op_I(s, id_src1, true);
 }
 
-static inline def_DHelper(SI2E) {
+static inline def_DHelper(SIb2E) {
     // 2 for the prefixed operand-size, 4 for the default value for set_width
   assert(id_dest->width == 2 || id_dest->width == 4);
-  operand_rm(s, id_dest, true, NULL, false);
   id_src1->width = 1; // RTFM 
+  operand_rm(s, id_dest, true, NULL, false);
   decode_op_SI(s, id_src1, true);
-  if (id_dest->width == 2) {
-    *dsrc1 &= 0xffff;
-  }
 }
 
 static inline def_DHelper(SI_E2G) {
