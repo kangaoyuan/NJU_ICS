@@ -182,7 +182,7 @@ static inline def_DHelper(E) {
 }
 
 static inline def_DHelper(setcc_E) {
-  operand_rm(s, id_dest, false, NULL, false);
+    operand_rm(s, id_dest, false, NULL, false);
 }
 
 static inline def_DHelper(gp7_E) {
