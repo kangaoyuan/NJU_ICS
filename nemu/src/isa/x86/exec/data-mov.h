@@ -1,3 +1,5 @@
+#include "../local-include/decode.h"
+
 static inline def_EHelper(mov) {
   operand_write(s, id_dest, dsrc1);
   print_asm_template2(mov);

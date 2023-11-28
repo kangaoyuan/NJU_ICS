@@ -114,13 +114,13 @@ static inline def_rtl(is_add_carry, rtlreg_t* dest,
   rtl_setrelop(s, RELOP_LTU, dest, res, src1);
 }
 
-#define def_rtl_setget_eflags(f) \
-  static inline def_rtl(concat(set_, f), const rtlreg_t* src) { \
-    cpu.eflags.f = *src; \
-  } \
-  static inline def_rtl(concat(get_, f), rtlreg_t* dest) { \
-    *dest = cpu.eflags.f; \
-  }
+#define def_rtl_setget_eflags(f)                                           \
+    static inline def_rtl(concat(set_, f), const rtlreg_t* src) {          \
+        cpu.eflags.f = *src;                                               \
+    }                                                                      \
+    static inline def_rtl(concat(get_, f), rtlreg_t* dest) {               \
+        *dest = cpu.eflags.f;                                              \
+    }
 
 def_rtl_setget_eflags(CF)
 def_rtl_setget_eflags(OF)

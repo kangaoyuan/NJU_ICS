@@ -1,4 +1,5 @@
 #include "cc.h"
+#include "../local-include/decode.h"
 
 static inline def_EHelper(jmp) {
   // the target address is calculated at the decode stage
