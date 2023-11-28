@@ -90,7 +90,8 @@ static int cmd_x(char* args) {
     assert(success == true);
     for (int i = 0; i < n; i++) {
         word_t content = vaddr_read(val + i * 4, 4);
-        printf("addr:0x%08x\tval:0x%08x\t%d\n", val + i * 4, content, content);
+        printf("addr:0x%08x%*sval:0x%08x%*s%d\n", val + i * 4, 4, "",
+               content, 4, "", content);
     }
     return 0;
 }
