@@ -35,8 +35,9 @@ static struct rule {
     {"!=",  TK_NOEQ},   // not_equal
     { "&&", TK_AND }, // and
     { "\\|\\|", TK_OR },  // or
-    { "[0-9]+", TK_NUM }, // decimal
+    // because 0x prefix, 0 is also a number. so the sequence is important.
     { "0[Xx][0-9A-Fa-f]+", TK_HEX }, // hex
+    { "[0-9]+", TK_NUM }, // decimal
     { "\\$[A-Za-z]+", TK_REG }, // register
 };
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
