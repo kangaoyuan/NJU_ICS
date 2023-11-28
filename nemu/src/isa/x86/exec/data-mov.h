@@ -50,17 +50,18 @@ static inline def_EHelper(cwtl) {
   print_asm(s->isa.is_operand_size_16 ? "cbtw" : "cwtl");
 }
 
-static inline def_EHelper(movsx) {
-  id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
-  rtl_sext(s, ddest, dsrc1, id_src1->width);
-  operand_write(s, id_dest, ddest);
-  print_asm_template2(movsx);
-}
-
 static inline def_EHelper(movzx) {
   id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
-  operand_write(s, id_dest, dsrc1);
+  rtl_zext(s, ddest, dsrc1, id_dest->width);
+  operand_write(s, id_dest, ddest);
   print_asm_template2(movzx);
+}
+
+static inline def_EHelper(movsx) {
+  id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
+  rtl_sext(s, ddest, dsrc1, id_dest->width);
+  operand_write(s, id_dest, ddest);
+  print_asm_template2(movsx);
 }
 
 static inline def_EHelper(lea) {

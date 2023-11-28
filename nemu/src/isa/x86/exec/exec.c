@@ -7,7 +7,7 @@ static inline void set_width(DecodeExecState *s, int width) {
   if (width == 0) {
     width = s->isa.is_operand_size_16 ? 2 : 4;
   }
-  s->src1.width = s->dest.width = s->src2.width = width;
+  s->dest.width = s->src1.width = s->src2.width = width;
 }
 
 /* 0x80, 0x81, 0x83 */
@@ -64,6 +64,10 @@ static inline def_EHelper(2byte_esc) {
   switch (opcode) {
   /* TODO: Add more instructions!!! */
     IDEX (0x01, gp7_E, gp7)
+    IDEX(0xb6, movb_E2G, movzx)
+    IDEX(0xb7, movw_E2G, movzx)
+    IDEX(0xbe, movb_E2G, movsx)
+    IDEX(0xbf, movw_E2G, movsx)
     IDEXW(0x94, setcc_E, setcc, 1)
     default: exec_inv(s);
   }

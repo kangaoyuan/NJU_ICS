@@ -49,13 +49,11 @@ static inline def_DopHelper(I) {
 /* sign immediate */
 static inline def_DopHelper(SI) {
     assert(op->width == 1 || op->width == 4);
-
     /* TODO: Use instr_fetch() to read `op->width' bytes of memory
      * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
      * and call `operand_imm()` as following.
 
      * operand_imm(s, op, load_val, ???, op->width); */
-
     word_t imm = instr_fetch(&s->seq_pc, op->width);
     rtl_sext(s, &imm, &imm, op->width);
     operand_imm(s, op, load_val, imm, op->width);
@@ -120,6 +118,16 @@ static inline def_DHelper(E2G) {
 }
 
 static inline def_DHelper(mov_E2G) {
+    operand_rm(s, id_src1, true, id_dest, false);
+}
+
+static inline def_DHelper(movb_E2G) {
+    id_src1->width = 1;
+    operand_rm(s, id_src1, true, id_dest, false);
+}
+
+static inline def_DHelper(movw_E2G) {
+    id_src1->width = 2;
     operand_rm(s, id_src1, true, id_dest, false);
 }
 
