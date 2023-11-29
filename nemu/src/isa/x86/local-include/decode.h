@@ -68,10 +68,9 @@ static inline def_DopHelper(a) {
 
 /* This helper function is use to decode register encoded in the opcode. */
 /* XX: AL, AH, BL, BH, CL, CH, DL, DH
- * eXX: eAX, eCX, eDX, eBX, eSP, eBP, eSI, eDI
- */
+ * eXX: eAX, eCX, eDX, eBX, eSP, eBP, eSI, eDI */
 static inline def_DopHelper(r) {
-  operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
+    operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
@@ -181,7 +180,7 @@ static inline def_DHelper(I) {
 }
 
 static inline def_DHelper(r) {
-  decode_op_r(s, id_dest, true);
+    decode_op_r(s, id_dest, true);
 }
 
 static inline def_DHelper(E) {

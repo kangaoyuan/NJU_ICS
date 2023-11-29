@@ -7,16 +7,16 @@
 enum { OP_TYPE_REG, OP_TYPE_MEM, OP_TYPE_IMM };
 
 typedef struct {
-  uint32_t type;
-  int width;
-  union {
-    uint32_t reg;
-    word_t imm;
-    sword_t simm;
-  };
-  rtlreg_t *preg;
-  rtlreg_t val;
-  char str[OP_STR_SIZE];
+    uint32_t type;
+    int      width;
+    union {
+        uint32_t reg;
+        word_t   imm;
+        sword_t  simm;
+    };
+    rtlreg_t* preg;
+    rtlreg_t  val;
+    char      str[OP_STR_SIZE];
 } Operand;
 
 typedef struct {
