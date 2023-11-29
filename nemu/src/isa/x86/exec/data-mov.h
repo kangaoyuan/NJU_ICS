@@ -1,5 +1,11 @@
 #include "../local-include/decode.h"
 
+static inline def_EHelper(lea) {
+  rtl_addi(s, ddest, s->isa.mbase, s->isa.moff);
+  operand_write(s, id_dest, ddest);
+  print_asm_template2(lea);
+}
+
 static inline def_EHelper(mov) {
   operand_write(s, id_dest, dsrc1);
   print_asm_template2(mov);
@@ -63,10 +69,4 @@ static inline def_EHelper(movsx) {
   rtl_sext(s, ddest, dsrc1, id_dest->width);
   operand_write(s, id_dest, ddest);
   print_asm_template2(movsx);
-}
-
-static inline def_EHelper(lea) {
-  rtl_addi(s, ddest, s->isa.mbase, s->isa.moff);
-  operand_write(s, id_dest, ddest);
-  print_asm_template2(lea);
 }

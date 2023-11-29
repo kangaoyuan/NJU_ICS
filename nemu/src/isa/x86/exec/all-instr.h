@@ -1,10 +1,10 @@
 #include "../local-include/rtl.h"
 #include "../local-include/decode.h"
 
-#include "arith.h"      // cmp add sub mul div
+#include "arith.h"      // cmp add sub inc dec neg mul div
 #include "control.h"    // jcc jmp call ret
-#include "data-mov.h"   // mov push pop lea
-#include "logic.h"      // test and or xor shl sar
+#include "data-mov.h"   // lea mov push pop leave
+#include "logic.h"      // test setcc and or xor not shl sar
 #include "system.h"
 #include "string.h"
 
