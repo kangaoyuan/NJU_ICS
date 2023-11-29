@@ -6,29 +6,48 @@
 
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
-static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
-  op->type = OP_TYPE_REG;
-  op->reg = r;
-
-  if (width == 4) {
-    op->preg = &reg_l(r);
-  } else {
-    assert(width == 1 || width == 2);
-    op->preg = &op->val;
-    if (load_val) rtl_lr(s, &op->val, r, width);
-  }
-
-  print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
+/* I386 manual does not contain this abbreviation.
+ * We decode everything of modR/M byte in one time. */
+/* Eb, Ew, Ev
+ * Gb, Gv
+ * Cd,
+ * M
+ * Rd
+ * Sw */
+static inline void operand_rm(DecodeExecState* s,
+                              Operand* rm, bool load_rm_val,
+                              Operand* reg, bool load_reg_val) {
+    read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
 }
 
-static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, word_t imm, int width) {
-  op->type = OP_TYPE_IMM;
-  op->imm = imm;
-  if (load_val) {
-    rtl_li(s, &op->val, imm);
-    op->preg = &op->val;
-  }
-  print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
+static inline void operand_imm(DecodeExecState* s, Operand* op,
+                               bool load_val, word_t imm, int width) {
+    op->type = OP_TYPE_IMM;
+    op->imm = imm;
+
+    if (load_val) {
+        op->preg = &op->val;
+        rtl_li(s, &op->val, imm);
+    }
+
+    print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
+}
+
+static inline void operand_reg(DecodeExecState* s, Operand* op,
+                               bool load_val, int r, int width) {
+    op->type = OP_TYPE_REG;
+    op->reg = r;
+
+    if (width == 4) {
+        op->preg = &reg_l(r);
+    } else {
+        assert(width == 1 || width == 2);
+        op->preg = &op->val;
+        if (load_val)
+            rtl_lr(s, &op->val, r, width);
+    }
+
+    print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
 }
 
 // decode operand helper
@@ -38,7 +57,6 @@ static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, w
 
 /* Ib, Iv */
 static inline def_DopHelper(I) {
-    /* pc here is pointing to the immediate */
     word_t imm = instr_fetch(&s->seq_pc, op->width);
     operand_imm(s, op, load_val, imm, op->width);
 }
@@ -46,7 +64,6 @@ static inline def_DopHelper(I) {
 /* I386 manual does not contain this abbreviation, but it is different from
  * the one above from the view of implementation. So we use another helper
  * function to decode it.  */
-/* sign immediate */
 static inline def_DopHelper(SI) {
     assert(op->width == 1 || op->width == 4);
     /* TODO: Use instr_fetch() to read `op->width' bytes of memory
@@ -73,31 +90,16 @@ static inline def_DopHelper(r) {
     operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
 
-/* I386 manual does not contain this abbreviation.
- * We decode everything of modR/M byte in one time. */
-/* Eb, Ew, Ev
- * Gb, Gv
- * Cd,
- * M
- * Rd
- * Sw */
-static inline void operand_rm(DecodeExecState* s,
-                              Operand* rm, bool load_rm_val,
-                              Operand* reg, bool load_reg_val) {
-    read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
-}
-
 /* Ob, Ov */
 static inline def_DopHelper(O) {
-  op->type = OP_TYPE_MEM;
-  s->isa.moff = instr_fetch(&s->seq_pc, 4);
-  s->isa.mbase = rz;
-  if (load_val) {
-    rtl_lm(s, &op->val, s->isa.mbase, s->isa.moff, op->width);
-    op->preg = &op->val;
-  }
-
-  print_Dop(op->str, OP_STR_SIZE, "0x%x", s->isa.moff);
+    op->type = OP_TYPE_MEM;
+    s->isa.mbase = rz;
+    s->isa.moff = instr_fetch(&s->seq_pc, 4);
+    if (load_val) {
+        op->preg = &op->val;
+        rtl_lm(s, &op->val, s->isa.mbase, s->isa.moff, op->width);
+    }
+    print_Dop(op->str, OP_STR_SIZE, "0x%x", s->isa.moff);
 }
 
 /* Eb <- Gb
@@ -152,8 +154,8 @@ static inline def_DHelper(I_E2G) {
 /* Eb <- Ib
  * Ev <- Iv */
 static inline def_DHelper(I2E) {
-  operand_rm(s, id_dest, true, NULL, false);
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, true, NULL, false);
+    decode_op_I(s, id_src1, true);
 }
 
 static inline def_DHelper(mov_I2E) {
@@ -176,7 +178,7 @@ static inline def_DHelper(mov_I2r) {
 
 /* used by unary operations */
 static inline def_DHelper(I) {
-  decode_op_I(s, id_dest, true);
+    decode_op_I(s, id_dest, true);
 }
 
 static inline def_DHelper(r) {
@@ -184,7 +186,7 @@ static inline def_DHelper(r) {
 }
 
 static inline def_DHelper(E) {
-  operand_rm(s, id_dest, true, NULL, false);
+    operand_rm(s, id_dest, true, NULL, false);
 }
 
 static inline def_DHelper(setcc_E) {
@@ -200,12 +202,12 @@ static inline def_DHelper(test_I) {
   decode_op_I(s, id_src1, true);
 }
 
-static inline def_DHelper(SIb2E) {
+static inline def_DHelper(SIb2E) { // Ib2E is ok?
     // 2 for the prefixed operand-size, 4 for the default value for set_width
-  assert(id_dest->width == 2 || id_dest->width == 4);
-  id_src1->width = 1; // RTFM 
-  operand_rm(s, id_dest, true, NULL, false);
-  decode_op_SI(s, id_src1, true);
+    assert(id_dest->width == 2 || id_dest->width == 4);
+    id_src1->width = 1;  // RTFM
+    operand_rm(s, id_dest, true, NULL, false);
+    decode_op_SI(s, id_src1, true);
 }
 
 static inline def_DHelper(SI_E2G) {
@@ -264,9 +266,9 @@ static inline def_DHelper(a2O) {
 }
 
 static inline def_DHelper(J) {
-  decode_op_SI(s, id_dest, false);
-  // the target address can be computed in the decode stage
-  s->jmp_pc = id_dest->simm + s->seq_pc;
+    decode_op_SI(s, id_dest, false);
+    // the target address can be computed in the decode stage
+    s->jmp_pc = s->seq_pc + id_dest->simm;
 }
 
 static inline def_DHelper(push_SI) {
