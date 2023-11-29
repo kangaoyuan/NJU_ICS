@@ -158,8 +158,8 @@ static inline def_DHelper(I2E) {
 }
 
 static inline def_DHelper(mov_I2E) {
-  operand_rm(s, id_dest, false, NULL, false);
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, false, NULL, false);
+    decode_op_I(s, id_src1, true);
 }
 
 /* XX <- Ib
