@@ -38,44 +38,6 @@ static inline def_rtl(pop, rtlreg_t* dest) {
   rtl_addi(s, &cpu.esp, &cpu.esp, 4);
 }
 
-static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
-    const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
-  // dest <- is_overflow(src1 - src2)
-  switch (width) {
-    case 1:
-      if (((int8_t)(*src1) < (int8_t)(*src2) && (int8_t)(*res) > 0)
-       || ((int8_t)(*src1) > (int8_t)(*src2) && (int8_t)(*res) < 0)) {
-          *dest = true;
-        } else {
-          *dest = false;
-        }
-        break;
-    case 2:
-      if (((int16_t)(*src1) < (int16_t)(*src2) && (int16_t)(*res) > 0)
-       || ((int16_t)(*src1) > (int16_t)(*src2) && (int16_t)(*res) < 0)) {
-          *dest = true;
-        } else {
-          *dest = false;
-        }
-        break;
-    case 4:
-      if (((int32_t)(*src1) < (int32_t)(*src2) && (int32_t)(*res) > 0)
-       || ((int32_t)(*src1) > (int32_t)(*src2) && (int32_t)(*res) < 0)) {
-          *dest = true;
-        } else {
-          *dest = false;
-        }
-        break;
-    default: assert(0);
-  }
-}
-
-static inline def_rtl(is_sub_carry, rtlreg_t* dest,
-    const rtlreg_t* src1, const rtlreg_t* src2) {
-  // dest <- is_carry(src1 - src2)
-  rtl_setrelop(s, RELOP_LTU, dest, src1, src2);
-}
-
 static inline def_rtl(is_add_overflow, rtlreg_t* dest,
     const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
   // dest <- is_overflow(src1 + src2)
@@ -108,11 +70,50 @@ static inline def_rtl(is_add_overflow, rtlreg_t* dest,
   }
 }
 
+static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
+    const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
+  // dest <- is_overflow(src1 - src2)
+  switch (width) {
+    case 1:
+      if (((int8_t)(*src1) < (int8_t)(*src2) && (int8_t)(*res) > 0)
+       || ((int8_t)(*src1) > (int8_t)(*src2) && (int8_t)(*res) < 0)) {
+          *dest = true;
+        } else {
+          *dest = false;
+        }
+        break;
+    case 2:
+      if (((int16_t)(*src1) < (int16_t)(*src2) && (int16_t)(*res) > 0)
+       || ((int16_t)(*src1) > (int16_t)(*src2) && (int16_t)(*res) < 0)) {
+          *dest = true;
+        } else {
+          *dest = false;
+        }
+        break;
+    case 4:
+      if (((int32_t)(*src1) < (int32_t)(*src2) && (int32_t)(*res) > 0)
+       || ((int32_t)(*src1) > (int32_t)(*src2) && (int32_t)(*res) < 0)) {
+          *dest = true;
+        } else {
+          *dest = false;
+        }
+        break;
+    default: assert(0);
+  }
+}
+
 static inline def_rtl(is_add_carry, rtlreg_t* dest, const rtlreg_t* res,
                       const rtlreg_t* src1) {
-    // dest <- is_carry(src1 + src2)
+    // dest <- is_carry(src1 + src2), (src1 + src2) - src1
     rtl_setrelop(s, RELOP_LTU, dest, res, src1);
 }
+
+static inline def_rtl(is_sub_carry, rtlreg_t* dest, const rtlreg_t* src1,
+                      const rtlreg_t* src2) {
+    // dest <- is_carry(src1 - src2), src1 - src2
+    rtl_setrelop(s, RELOP_LTU, dest, src1, src2);
+}
+
 
 #define def_rtl_setget_eflags(f)                                           \
     static inline def_rtl(concat(set_, f), const rtlreg_t* src) {          \
