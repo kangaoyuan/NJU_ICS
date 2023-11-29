@@ -24,7 +24,6 @@
     def_rtl_compute_reg(name) def_rtl_compute_imm(name)
 
 // compute
-
     
 def_rtl_compute_reg_imm(add)
 def_rtl_compute_reg_imm(sub)
@@ -126,18 +125,18 @@ static inline def_rtl(lms, rtlreg_t *dest, const rtlreg_t* addr, word_t offset, 
 
 static inline def_rtl(host_lm, rtlreg_t* dest, const void *addr, int len) {
   switch (len) {
-    case 4: *dest = *(uint32_t *)addr; return;
     case 1: *dest = *( uint8_t *)addr; return;
     case 2: *dest = *(uint16_t *)addr; return;
+    case 4: *dest = *(uint32_t *)addr; return;
     default: assert(0);
   }
 }
 
 static inline def_rtl(host_sm, void *addr, const rtlreg_t *src1, int len) {
   switch (len) {
-    case 4: *(uint32_t *)addr = *src1; return;
     case 1: *( uint8_t *)addr = *src1; return;
     case 2: *(uint16_t *)addr = *src1; return;
+    case 4: *(uint32_t *)addr = *src1; return;
     default: assert(0);
   }
 }
@@ -145,18 +144,19 @@ static inline def_rtl(host_sm, void *addr, const rtlreg_t *src1, int len) {
 // control
 
 static inline def_rtl(j, vaddr_t target) {
-  s->jmp_pc = target;
-  s->is_jmp = true;
+    s->is_jmp = true;
+    s->jmp_pc = target;
 }
 
-static inline def_rtl(jr, rtlreg_t *target) {
-  s->jmp_pc = *target;
-  s->is_jmp = true;
+static inline def_rtl(jr, rtlreg_t* target) {
+    s->is_jmp = true;
+    s->jmp_pc = *target;
 }
 
-static inline def_rtl(jrelop, uint32_t relop,
-    const rtlreg_t *src1, const rtlreg_t *src2, vaddr_t target) {
-  bool is_jmp = interpret_relop(relop, *src1, *src2);
-  if (is_jmp) rtl_j(s, target);
+static inline def_rtl(jrelop, uint32_t relop, const rtlreg_t* src1,
+                      const rtlreg_t* src2, vaddr_t target) {
+    bool is_jmp = interpret_relop(relop, *src1, *src2);
+    if (is_jmp)
+        rtl_j(s, target);
 }
 #endif

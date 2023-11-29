@@ -28,7 +28,7 @@ static inline def_EHelper(popa) {
 static inline def_EHelper(leave) {
     rtl_mv(s, &reg_l(R_ESP), &reg_l(R_EBP));
     rtl_pop(s, &reg_l(R_EBP));
-  print_asm("leave");
+    print_asm("leave");
 }
 
 static inline def_EHelper(cltd) {
