@@ -132,7 +132,6 @@ again:
     IDEX (0xd3, gp2_cl2E, gp2)
     EX   (0xd6, nemu_trap)
 
-    // 0xe8 opcode execting call, which width is 0 depending on operand prefix
     
     IDEXW(0x00, G2E, add, 1)
     IDEX(0x01, G2E, add)
