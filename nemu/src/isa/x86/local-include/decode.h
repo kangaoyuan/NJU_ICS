@@ -272,7 +272,7 @@ static inline def_DHelper(J) {
 }
 
 static inline def_DHelper(push_SI) {
-  decode_op_SI(s, id_dest, true);
+    decode_op_SI(s, id_dest, true);
 }
 
 static inline def_DHelper(in_I2a) {
