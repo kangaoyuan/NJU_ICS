@@ -45,8 +45,8 @@ static inline def_EHelper(gp4) {
 /* 0xff */
 static inline def_EHelper(gp5) {
   switch (s->isa.ext_opcode) {
-    EX(0, inc) EX(1, dec) EX(2, call_rm) EMPTY(3)
-    EX(4, jmp_rm) EMPTY(5) EX(6, push) EMPTY(7)
+    EXW(0, inc, -1) EXW(1, dec, -1) EXW(2, call_rm, -1) EMPTY(3)
+    EXW(4, jmp_rm, -1) EMPTY(5) EXW(6, push, -1) EMPTY(7)
   }
 }
 
@@ -65,10 +65,6 @@ static inline def_EHelper(2byte_esc) {
   switch (opcode) {
   /* TODO: Add more instructions!!! */
     IDEX (0x01, gp7_E, gp7)
-    IDEX(0xb6, movb_E2G, movzx)
-    IDEX(0xb7, movw_E2G, movzx)
-    IDEX(0xbe, movb_E2G, movsx)
-    IDEX(0xbf, movw_E2G, movsx)
     IDEX(0x80, J, jcc)
     IDEX(0x81, J, jcc)
     IDEX(0x82, J, jcc)
@@ -100,6 +96,11 @@ static inline def_EHelper(2byte_esc) {
     IDEXW(0x9d, setcc_E, setcc, 1)
     IDEXW(0x9e, setcc_E, setcc, 1)
     IDEXW(0x9f, setcc_E, setcc, 1)
+    IDEX(0xaf, E2G, imul2)
+    IDEX(0xb6, movb_E2G, movzx)
+    IDEX(0xb7, movw_E2G, movzx)
+    IDEX(0xbe, movb_E2G, movsx)
+    IDEX(0xbf, movw_E2G, movsx)
     default: exec_inv(s);
   }
 }
@@ -269,6 +270,8 @@ again:
     IDEXW(0x84, G2E, test, 1)
     IDEX(0x85, G2E, test)
     IDEX(0x8d, lea_M2G, lea)
+    IDEX(0x8f, E, pop)
+
     IDEXW(0xa8, I2a, test, 1)
     IDEX(0xa9, I2a, test)
     EX(0xc3, ret)
