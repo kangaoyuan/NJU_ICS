@@ -54,19 +54,49 @@ static inline def_EHelper(not) {
 }
 
 static inline def_EHelper(sar) {
-  TODO();
-  // unnecessary to update CF and OF in NEMU
-  print_asm_template2(sar);
+    rtl_sar(s, s0, ddest, dsrc1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    operand_write(s, id_dest, s0);
+    // unnecessary to update CF and OF in NEMU
+    print_asm_template2(sar);
 }
 
 static inline def_EHelper(shl) {
-  TODO();
-  // unnecessary to update CF and OF in NEMU
-  print_asm_template2(shl);
+    rtl_shl(s, s0, ddest, dsrc1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    operand_write(s, id_dest, s0);
+    // unnecessary to update CF and OF in NEMU
+    print_asm_template2(shl);
 }
 
 static inline def_EHelper(shr) {
-  TODO();
-  // unnecessary to update CF and OF in NEMU
-  print_asm_template2(shr);
+    rtl_shr(s, s0, ddest, dsrc1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    operand_write(s, id_dest, s0);
+    // unnecessary to update CF and OF in NEMU
+    print_asm_template2(shr);
+}
+
+static inline def_EHelper(rol) {
+    while(*dsrc1){
+        rtl_msb(s, s0, ddest, id_dest->width);
+        *ddest = *ddest * 2 + *s0;
+        *dsrc1 -= 1;
+    }
+    rtl_update_ZFSF(s, ddest, id_dest->width);
+    operand_write(s, id_dest, ddest);
+    // unnecessary to update CF and OF in NEMU
+    print_asm_template2(rol);
+}
+
+static inline def_EHelper(ror) {
+    while(*dsrc1){
+        rtl_andi(s, s0, ddest, 1);
+        *ddest = *ddest / 2 + (*s0 << 31);
+        *dsrc1 -= 1;
+    }
+    rtl_update_ZFSF(s, ddest, id_dest->width);
+    operand_write(s, id_dest, ddest);
+    // unnecessary to update CF and OF in NEMU
+    print_asm_template2(ror);
 }

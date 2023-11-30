@@ -1,6 +1,5 @@
 #include <cpu/exec.h>
 #include "all-instr.h"
-#include "../local-include/decode.h"
 
 static inline void set_width(DecodeExecState *s, int width) {
   if (width == -1) return;
@@ -21,8 +20,8 @@ static inline def_EHelper(gp1) {
 /* 0xc0, 0xc1, 0xd0, 0xd1, 0xd2, 0xd3 */
 static inline def_EHelper(gp2) {
   switch (s->isa.ext_opcode) {
-    EMPTY(0) EMPTY(1) EMPTY(2) EMPTY(3)
-    EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+    EXW(0, rol, -1) EXW(1, ror, -1) EMPTY(2) EMPTY(3)
+    EXW(4, shl, -1) EXW(5, shr, -1) EXW(6, shl, -1) EXW(7, sar, -1)
   }
 }
 
@@ -149,6 +148,7 @@ again:
     EX   (0xd6, nemu_trap)
 
     
+  /* TODO: Add more instructions!!! */
     IDEXW(0x00, G2E, add, 1)
     IDEX(0x01, G2E, add)
     IDEXW(0x02, E2G, add, 1)
@@ -245,7 +245,9 @@ again:
     EX(0x60, pusha)
     EX(0x61, popa)
     IDEX(0x68, push_SI, push)
+    IDEX(0x69, I_E2G, imul3)
     IDEXW(0x6a, push_SI, push, 1)
+    IDEX(0x6b, SI_E2G, imul3)
 
     IDEXW(0x70, J, jcc, 1)
     IDEXW(0x71, J, jcc, 1)
