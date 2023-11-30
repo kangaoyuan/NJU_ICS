@@ -66,37 +66,35 @@ static inline def_EHelper(leave) {
 }
 
 static inline def_EHelper(cltd) {
-  if (s->isa.is_operand_size_16) {
-    rtl_msb(s, s0, (rtlreg_t*)&reg_w(R_AX), 2);
-    rtl_sext(s, (rtlreg_t*)&reg_w(R_DX), s0, 4);
-  }
-  else {
-    rtl_msb(s, s0, (rtlreg_t*)&reg_l(R_EAX), 4);
-    rtl_sext(s, (rtlreg_t*)&reg_l(R_EDX), s0, 4);
-  }
-  print_asm(s->isa.is_operand_size_16 ? "cwtl" : "cltd");
+    if (s->isa.is_operand_size_16) {
+        rtl_msb(s, s0, (rtlreg_t*)&reg_w(R_AX), 2);
+        rtl_sext(s, (rtlreg_t*)&reg_w(R_DX), s0, 4);
+    } else {
+        rtl_msb(s, s0, (rtlreg_t*)&reg_l(R_EAX), 4);
+        rtl_sext(s, (rtlreg_t*)&reg_l(R_EDX), s0, 4);
+    }
+    print_asm(s->isa.is_operand_size_16 ? "cwtl" : "cltd");
 }
 
 static inline def_EHelper(cwtl) {
-  if (s->isa.is_operand_size_16) {
-    rtl_sext(s, (rtlreg_t*)&reg_w(R_AX), (rtlreg_t*)&reg_b(R_AL), 2);
-  }
-  else {
-    rtl_sext(s, (rtlreg_t*)&reg_l(R_EAX), (rtlreg_t*)&reg_w(R_AX), 4);
-  }
-  print_asm(s->isa.is_operand_size_16 ? "cbtw" : "cwtl");
+    if (s->isa.is_operand_size_16) {
+        rtl_sext(s, (rtlreg_t*)&reg_w(R_AX), (rtlreg_t*)&reg_b(R_AL), 2);
+    } else {
+        rtl_sext(s, (rtlreg_t*)&reg_l(R_EAX), (rtlreg_t*)&reg_w(R_AX), 4);
+    }
+    print_asm(s->isa.is_operand_size_16 ? "cbtw" : "cwtl");
 }
 
 static inline def_EHelper(movzx) {
-  id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
-  rtl_zext(s, ddest, dsrc1, id_dest->width);
-  operand_write(s, id_dest, ddest);
-  print_asm_template2(movzx);
+    id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
+    rtl_zext(s, ddest, dsrc1, id_dest->width);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(movzx);
 }
 
 static inline def_EHelper(movsx) {
-  id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
-  rtl_sext(s, ddest, dsrc1, id_dest->width);
-  operand_write(s, id_dest, ddest);
-  print_asm_template2(movsx);
+    id_dest->width = s->isa.is_operand_size_16 ? 2 : 4;
+    rtl_sext(s, ddest, dsrc1, id_dest->width);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(movsx);
 }
