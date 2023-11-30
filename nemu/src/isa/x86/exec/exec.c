@@ -155,30 +155,56 @@ again:
     IDEX(0x03, E2G, add)
     IDEXW(0x04, I2a, add, 1)
     IDEX(0x05, I2a, add)
+
     IDEXW(0x08, G2E, or, 1)
     IDEX(0x09, G2E, or)
     IDEXW(0x0a, E2G, or, 1)
     IDEX(0x0b, E2G, or)
     IDEXW(0x0c, I2a, or, 1)
     IDEX(0x0d, I2a, or)
+
     IDEXW(0x10, G2E, adc, 1)
     IDEX(0x011, G2E, adc)
     IDEXW(0x12, E2G, adc, 1)
     IDEX(0x13, E2G, adc)
     IDEXW(0x14, I2a, adc, 1)
     IDEX(0x15, I2a, adc)
+
+    IDEXW(0x18, G2E, sbb, 1)
+    IDEX(0x19, G2E, sbb)
+    IDEXW(0x1a, E2G, sbb, 1)
+    IDEX(0x1b, E2G, sbb)
+    IDEXW(0x1c, I2a, sbb, 1)
+    IDEX(0x1d, I2a, sbb)
+
+    IDEXW(0x20, G2E, and, 1)
+    IDEX(0x021, G2E, and)
+    IDEXW(0x22, E2G, and, 1)
+    IDEX(0x23, E2G, and)
+    IDEXW(0x24, I2a, and, 1)
+    IDEX(0x25, I2a, and)
+
+    IDEXW(0x28, G2E, sub, 1)
+    IDEX(0x29, G2E, sub)
+    IDEXW(0x2a, E2G, sub, 1)
+    IDEX(0x2b, E2G, sub)
+    IDEXW(0x2c, I2a, sub, 1)
+    IDEX(0x2d, I2a, sub)
+
     IDEXW(0x30, G2E, xor, 1)
     IDEX(0x31, G2E, xor)
     IDEXW(0x32, E2G, xor, 1)
     IDEX(0x33, E2G, xor)
     IDEXW(0x34, I2a, xor, 1)
     IDEX(0x35, I2a, xor)
+
     IDEXW(0x38, G2E, cmp, 1)
     IDEX(0x39, G2E, cmp)
     IDEXW(0x3a, E2G, cmp, 1)
     IDEX(0x3b, E2G, cmp)
     IDEXW(0x3c, I2a, cmp, 1)
     IDEX(0x3d, I2a, cmp)
+
     IDEX(0x40, r, inc)
     IDEX(0x41, r, inc)
     IDEX(0x42, r, inc)
@@ -187,6 +213,7 @@ again:
     IDEX(0x45, r, inc)
     IDEX(0x46, r, inc)
     IDEX(0x47, r, inc)
+
     IDEX(0x48, r, dec)
     IDEX(0x49, r, dec)
     IDEX(0x4a, r, dec)
@@ -195,6 +222,7 @@ again:
     IDEX(0x4d, r, dec)
     IDEX(0x4e, r, dec)
     IDEX(0x4f, r, dec)
+
     IDEX(0x50, r, push)
     IDEX(0x51, r, push)
     IDEX(0x52, r, push)
@@ -203,6 +231,7 @@ again:
     IDEX(0x55, r, push)
     IDEX(0x56, r, push)
     IDEX(0x57, r, push)
+
     IDEX(0x58, r, pop)
     IDEX(0x59, r, pop)
     IDEX(0x5a, r, pop)
@@ -211,6 +240,7 @@ again:
     IDEX(0x5d, r, pop)
     IDEX(0x5e, r, pop)
     IDEX(0x5f, r, pop)
+
     IDEX(0x68, push_SI, push)
     IDEXW(0x6a, push_SI, push, 1)
     IDEXW(0x70, J, jcc, 1)
