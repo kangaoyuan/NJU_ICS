@@ -123,6 +123,8 @@ again:
     IDEX (0xa1, O2a, mov)
     IDEXW(0xa2, a2O, mov, 1)
     IDEX (0xa3, a2O, mov)
+    //EXW (0xa4, movs, 1)
+    //EX (0xa5, movs)
     IDEXW(0xb0, mov_I2r, mov, 1)
     IDEXW(0xb1, mov_I2r, mov, 1)
     IDEXW(0xb2, mov_I2r, mov, 1)
@@ -271,6 +273,9 @@ again:
     IDEX(0x85, G2E, test)
     IDEX(0x8d, lea_M2G, lea)
     IDEX(0x8f, E, pop)
+
+    EX(0x98, cwtl)
+    EX(0x99, cltd)
 
     IDEXW(0xa8, I2a, test, 1)
     IDEX(0xa9, I2a, test)
