@@ -50,7 +50,7 @@ static inline def_EHelper(gp5) {
   }
 }
 
-/* 0x0f 0x01*/
+/* 0x0f01*/
 static inline def_EHelper(gp7) {
   switch (s->isa.ext_opcode) {
     EMPTY(0) EMPTY(1) EMPTY(2) EMPTY(3)
@@ -58,6 +58,7 @@ static inline def_EHelper(gp7) {
   }
 }
 
+/* 0x0f */
 static inline def_EHelper(2byte_esc) {
   uint8_t opcode = instr_fetch(&s->seq_pc, 1);
   s->opcode = opcode;
