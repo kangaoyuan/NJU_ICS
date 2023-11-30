@@ -23,13 +23,40 @@ static inline def_EHelper(pop) {
 }
 
 static inline def_EHelper(pusha) {
-  TODO();
-  print_asm("pusha");
+    if (s->isa.is_operand_size_16) {
+        rtlreg_t temp = reg_w(R_SP);
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_AX));
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_CX));
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_DX));
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_BX));
+        rtl_push(s, &temp);
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_BP));
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_SI));
+        rtl_push(s, (const rtlreg_t*)&reg_w(R_DI));
+    } else {
+        rtlreg_t temp = cpu.esp;
+        rtl_push(s, &cpu.eax);
+        rtl_push(s, &cpu.ecx);
+        rtl_push(s, &cpu.edx);
+        rtl_push(s, &cpu.ebx);
+        rtl_push(s, &temp);
+        rtl_push(s, &cpu.ebp);
+        rtl_push(s, &cpu.esi);
+        rtl_push(s, &cpu.edi);
+    }
+    print_asm("pusha");
 }
 
 static inline def_EHelper(popa) {
-  TODO();
-  print_asm("popa");
+    rtl_pop(s, &cpu.eax);
+    rtl_pop(s, &cpu.ecx);
+    rtl_pop(s, &cpu.edx);
+    rtl_pop(s, &cpu.ebx);
+    rtl_pop(s, s0);
+    rtl_pop(s, &cpu.ebp);
+    rtl_pop(s, &cpu.esi);
+    rtl_pop(s, &cpu.edi);
+    print_asm("popa");
 }
 
 static inline def_EHelper(leave) {

@@ -241,8 +241,12 @@ again:
     IDEX(0x5e, r, pop)
     IDEX(0x5f, r, pop)
 
+
+    EX(0x60, pusha)
+    EX(0x61, popa)
     IDEX(0x68, push_SI, push)
     IDEXW(0x6a, push_SI, push, 1)
+
     IDEXW(0x70, J, jcc, 1)
     IDEXW(0x71, J, jcc, 1)
     IDEXW(0x72, J, jcc, 1)
@@ -258,6 +262,7 @@ again:
     IDEXW(0x7d, J, jcc, 1)
     IDEXW(0x7e, J, jcc, 1)
     IDEXW(0x7f, J, jcc, 1)
+
     IDEXW(0x84, G2E, test, 1)
     IDEX(0x85, G2E, test)
     IDEX(0x8d, lea_M2G, lea)
