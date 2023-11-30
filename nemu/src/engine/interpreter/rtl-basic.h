@@ -105,8 +105,9 @@ static inline def_rtl(idiv64_r, rtlreg_t* dest,
 
 // memory
 
-static inline def_rtl(lm, rtlreg_t *dest, const rtlreg_t* addr, word_t offset, int len) {
-  *dest = vaddr_read(*addr + offset, len);
+static inline def_rtl(lm, rtlreg_t* dest, const rtlreg_t* addr,
+                      word_t offset, int len) {
+    *dest = vaddr_read(*addr + offset, len);
 }
 
 static inline def_rtl(sm, const rtlreg_t* addr, word_t offset, const rtlreg_t* src1, int len) {
