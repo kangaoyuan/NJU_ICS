@@ -34,9 +34,9 @@ char* strncpy(char* dst, const char* src, size_t n) {
 
 char* strcat(char* dst, const char* src) {
     char *result = dst;
-    int length = strlen(dst);
-    for(dst += length; *src; ++dst){
-         *dst = *src; 
+    dst += strlen(dst);
+    while(*src){
+         *dst++ = *src++; 
     }
     *dst = '\0';
     return result;
