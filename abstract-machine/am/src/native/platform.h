@@ -14,15 +14,13 @@ void __am_init_timer_irq();
 void __am_pmem_map(void *va, void *pa, int prot);
 void __am_pmem_unmap(void *va);
 
-#define MY_SIGSTACK_SIZE (SIGSTKSZ)
-
 // per-cpu structure
 typedef struct {
   void *vm_head;
   uintptr_t ksp;
   int cpuid;
   Event ev; // similar to cause register in mips/riscv
-  uint8_t sigstack[MY_SIGSTACK_SIZE];
+  uint8_t sigstack[8192];
 } __am_cpu_t;
 extern __am_cpu_t *__am_cpu_struct;
 #define thiscpu __am_cpu_struct
