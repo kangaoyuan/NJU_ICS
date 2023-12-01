@@ -58,8 +58,18 @@ static inline def_EHelper(dec) {
 }
 
 static inline def_EHelper(neg) {
-  TODO();
-  print_asm_template1(neg);
+    rtl_neg(s, s0, ddest);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    if (*ddest == 1 << (id_dest->width * 8 - 1))
+        cpu.eflags.OF = 1;
+    else
+        cpu.eflags.OF =0;
+    if (*ddest == 0)
+        cpu.eflags.CF = 0;
+    else
+        cpu.eflags.CF = 1;
+    operand_write(s, id_dest, s0);
+    print_asm_template1(neg);
 }
 
 static inline def_EHelper(adc) {
