@@ -1,5 +1,7 @@
 include nemu/Makefile.git
 
+.PHONY: default clean submit
+
 default:
 	@echo "Please run 'make' under any subprojects to compile."
 
@@ -12,5 +14,3 @@ clean:
 submit: clean
 	git gc
 	@#STUID=$(STUID) STUNAME=$(STUNAME) bash -c "$$(curl -s http://jyywiki.cn/static/submit.sh)"
-
-.PHONY: default clean submit
