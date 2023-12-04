@@ -297,6 +297,11 @@ static inline def_DHelper(out_a2dx) {
   operand_reg(s, id_dest, true, R_DX, 2);
 }
 
+static inline def_DHelper(Y2X) {
+    operand_reg(s, id_src1, true, R_ESI, id_src1->width);
+    operand_reg(s, id_dest, true, R_EDI, id_dest->width);
+}
+
 static inline void operand_write(DecodeExecState* s, Operand* op,
                                  rtlreg_t* src) {
     if (op->type == OP_TYPE_REG) {

@@ -98,3 +98,12 @@ static inline def_EHelper(movsx) {
     operand_write(s, id_dest, ddest);
     print_asm_template2(movsx);
 }
+
+static inline def_EHelper(movs) {
+    rtl_lm(s, s0, dsrc1, 0, id_src1->width);
+    rtl_sm(s, ddest, 0, s0, id_dest->width);
+    operand_write(s, id_dest, ddest);
+    rtl_addi(s, dsrc1, dsrc1, 1);
+    rtl_addi(s, ddest, ddest, 1); 
+    print_asm_template1(movs);
+}
