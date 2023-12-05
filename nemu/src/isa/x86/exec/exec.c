@@ -262,6 +262,7 @@ again:
     IDEXW(0x74, J, jcc, 1)
     IDEXW(0x75, J, jcc, 1)
     IDEXW(0x76, J, jcc, 1)
+    IDEXW(0x77, J, jcc, 1)
     IDEXW(0x78, J, jcc, 1)
     IDEXW(0x79, J, jcc, 1)
     IDEXW(0x7a, J, jcc, 1)
