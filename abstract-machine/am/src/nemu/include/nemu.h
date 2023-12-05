@@ -2,7 +2,6 @@
 #define NEMU_H__
 
 #include <klib-macros.h>
-
 #include ISA_H // "x86.h", "mips32.h", ...
 
 #if defined(__ISA_X86__)
