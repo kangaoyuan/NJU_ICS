@@ -1,4 +1,9 @@
 // **MAY SUBJECT TO CHANGE IN THE FUTURE**
+#ifndef __AMDEV_H__
+#define __AMDEV_H__
+
+#include <stdint.h>
+#include <stdbool.h>
 
 #define AM_DEVREG(id, reg, perm, ...) \
   enum { AM_##reg = (id) }; \
@@ -67,3 +72,4 @@ struct gpu_canvas {
     struct gpu_texturedesc texture;
   };
 } __attribute__((packed));
+#endif

@@ -1,15 +1,15 @@
 #ifndef KLIB_MACROS_H__
 #define KLIB_MACROS_H__
 
-#define ROUNDUP(a, sz)      ((((uintptr_t)a) + (sz) - 1) & ~((sz) - 1))
-#define ROUNDDOWN(a, sz)    ((((uintptr_t)a)) & ~((sz) - 1))
 #define LENGTH(arr)         (sizeof(arr) / sizeof((arr)[0]))
-#define RANGE(st, ed)       (Area) { .start = (void *)(st), .end = (void *)(ed) }
+#define ROUNDDOWN(a, sz)    ((((uintptr_t)a)) & ~((sz) - 1))
+#define ROUNDUP(a, sz)      ((((uintptr_t)a) + (sz) - 1) & ~((sz) - 1))
 #define IN_RANGE(ptr, area) ((area).start <= (ptr) && (ptr) < (area).end)
+#define RANGE(st, ed)       (Area) { .start = (void *)(st), .end = (void *)(ed) }
 
 #define STRINGIFY(s)        #s
-#define TOSTRING(s)         STRINGIFY(s)
 #define _CONCAT(x, y)       x ## y
+#define TOSTRING(s)         STRINGIFY(s)
 #define CONCAT(x, y)        _CONCAT(x, y)
 
 #define putstr(s) \
