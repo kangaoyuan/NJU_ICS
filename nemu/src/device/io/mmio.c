@@ -21,5 +21,7 @@ void add_mmio_map(char* name, paddr_t addr, uint8_t* space, int len,
 /* bus interface */
 IOMap* fetch_mmio_map(paddr_t addr) {
     int mapid = find_mapid_by_addr(maps, nr_map, addr);
-    return (mapid == -1 ? NULL : &maps[mapid]);
+    assert(mapid != -1);
+    return &maps[mapid];
+    // return (mapid == -1 ? NULL : &maps[mapid]);
 }

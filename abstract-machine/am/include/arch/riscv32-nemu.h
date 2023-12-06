@@ -1,9 +1,10 @@
 #ifndef ARCH_H__
 #define ARCH_H__
 
+#include <stdint.h>
 struct Context {
-  uintptr_t epc, cause, gpr[32], status;
-  void *pdir;
+    uintptr_t epc, cause, gpr[32], status;
+    void*     pdir;
 };
 
 #define GPR1 gpr[17] // a7

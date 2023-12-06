@@ -7,7 +7,6 @@
 #define SERIAL_MMIO 0xa10003F8
 
 #define CH_OFFSET 0
-
 static uint8_t *serial_base = NULL;
 
 /* io_callback */
@@ -16,13 +15,15 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
     switch (offset) {
     /* We bind the serial port with the host stderr in NEMU. */
     case CH_OFFSET:
+        // only valid when map_write() to callback.
         if (is_write)
             putc(serial_base[0], stderr);
         else
-            panic("do not support read");
+            panic("serial_io_handler do not support read");
         break;
+    // assert(offset == 0);
     default:
-        panic("do not support offset = %d", offset);
+        panic("serial_io_handler do not support offset = %d", offset);
     }
 }
 

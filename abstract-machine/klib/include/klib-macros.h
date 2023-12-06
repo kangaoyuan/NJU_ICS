@@ -33,7 +33,6 @@
       putstr(" @ " __FILE__ ":" TOSTRING(__LINE__) "  \n"); \
       halt(1); \
     } })
-
 #define panic(s) panic_on(1, s)
 
 #endif

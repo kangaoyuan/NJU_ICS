@@ -22,6 +22,7 @@ void add_pio_map(char* name, ioaddr_t addr, uint8_t* space, int len,
 }
 
 uint32_t pio_read_common(ioaddr_t addr, int len) {
+    // assert(addr + len <= PORT_IO_SPACE_MAX);
     assert(addr + len - 1 < PORT_IO_SPACE_MAX);
     int mapid = find_mapid_by_addr(maps, nr_map, addr);
     assert(mapid != -1);
@@ -29,6 +30,7 @@ uint32_t pio_read_common(ioaddr_t addr, int len) {
 }
 
 void pio_write_common(ioaddr_t addr, uint32_t data, int len) {
+    // above two assert is equal.
     assert(addr + len - 1 < PORT_IO_SPACE_MAX);
     int mapid = find_mapid_by_addr(maps, nr_map, addr);
     assert(mapid != -1);

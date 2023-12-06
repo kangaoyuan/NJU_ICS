@@ -5,6 +5,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// Memory area for [@start, @end)
+typedef struct {
+    void *start, *end;
+} Area;
+
+// AM register enum and struct definitions.
+// which are independent of archs, every arch has same interfaces.
 #define AM_DEVREG(id, reg, perm, ...) \
   enum { AM_##reg = (id) }; \
   typedef struct { __VA_ARGS__; } AM_##reg##_T;
@@ -34,8 +41,7 @@ AM_DEVREG(22, NET_STATUS,   RD, int rx_len, tx_len);
 AM_DEVREG(23, NET_TX,       WR, Area buf);
 AM_DEVREG(24, NET_RX,       WR, Area buf);
 
-// Input
-
+// Input keyboard
 #define AM_KEYS(_) \
   _(ESCAPE) _(F1) _(F2) _(F3) _(F4) _(F5) _(F6) _(F7) _(F8) _(F9) _(F10) _(F11) _(F12) \
   _(GRAVE) _(1) _(2) _(3) _(4) _(5) _(6) _(7) _(8) _(9) _(0) _(MINUS) _(EQUALS) _(BACKSPACE) \
@@ -46,13 +52,9 @@ AM_DEVREG(24, NET_RX,       WR, Area buf);
   _(UP) _(DOWN) _(LEFT) _(RIGHT) _(INSERT) _(DELETE) _(HOME) _(END) _(PAGEUP) _(PAGEDOWN)
 
 #define AM_KEY_NAMES(key) AM_KEY_##key,
-enum {
-  AM_KEY_NONE = 0,
-  AM_KEYS(AM_KEY_NAMES)
-};
+enum { AM_KEY_NONE = 0, AM_KEYS(AM_KEY_NAMES) };
 
 // GPU
-
 #define AM_GPU_TEXTURE  1
 #define AM_GPU_SUBTREE  2
 #define AM_GPU_NULL     0xffffffff
@@ -60,16 +62,16 @@ enum {
 typedef uint32_t gpuptr_t;
 
 struct gpu_texturedesc {
-  uint16_t w, h;
-  gpuptr_t pixels;
+    uint16_t w, h;
+    gpuptr_t pixels;
 } __attribute__((packed));
 
 struct gpu_canvas {
-  uint16_t type, w, h, x1, y1, w1, h1;
-  gpuptr_t sibling;
-  union {
-    gpuptr_t child;
-    struct gpu_texturedesc texture;
-  };
+    uint16_t type, w, h, x1, y1, w1, h1;
+    gpuptr_t sibling;
+    union {
+        gpuptr_t               child;
+        struct gpu_texturedesc texture;
+    };
 } __attribute__((packed));
 #endif

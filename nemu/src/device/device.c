@@ -13,16 +13,19 @@ void init_i8042();
 void init_audio();
 void init_timer();
 
-void vga_update_screen();
-void send_key(uint8_t, bool);
 
 static int device_update_flag = false;
-
 static void set_device_update_flag() {
     device_update_flag = true;
 }
 
+void vga_update_screen();
+void send_key(uint8_t, bool);
+// device_update() function applied in cpu_exec() function,
+// when every intruction be executed.
 void device_update() {
+    // set_device_update_flag() fucntion registered in alarm signal handler,
+    // which is to control the device_update frequency.
     if (!device_update_flag) {
         return;
     }
@@ -32,6 +35,7 @@ void device_update() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
+        // clicking the window x button to quit
         case SDL_QUIT:
             nemu_state.state = NEMU_QUIT;
             break;
@@ -50,19 +54,20 @@ void device_update() {
 }
 
 void sdl_clear_event_queue() {
-  SDL_Event event;
-  while (SDL_PollEvent(&event));
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+        ;
 }
 
 void init_device() {
-    init_serial();
-    init_timer();
-    init_vga();
-    init_i8042();
-    init_audio();
+    init_serial();  // serial 
+    init_timer();   // timer
+    init_vga();     // vga
+    init_i8042();   // keyboard
+    init_audio();   // audio
 
-    add_alarm_handle(set_device_update_flag);
-    init_alarm();
+    add_alarm_handle(set_device_update_flag);   // alarm handler
+    init_alarm();   // alarm, attention for alarm signal register
 }
 #else
 

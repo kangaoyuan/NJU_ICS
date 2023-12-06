@@ -1,6 +1,7 @@
 #ifndef AM_H__
 #define AM_H__
 
+#include "amdev.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include ARCH_H // this macro is defined in $CFLAGS
@@ -10,11 +11,6 @@
 #define MMAP_NONE  0x00000000 // no access
 #define MMAP_READ  0x00000001 // can read
 #define MMAP_WRITE 0x00000002 // can write
-
-// Memory area for [@start, @end)
-typedef struct {
-    void *start, *end;
-} Area;
 
 // Arch-dependent processor context
 typedef struct Context Context;
@@ -55,7 +51,6 @@ void     halt        (int code) __attribute__((__noreturn__));
 bool     ioe_init    (void);
 void     ioe_read    (int reg, void *buf);
 void     ioe_write   (int reg, void *buf);
-#include "amdev.h"
 
 // ---------- CTE: Interrupt Handling and Context Switching ----------
 bool     cte_init    (Context *(*handler)(Event ev, Context *ctx));

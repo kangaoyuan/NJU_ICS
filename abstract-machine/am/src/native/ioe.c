@@ -43,29 +43,28 @@ static void *lut[128] = {
 };
 
 bool ioe_init() {
-  panic_on(cpu_current() != 0, "call ioe_init() in other CPUs");
-  panic_on(ioe_init_done, "double-initialization");
-  __am_has_ioe = true;
-  return true;
+    panic_on(cpu_current() != 0, "call ioe_init() in other CPUs");
+    panic_on(ioe_init_done, "double-initialization");
+    __am_has_ioe = true;
+    return true;
 }
 
 static void fail(void *buf) { panic("access nonexist register"); }
-
 void __am_ioe_init() {
-  for (int i = 0; i < LENGTH(lut); i++)
-    if (!lut[i]) lut[i] = fail;
-  __am_timer_init();
-  __am_gpu_init();
-  __am_input_init();
-  ioe_init_done = true;
+    for (int i = 0; i < LENGTH(lut); i++){
+        if (!lut[i])
+            lut[i] = fail;
+    }
+    __am_timer_init();
+    __am_gpu_init();
+    __am_input_init();
+    ioe_init_done = true;
 }
 
-static void do_io(int reg, void *buf) {
-  if (!ioe_init_done) {
-    __am_ioe_init();
-  }
-  ((handler_t)lut[reg])(buf);
+static void do_io(int reg, void* buf) {
+    if (!ioe_init_done)
+        __am_ioe_init();
+    ((handler_t)lut[reg])(buf);
 }
-
 void ioe_read (int reg, void *buf) { do_io(reg, buf); }
 void ioe_write(int reg, void *buf) { do_io(reg, buf); }

@@ -5,7 +5,7 @@
 #define I8042_DATA_PORT 0x60
 #define I8042_DATA_MMIO 0xa1000060
 
-static uint32_t *i8042_data_port_base = NULL;
+#define KEYDOWN_MASK 0x8000
 
 // Note that this is not the standard
 #define _KEYS(f) \
@@ -18,22 +18,17 @@ f(LCTRL) f(APPLICATION) f(LALT) f(SPACE) f(RALT) f(RCTRL) \
 f(UP) f(DOWN) f(LEFT) f(RIGHT) f(INSERT) f(DELETE) f(HOME) f(END) f(PAGEUP) f(PAGEDOWN)
 
 #define _KEY_NAME(k) _KEY_##k,
-
-enum {
-  _KEY_NONE = 0,
-  MAP(_KEYS, _KEY_NAME)
-};
+enum { _KEY_NONE = 0, MAP(_KEYS, _KEY_NAME) };
 
 #define SDL_KEYMAP(k) [concat(SDL_SCANCODE_, k)] = concat(_KEY_, k),
-static uint32_t keymap[256] = {
-  MAP(_KEYS, SDL_KEYMAP)
-};
+static uint32_t keymap[256] = {MAP(_KEYS, SDL_KEYMAP)};
+
 
 #define KEY_QUEUE_LEN 1024
-static int key_queue[KEY_QUEUE_LEN] = {};
 static int key_f = 0, key_r = 0;
+static int key_queue[KEY_QUEUE_LEN] = {};
 
-#define KEYDOWN_MASK 0x8000
+static uint32_t *i8042_data_port_base = NULL;
 
 void send_key(uint8_t scancode, bool is_keydown) {
     if (nemu_state.state == NEMU_RUNNING && keymap[scancode] != _KEY_NONE) {
