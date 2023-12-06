@@ -22,9 +22,7 @@ int printf(const char *fmt, ...) {
     va_start(ap, fmt);
     int ret = vsnprintf(ans, MAX_BUF, fmt, ap);
     va_end(ap);
-    for(int i = 0; ans[i]; ++i){
-        putch(ans[i]); 
-    }
+    putstr(ans);
     return ret;
 }
 
