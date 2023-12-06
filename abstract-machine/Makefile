@@ -56,8 +56,7 @@ LIBS     := $(sort $(LIBS) am klib) # lazy evaluation ("=") causes infinite recu
 LINKAGE   = $(OBJS) \
   $(addsuffix -$(ARCH).a, $(join \
     $(addsuffix /build/, $(addprefix $(AM_HOME)/, $(LIBS))), \
-    $(LIBS) \
-))
+    $(LIBS)))
 
 ## 3. General Compilation Flags
 
