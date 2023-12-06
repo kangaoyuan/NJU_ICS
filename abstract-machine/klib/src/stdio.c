@@ -3,11 +3,9 @@
 #include <klib-macros.h>
 #include <stdarg.h>
 
-#define MAX_BUF 2048
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-
-
+#define MAX_BUF 2048
 #define BUFFER_SIZE (400)
 
 static int isdigit(char c){
@@ -17,8 +15,6 @@ static int isdigit(char c){
 static int islower(char c){
   return 'a' <= c && c <= 'z';
 }
-
-
 
 int printf(const char *fmt, ...) {
     static char ans[MAX_BUF] = {};
