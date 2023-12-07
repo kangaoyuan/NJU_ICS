@@ -16,7 +16,7 @@
 #endif
 #define SCREEN_SIZE ((SCREEN_H * SCREEN_W) * sizeof(uint32_t))
 
-#define VMEM 0xa0000000
+#define VMEM 0xa0000000   // VMEM is equal to FB_ADDR
 #define VGACTL_PORT 0x100 // Note that this is not the standard
 #define VGACTL_MMIO 0xa1000100
 
