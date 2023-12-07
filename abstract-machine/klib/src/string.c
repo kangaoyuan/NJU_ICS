@@ -1,102 +1,97 @@
 #include <klib.h>
-#include <stdint.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-size_t strlen(const char* s) {
-    int cnt = 0;
-    while (*s) {
-        ++s;
-        ++cnt;
-    }
-    return cnt;
+size_t strlen(const char *s) {
+  size_t i = 0;;
+  while(s[i] != '\0') {i++;}
+  return i;
 }
 
-char* strcpy(char* dst, const char* src) {
-    char *result = dst;
-    // while(*dst++ = *src++) ; // equalvalent to below two statements.
-    while (*src) {
-        *dst++ = *src++;
-    }
-    *dst = '\0';
-    return result;
+char *strcpy(char* dst,const char* src) {
+  size_t i = 0;
+  while(src[i] != '\0')
+  {
+    dst[i] = src[i];
+    i++;
+  }
+  dst[i] = '\0';
+  return dst;
 }
 
 char* strncpy(char* dst, const char* src, size_t n) {
-    char *result = dst;
-    while (*src && n > 0) {
-        --n;
-        *dst++ = *src++;
-    }
-    *dst = '\0';
-    return result;
+  size_t i;
+  for(i = 0;i < n&& src[i] != '\0';i++)
+    dst[i] = src[i];
+  for(; i < n;i ++)
+    dst[i] = '\0';
+  return dst;
 }
 
 char* strcat(char* dst, const char* src) {
-    char *result = dst;
-    int length = strlen(dst);
-    for(dst += length; *src; ++dst){
-         *dst = *src; 
-    }
-    *dst = '\0';
-    return result;
+  size_t i = 0,j = 0;;
+  while(dst[i] != '\0')
+  {
+    i++;
+  }
+  while(src[j] != '\0')
+  {
+    dst[i] = src[j];
+    i++;
+    j++;
+  }
+  dst[i] = '\0';
+  return dst;
 }
 
 int strcmp(const char* s1, const char* s2) {
-    while(*s1 == *s2 && *s1 != '\0' && *s2 != '\0'){
-        ++s1;
-        ++s2;
-    }
-    return *s1 - *s2;
+  char const *p1 = s1,*p2 = s2;
+  while(*p1 == *p2 && *p1 != '\0' && *p2 != '\0')
+  {
+    //printf("%c %c\n",*p1,*p2);
+    p1++;
+    p2++;
+  }
+  return *p1-*p2;
 }
 
 int strncmp(const char* s1, const char* s2, size_t n) {
-    while(n > 0){
-        if(*s1 != *s2){
-            return *s1 - *s2; 
-        }
-        --n;
-        ++s1;
-        ++s2;
-    }
-    return 0;
+  assert(0);
+  return 0;
 }
 
-void* memset(void* v, int c, size_t n) {
-    for(uint8_t *s = v; n > 0; ++s, --n){
-        *s = c; 
-    }
-    return v;
+void* memset(void* v,int c,size_t n) {
+  for(int i = 0; i < n;i ++)
+  {
+    ((char*)v)[i] = c; 
+  }
+  return v;
 }
 
-void* memmove(void* dst, const void* src, size_t n) {
-    uint8_t* udst = dst;
-    const uint8_t* usrc = src;
-    while(n > 0) {
-        --n;
-        *udst++ = *usrc++;
-    }
-    return dst;
+void* memmove(void* dst,const void* src,size_t n) {
+  assert(0);
+  return NULL;
 }
 
 void* memcpy(void* out, const void* in, size_t n) {
-    for(uint8_t *dst = out; n > 0; --n){
-        *dst++ = *(const uint8_t*)in++; 
-    }
-    return out;
+  size_t i = 0;
+  while(n--)
+  {
+    ((char*) out)[i] = *(char*)in;
+    in++;
+    i++;
+  }
+  return out;
 }
 
 int memcmp(const void* s1, const void* s2, size_t n) {
-   const uint8_t* us1 = (const uint8_t*)s1;
-   const uint8_t* us2 = (const uint8_t*)s2;
-    while(n > 0){
-        if(*us1 != *us2)
-            return *us1 - *us2;
-        --n;
-        ++us1;
-        ++us2;
-    }
-    return 0;
+  size_t i = 0;
+  while(((char*)s1)[i] == ((char *)s2)[i] && i < n)
+  {
+    i++;
+  }
+  return i == n? 0:((char*)s1)[i] - ((char *)s2)[i];
+  
 }
 
 #endif
