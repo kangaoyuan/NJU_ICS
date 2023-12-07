@@ -13,13 +13,14 @@ size_t strlen(const char* s) {
 }
 
 char* strcpy(char* dst, const char* src) {
-    char *result = dst;
-    // while(*dst++ = *src++) ; // equalvalent to below two statements.
-    while (*src) {
-        *dst++ = *src++;
-    }
-    *dst = '\0';
-    return result;
+    /*  char *result = dst;
+        while(*dst++ = *src++) ; // equalvalent to below two statements.
+        while (*src) {
+            *dst++ = *src++;
+        }
+        *dst = '\0';
+        return result;  */
+    return memmove(dst, src, strlen(src)+1);
 }
 
 char* strncpy(char* dst, const char* src, size_t n) {
@@ -33,13 +34,15 @@ char* strncpy(char* dst, const char* src, size_t n) {
 }
 
 char* strcat(char* dst, const char* src) {
-    char *result = dst;
-    dst += strlen(dst);
-    while(*src){
-         *dst++ = *src++; 
-    }
-    *dst = '\0';
-    return result;
+    /*  char *result = dst;
+        dst += strlen(dst);
+        while(*src){
+             *dst++ = *src++; 
+        }
+        *dst = '\0';
+        return result; */
+    strcpy (dst + strlen (dst), src);
+    return dst;
 }
 
 int strcmp(const char* s1, const char* s2) {
@@ -70,12 +73,21 @@ void* memset(void* v, int c, size_t n) {
 }
 
 void* memmove(void* dst, const void* src, size_t n) {
-    uint8_t* udst = dst;
-    const uint8_t* usrc = src;
-    while(n > 0) {
-        --n;
-        *udst++ = *usrc++;
+    unsigned char*       d = dst;
+    const unsigned char* s = src;
+
+    if (d < s || d >= s + n) {
+        while (n--) {
+            *d++ = *s++;
+        }
+    } else {
+        d += n - 1;
+        s += n - 1;
+        while (n--) {
+            *d-- = *s--;
+        }
     }
+
     return dst;
 }
 
@@ -87,8 +99,8 @@ void* memcpy(void* out, const void* in, size_t n) {
 }
 
 int memcmp(const void* s1, const void* s2, size_t n) {
-   const uint8_t* us1 = (const uint8_t*)s1;
-   const uint8_t* us2 = (const uint8_t*)s2;
+   const uint8_t* us1 = s1;
+   const uint8_t* us2 = s2;
     while(n > 0){
         if(*us1 != *us2)
             return *us1 - *us2;
