@@ -20,7 +20,7 @@ char* strcpy(char* dst, const char* src) {
         }
         *dst = '\0';
         return result;  */
-    return memmove(dst, src, strlen(src)+1);
+    return memcpy(dst, src, strlen(src)+1);
 }
 
 char* strncpy(char* dst, const char* src, size_t n) {
