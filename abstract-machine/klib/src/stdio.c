@@ -32,7 +32,7 @@ void itoa_base(int dec, char *dest, int base) {
     for(int tmp = dec; tmp > 0; tmp /= base)
         width++;
     dest[width--] = '\0';
-    for(int rem = dec % base; dec > 0; dec = dec / base){
+    for(int rem = dec % base; dec > 0; rem = dec % base, dec = dec / base){
         dest[width--] = rem > 9 ? rem - 10 + 'a' : rem + '0';
     }
 }
