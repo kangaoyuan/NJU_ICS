@@ -14,6 +14,29 @@ static int islower(char c){
   return 'a' <= c && c <= 'z';
 }
 
+void itoa_base(int dec, char *dest, int base) {
+    assert(base == 2 || base == 8 || base == 10 || base == 16); 
+
+    if(dec == 0){
+        dest[0] = '0'; 
+        dest[1] = '\0'; 
+        return;
+    }
+    
+    if(dec < 0){
+        dec = -dec; 
+        *dest++ = '-';
+    }
+
+    int width = 0;
+    for(int tmp = dec; tmp > 0; tmp /= base)
+        width++;
+    dest[width--] = '\0';
+    for(int rem = dec % base; dec > 0; dec = dec / base){
+        dest[width--] = rem > 9 ? rem - 10 + 'a' : rem + '0';
+    }
+}
+
 int printf(const char *fmt, ...) {
     static char ans [BUFFER_SIZE] = {};
     va_list ap;
