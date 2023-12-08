@@ -33,10 +33,10 @@ void   free      (void *ptr);
 // stdio.h
 int    printf    (const char *format, ...);
 int    sprintf   (char *str, const char *format, ...);
+int    sscanf    (const char *str, const char *format, ...);
 int    snprintf  (char *str, size_t size, const char *format, ...);
 int    vsprintf  (char *str, const char *format, va_list ap);
 int    vsnprintf (char *str, size_t size, const char *format, va_list ap);
-int    sscanf    (const char *str, const char *format, ...);
 
 // assert.h
 #ifdef NDEBUG

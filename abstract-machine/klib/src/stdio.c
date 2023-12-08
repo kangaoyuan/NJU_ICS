@@ -1,12 +1,10 @@
-#include <am.h>
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
-#define MAX_BUF 2048
-#define BUFFER_SIZE (400)
+#define BUFFER_SIZE (2048)
 
 static int isdigit(char c){
   return '0' <= c && c <= '9';
@@ -17,10 +15,10 @@ static int islower(char c){
 }
 
 int printf(const char *fmt, ...) {
-    static char ans[MAX_BUF] = {};
+    static char ans [BUFFER_SIZE] = {};
     va_list ap;
     va_start(ap, fmt);
-    int ret = vsnprintf(ans, MAX_BUF, fmt, ap);
+    int ret = vsnprintf(ans, BUFFER_SIZE, fmt, ap);
     va_end(ap);
     putstr(ans);
     return ret;
@@ -35,10 +33,10 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-    va_list arg;
-    va_start(arg, fmt);
-    int ret = vsnprintf(out, n, fmt, arg);
-    va_end(arg);
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vsnprintf(out, n, fmt, ap);
+    va_end(ap);
     return ret;
 }
 

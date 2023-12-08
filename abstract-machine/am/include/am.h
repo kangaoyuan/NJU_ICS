@@ -1,7 +1,7 @@
 #ifndef AM_H__
 #define AM_H__
 
-#include "amdev.h"
+#include <amdev.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include ARCH_H // this macro is defined in $CFLAGS
