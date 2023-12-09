@@ -32,42 +32,19 @@ void itoa_base(int dec, char *dest, int base) {
     for(int tmp = dec; tmp > 0; tmp /= base)
         width++;
     dest[width--] = '\0';
-    for(int rem = dec % base; dec > 0; dec = dec / base, rem = dec %base){
+    for(int rem = dec % base; dec > 0; dec = dec / base, rem = dec % base)
         dest[width--] = rem > 9 ? rem - 10 + 'a' : rem + '0';
-    }
 }
 
-int printf(const char *fmt, ...) {
-    static char ans [BUFFER_SIZE] = {};
-    va_list ap;
-    va_start(ap, fmt);
-    int ret = vsnprintf(ans, BUFFER_SIZE, fmt, ap);
-    va_end(ap);
-    putstr(ans);
-    return ret;
+void itoa(int d, char* dest) {
+    itoa_base(d, dest, 10);
 }
 
-int sprintf(char *out, const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    int ret = vsprintf(out, fmt, ap);
-    va_end(ap);
-    return ret;
+void xtoa(int d, char* dest) {
+    itoa_base(d, dest, 16);
 }
 
-int snprintf(char *out, size_t n, const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    int ret = vsnprintf(out, n, fmt, ap);
-    va_end(ap);
-    return ret;
-}
-
-int vsprintf(char* out, const char* fmt, va_list ap) {
-    return vsnprintf(out, -1, fmt, ap);
-}
-
-void itoa(unsigned int n, char* buf) {
+/* void itoa(unsigned int n, char* buf) {
     if (n < 10) {
         buf[0] = n + '0';
         buf[1] = '\0';
@@ -101,6 +78,37 @@ void xtoa(unsigned int n, char* buf) {
         buf[i] = (n % 16) - 10 + 'a';
         buf[i + 1] = '\0';
     }
+} */
+
+
+int printf(const char *fmt, ...) {
+    static char ans [BUFFER_SIZE] = {};
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vsnprintf(ans, BUFFER_SIZE, fmt, ap);
+    va_end(ap);
+    putstr(ans);
+    return ret;
+}
+
+int sprintf(char *out, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vsprintf(out, fmt, ap);
+    va_end(ap);
+    return ret;
+}
+
+int snprintf(char *out, size_t n, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vsnprintf(out, n, fmt, ap);
+    va_end(ap);
+    return ret;
+}
+
+int vsprintf(char* out, const char* fmt, va_list ap) {
+    return vsnprintf(out, -1, fmt, ap);
 }
 
 int vsnprintf(char* out, size_t n, const char* fmt, va_list ap) {
@@ -176,164 +184,161 @@ int vsnprintf(char* out, size_t n, const char* fmt, va_list ap) {
     //}
 
     //return cnt++;
-    static char vsn_buffer[BUFFER_SIZE]; // Pay attetion to this STATIC array
-  static char *presentation = "0123456789abcdef";
-  char* buffer = vsn_buffer;
-  char *outp = out;
-  int ret = 0;
-  const char *ori = fmt;
-  while(*fmt){
-    char cur = *fmt;
-    if(cur == '%'){
-      ++fmt;
-      char pre = '\0';
-      int mnWidth = 0, outWidth = 0;
-      char type = '\0';
-      if(isdigit(*fmt)){
-        switch(*fmt){
-          case '0':
-            pre = '0';
-            fmt++;
-            break;
-          default:
-            assert(0);
-            break;
-        }
-        while(isdigit(*fmt)){
-          mnWidth = mnWidth*10+((*fmt)-'0');
-          fmt++;
-        }
-      }
-      if(islower(*fmt)){
-        type = *fmt;
-      }
-      char *cp = &buffer[BUFFER_SIZE-1];
-      *cp = '\0';
-      switch(type){
-        case 'd':
-        {
-          int32_t var = va_arg(ap, int32_t);
-          int isneg = 0;
-          if(var < 0){
-            isneg = 1;
-            var = -var;
-          }
-          do{
-            *(--cp) = presentation[var % 10];
-            outWidth++;
-            var /= 10;
-          }while (var);
-          if(isneg){
-            *(--cp) = '-';
-            outWidth++;
-          }
-          break;
-        }
-        case 'u':
-        {
-          uint32_t var = va_arg(ap, uint32_t);
-          do{
-            *(--cp) = presentation[var % 10];
-            outWidth++;
-            var /= 10;
-          }while (var);
-          break;
-        }
-        case 'p':
-        {
-          // Do not use uint32_t uint64_t but use unsigned long to support -m64 -m32
-          unsigned long var = (unsigned long)(va_arg(ap, void *));
-          do{
-            *(--cp) = presentation[var % 16];
-            outWidth++;
-            var /= 16;
-          }while (var);
-          *(--cp) = 'x';
-          outWidth++;
-          *(--cp) = '0';
-          outWidth++;
-          break;
-        }
-        case 'x':
-        {
-          uint32_t var = va_arg(ap, uint32_t);
-          do{
-            *(--cp) = presentation[var % 16];
-            outWidth++;
-            var /= 16;
-          }while (var);
-          break;
-        }
-        case 'f':
-        {
-          double var = va_arg(ap, double);
-          int32_t _int = (int32_t)(var*10000);// remain 4 bit
-          int isneg = 0;
-          if(_int < 0){
-            isneg = 1;
-            _int = -_int;
-          }
-          for(int i=0;i<4;i++){
-            *(--cp) = presentation[_int % 10];
-            outWidth++;
-            _int /= 10;
-          }
-          *(--cp) = '.';
-          outWidth++;
-          do{
-            *(--cp) = presentation[_int % 10];
-            outWidth++;
-            _int /= 10;
-          }while (_int);
-          if(isneg){
-            *(--cp) = '-';
-            outWidth++;
-          }
-          break;
-        }
-        case 's':
-        {
-          char *sb = va_arg(ap, char*);
-          char *se = sb;
-          while(*se)
-            se++;
-          while(se != sb){
-            *(--cp) = *(--se);
-            outWidth++;
-          }
-          break;
-        }
-        default:
-          putch('!');
-          while(*ori){
-            putch(*ori);
-            ori++;
-          }
-          assert(0);
-          break;
-      }
-      if(pre!='\0'){
-        while(outWidth<mnWidth){
-          *(--cp) = pre;
-          outWidth++;
-        }
-      }
-      while(*cp){
-        *outp = *cp;
-        if(++ret == n)break;
-        outp++;
-        cp++;
-      }
+    static char  vsn_buffer[BUFFER_SIZE];
+    static char* presentation = "0123456789abcdef";
+    char*        buffer = vsn_buffer;
+    char*        outp = out;
+    int          ret = 0;
+    const char*  ori = fmt;
+
+    while (*fmt) {
+        char cur = *fmt;
+        if (cur != '%') {
+            // every time out(outp) variable increments, the n is to judge
+            *outp++ = cur;
+            if (++ret == n)
+                break;
+        } else  {
+            ++fmt;
+            char pre = '\0';
+            int  mnWidth = 0, outWidth = 0;
+            char type = '\0';
+
+            if (isdigit(*fmt)) {
+                switch (*fmt) {
+                case '0':
+                    pre = '0';
+                    fmt++;
+                    break;
+                default:
+                    break;
+                }
+                while (isdigit(*fmt)) {
+                    mnWidth = mnWidth * 10 + ((*fmt) - '0');
+                    fmt++;
+                }
+            }
+            if (islower(*fmt)) {
+                type = *fmt;
+            }
+            char* cp = &buffer[BUFFER_SIZE - 1];
+            *cp = '\0';
+            switch (type) {
+            case 'd': {
+                int32_t var = va_arg(ap, int32_t);
+                int     isneg = 0;
+                if (var < 0) {
+                    isneg = 1;
+                    var = -var;
+                }
+                do {
+                    *(--cp) = presentation[var % 10];
+                    outWidth++;
+                    var /= 10;
+                } while (var);
+                if (isneg) {
+                    *(--cp) = '-';
+                    outWidth++;
+                }
+                break;
+            }
+            case 'u': {
+                uint32_t var = va_arg(ap, uint32_t);
+                do {
+                    *(--cp) = presentation[var % 10];
+                    outWidth++;
+                    var /= 10;
+                } while (var);
+                break;
+            }
+            case 'p': {
+                // Do not use uint32_t uint64_t but use unsigned long to
+                // support -m64 -m32
+                unsigned long var = (unsigned long)(va_arg(ap, void*));
+                do {
+                    *(--cp) = presentation[var % 16];
+                    outWidth++;
+                    var /= 16;
+                } while (var);
+                *(--cp) = 'x';
+                outWidth++;
+                *(--cp) = '0';
+                outWidth++;
+                break;
+            }
+            case 'x': {
+                uint32_t var = va_arg(ap, uint32_t);
+                do {
+                    *(--cp) = presentation[var % 16];
+                    outWidth++;
+                    var /= 16;
+                } while (var);
+                break;
+            }
+            case 'f': {
+                double  var = va_arg(ap, double);
+                int32_t _int = (int32_t)(var * 10000);  // remain 4 bit
+                int     isneg = 0;
+                if (_int < 0) {
+                    isneg = 1;
+                    _int = -_int;
+                }
+                for (int i = 0; i < 4; i++) {
+                    *(--cp) = presentation[_int % 10];
+                    outWidth++;
+                    _int /= 10;
+                }
+                *(--cp) = '.';
+                outWidth++;
+                do {
+                    *(--cp) = presentation[_int % 10];
+                    outWidth++;
+                    _int /= 10;
+                } while (_int);
+                if (isneg) {
+                    *(--cp) = '-';
+                    outWidth++;
+                }
+                break;
+            }
+            case 's': {
+                char* sb = va_arg(ap, char*);
+                char* se = sb;
+                while (*se)
+                    se++;
+                while (se != sb) {
+                    *(--cp) = *(--se);
+                    outWidth++;
+                }
+                break;
+            }
+            default:
+                putch('!');
+                while (*ori) {
+                    putch(*ori);
+                    ori++;
+                }
+                assert(0);
+                break;
+            }
+            if (pre != '\0') {
+                while (outWidth < mnWidth) {
+                    *(--cp) = pre;
+                    outWidth++;
+                }
+            }
+            while (*cp) {
+                *outp = *cp;
+                if (++ret == n)
+                    break;
+                outp++;
+                cp++;
+            }
+        }  
+        fmt++;
     }
-    else{
-      *outp = cur;
-      outp++;
-      if(++ret == n)break;
-    }
-    fmt++;
-  }  
-  *outp = '\0';
-  return ret;
+    *outp = '\0';
+    return ret;
 }
 
 #endif
