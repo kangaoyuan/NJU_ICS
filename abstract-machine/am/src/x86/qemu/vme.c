@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include "x86-qemu.h"
 
 const struct mmu_config mmu = {

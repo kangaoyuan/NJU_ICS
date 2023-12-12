@@ -100,3 +100,47 @@ static inline def_EHelper(ror) {
     // unnecessary to update CF and OF in NEMU
     print_asm_template2(ror);
 }
+
+static inline def_EHelper(shld) {
+    *s0 = s->isa.is_operand_size_16 ? *dsrc1 % 16 : *dsrc1 % 32;
+    *s1 = *dsrc2;
+    if (*s0 != 0) {
+        *t0 = ((*ddest >> (id_dest->width * 8 - *s0)) & 1);
+        rtl_set_CF(s, t0);
+        if (s->isa.is_operand_size_16) {
+            rtl_shl(s, ddest, ddest, s0);
+            rtl_andi(s, ddest, ddest, 0xffff);
+            rtl_andi(s, s1, s1, 0xffff);
+            rtl_shri(s, s1, s1, 16 - *s0);
+            rtl_or(s, s1, s1, ddest);
+        } else {
+            rtl_shl(s, ddest, ddest, s0);
+            rtl_shri(s, s1, s1, 32 - *s0);
+            rtl_or(s, s1, s1, ddest);
+        }
+        rtl_update_ZFSF(s, s1, id_dest->width);
+        operand_write(s, id_dest, s1);
+    }
+}
+
+static inline def_EHelper(shrd) {
+    *s0 = s->isa.is_operand_size_16 ? *dsrc1 % 16 : *dsrc1 % 32;
+    *s1 = *dsrc2;       
+    if (*s0 != 0) {
+        *t0 = ((*ddest >> (*s0 - 1)) & 1);
+        rtl_set_CF(s, t0);
+        if (s->isa.is_operand_size_16) {
+            rtl_shr(s, ddest, ddest, s0);
+            rtl_andi(s, ddest, ddest, 0xffff);
+            rtl_andi(s, s1, s1, 0xffff);
+            rtl_shli(s, s1, s1, 16 - *s0);
+            rtl_or(s, s1, s1, ddest);
+            operand_write(s, id_dest, s1);
+        } else {
+            rtl_shr(s, ddest, ddest, s0);
+            rtl_shli(s, s1, s1, 32 - *s0);
+            rtl_or(s, s1, s1, ddest);
+            operand_write(s, id_dest, s1);
+        }
+    }
+}
