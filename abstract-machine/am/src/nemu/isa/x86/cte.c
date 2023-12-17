@@ -41,8 +41,6 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
     // ---------------------- system call ----------------------------
     idt[0x80] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecsys, DPL_USER);
     idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
-    printf("the address of idt[0x81] = %x\n", &idt[0x81]);
-    printf("the address of __am_vectrap = %x\n", __am_vectrap);
     set_idt(idt, sizeof(idt));
 
     // register event handler
