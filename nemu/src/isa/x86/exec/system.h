@@ -6,7 +6,7 @@ static inline def_EHelper(lidt) {
     //cpu.idtr_limit = *t0;
     vaddr_t addr = *s->isa.mbase;
     cpu.idtr_limit = vaddr_read(addr, 2);
-    cpu.idtr_base = vaddr_read(*ddest + 2, 4);
+    cpu.idtr_base = vaddr_read(addr + 2, 4);
     print_asm_template1(lidt);
 }
 
