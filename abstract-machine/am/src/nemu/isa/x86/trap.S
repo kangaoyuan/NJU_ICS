@@ -7,7 +7,8 @@
 
 __am_asm_trap:
   pushal
-  pushl $0
+  # CR3
+  pushl $0   
   pushl %esp
   call __am_irq_handle
   addl $4, %esp
