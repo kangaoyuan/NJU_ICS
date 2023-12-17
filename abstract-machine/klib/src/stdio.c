@@ -202,7 +202,7 @@ static void print_num_p(char** at, size_t *left, int *ret, void* val
         buf[0] = '0';
         buf[1] = 'x';
         xtoa((uintptr_t)val, buf+2);
-        len = 2 + strlen(buf);  
+        len = strlen(buf);  
     }
     print_num(at, left, ret, minw, precision, flag, zero, neg, buf, len);
 }

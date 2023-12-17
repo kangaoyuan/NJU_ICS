@@ -249,7 +249,7 @@ again:
     IDEX(0x5e, r, pop)
     IDEX(0x5f, r, pop)
 
-
+    // pusha pushing all general registers to save the context info.
     EX(0x60, pusha)
     EX(0x61, popa)
     IDEX(0x68, push_SI, push)
@@ -286,6 +286,8 @@ again:
     IDEX(0xa9, I2a, test)
     EX(0xc3, ret)
     EX(0xc9, leave)
+    EX(0xcf, iret)
+    IDEXW(0xcd, I, int, 1)
     IDEXW(0xe4, in_I2a, in, 1)
     IDEX(0xe5, in_I2a, in)
     IDEXW(0xe6, out_a2I, out, 1)

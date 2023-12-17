@@ -7,16 +7,11 @@
 
 __am_asm_trap:
   pushal
-
   pushl $0
-
   pushl %esp
   call __am_irq_handle
-
   addl $4, %esp
-
   addl $4, %esp
   popal
   addl $4, %esp
-
   iret

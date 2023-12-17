@@ -1,13 +1,6 @@
 #include "../local-include/decode.h"
 #include <monitor/difftest.h>
 
-uint32_t pio_read_l(ioaddr_t);
-uint32_t pio_read_w(ioaddr_t);
-uint32_t pio_read_b(ioaddr_t);
-void pio_write_l(ioaddr_t, uint32_t);
-void pio_write_w(ioaddr_t, uint32_t);
-void pio_write_b(ioaddr_t, uint32_t);
-
 static inline def_EHelper(lidt) {
     rtl_li(s, s0, *ddest);
     cpu.idtr_limit = vaddr_read(*s0, 2);
@@ -29,24 +22,34 @@ static inline def_EHelper(mov_cr2r) {
 #endif
 }
 
+void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr);
 static inline def_EHelper(int) {
-  TODO();
-  print_asm("int %s", id_dest->str);
+    raise_intr(s, *ddest, s->seq_pc);
+    print_asm("int %s", id_dest->str);
 
 #ifndef __DIFF_REF_NEMU__
-  difftest_skip_dut(1, 2);
+    difftest_skip_dut(1, 2);
 #endif
 }
 
 static inline def_EHelper(iret) {
-  TODO();
-  print_asm("iret");
+    rtl_pop(s, s0);
+    rtl_pop(s, &cpu.cs);
+    rtl_pop(s, &cpu.eflags.val);
+    rtl_j(s, *s0);
+    print_asm("iret");
 
 #ifndef __DIFF_REF_NEMU__
-  difftest_skip_ref();
+    difftest_skip_ref();
 #endif
 }
 
+uint32_t pio_read_l(ioaddr_t);
+uint32_t pio_read_w(ioaddr_t);
+uint32_t pio_read_b(ioaddr_t);
+void pio_write_l(ioaddr_t, uint32_t);
+void pio_write_w(ioaddr_t, uint32_t);
+void pio_write_b(ioaddr_t, uint32_t);
 static inline def_EHelper(in) {
     switch (id_dest->width) {
     case 1:
