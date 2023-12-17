@@ -2,7 +2,8 @@
 #include <monitor/difftest.h>
 
 static inline def_EHelper(lidt) {
-    cpu.idtr_limit = vaddr_read(*ddest, 2);
+    rtl_shri(s, ddest, ddest, 16);
+    cpu.idtr_limit = *ddest;
     cpu.idtr_base = vaddr_read(*ddest + 2, 4);
     print_asm_template1(lidt);
 }
