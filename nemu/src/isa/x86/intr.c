@@ -11,7 +11,7 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     rtl_push(s, &ret_addr);  // rtl_push(&cpu.eip);
 
     vaddr_t offset = cpu.idtr_base + 8 * NO;
-    Assert(offset < cpu.idtr_limit, "Bigger than IDTR limit.");
+    Assert(NO < cpu.idtr_limit, "Bigger than IDTR limit.");
     //GateDesc32 gate;
     word_t gate_low = vaddr_read(offset, 2);
     word_t gate_high = vaddr_read(offset + 6, 2);
