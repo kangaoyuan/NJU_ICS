@@ -9,7 +9,7 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     cpu.eflags.IF = 0;  // Set for disable intr
     rtl_push(s, &cpu.eflags.val);
     rtl_push(s, &cpu.cs);
-    rtl_push(s, &ret_addr);  // rtl_push(&cpu.eip);
+    rtl_push(s, &ret_addr);  // rtl_push(&cpu.pc);
 
     Assert(NO < cpu.idtr_limit, "Bigger than IDTR limit.");
     //GateDesc32 gate;
@@ -19,7 +19,6 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
 
     // gate.offset_31_16 << 16 | gate.offset_15_0 
     word_t int_addr = gate_high << 16 | gate_low;
-    printf("int_addr = %x", int_addr);
     rtl_j(s, int_addr);
 }
 

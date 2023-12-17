@@ -28,7 +28,7 @@ static inline def_EHelper(int) {
            "08x\nesi:%08x\nedi:%08x\n",
            cpu.eax, cpu.ecx, cpu.edx, cpu.ebx, cpu.esp, cpu.ebp, cpu.esi,
            cpu.edi);
-    printf("pc:%08x\ncs:%08x\neflags:%08x\n", cpu.pc, cpu.cs,
+    printf("pc:%08x\ncs:%08x\neflags:%08x\n", s->seq_pc, cpu.cs,
            cpu.eflags.val);
     raise_intr(s, *ddest, s->seq_pc);
     print_asm("int %s", id_dest->str);
