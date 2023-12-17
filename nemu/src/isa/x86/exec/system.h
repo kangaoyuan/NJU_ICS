@@ -4,7 +4,7 @@
 static inline def_EHelper(lidt) {
     rtl_li(s, s0, *ddest);
     cpu.idtr_limit = vaddr_read(*s0, 2);
-    cpu.idtr_base = vaddr_read(*(s0 + 2), 4);
+    cpu.idtr_base = vaddr_read(*s0 + 2, 4);
     print_asm_template1(lidt);
 }
 
