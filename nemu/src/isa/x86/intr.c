@@ -5,20 +5,22 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     /* TODO: Trigger an interrupt/exception with ``NO''.
      * That is, use ``NO'' to index the IDT. */
 
-    printf("int NO = %x", NO);
+    printf("int NO = %x\n", NO);
     cpu.eflags.IF = 0;  // Set for disable intr
     rtl_push(s, &cpu.eflags.val);
     rtl_push(s, &cpu.cs);
     rtl_push(s, &ret_addr);  // rtl_push(&cpu.eip);
 
-    vaddr_t offset = cpu.idtr_base + 8 * NO;
     Assert(NO < cpu.idtr_limit, "Bigger than IDTR limit.");
     //GateDesc32 gate;
+    vaddr_t offset = cpu.idtr_base + 8 * NO;
     word_t gate_low = vaddr_read(offset, 2);
     word_t gate_high = vaddr_read(offset + 6, 2);
 
     // gate.offset_31_16 << 16 | gate.offset_15_0 
-    rtl_j(s, gate_high << 16 | gate_low);
+    word_t int_addr = gate_high << 16 | gate_low;
+    printf("int_addr = %x", int_addr);
+    rtl_j(s, int_addr);
 }
 
 void query_intr(DecodeExecState* s) {
