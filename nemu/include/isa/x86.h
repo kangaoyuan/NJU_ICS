@@ -23,30 +23,49 @@ typedef struct {
         } gpr[8];
     };
     vaddr_t pc;
-    union
-	{
-		struct{
-			uint32_t CF: 1;
-			uint32_t p1: 1;
-			uint32_t PF: 1;
-			uint32_t p3: 1;
-			uint32_t AF: 1;
-			uint32_t p5: 1;
-			uint32_t ZF: 1;
-			uint32_t SF: 1;
-			uint32_t TF: 1;
-			uint32_t IF: 1;
-			uint32_t DF: 1;
-			uint32_t OF: 1;
-			uint32_t IOPL: 2;
-			uint32_t NT: 1;
-			uint32_t p15: 1;
-			uint32_t RF: 1;
-			uint32_t VM: 1;
-			uint32_t zero: 14;
-		};
-		uint32_t eflags_value;
-	} eflags;
+    union {
+        struct {
+            uint32_t CF : 1;
+            uint32_t resv1 : 1;
+            uint32_t PF : 1;
+            uint32_t resv2 : 1;
+            uint32_t AF : 1;
+            uint32_t resv3 : 1;
+            uint32_t ZF : 1;
+            uint32_t SF : 1;
+            uint32_t TF : 1;
+            uint32_t IF : 1;
+            uint32_t DF : 1;
+            uint32_t OF : 1;
+            uint32_t IOPL : 2;
+            uint32_t NT : 1;
+            uint32_t resv4 : 1;
+            uint32_t RF : 1;
+            uint32_t VM : 1;
+            uint32_t resv5 : 14;
+        };
+        uint32_t val;
+    } eflags;
+
+    uint32_t cs;
+	uint32_t ss;
+
+	struct{
+		uint32_t idtr_base;
+		uint16_t idtr_limit;
+	};
+
+	struct{
+		uint32_t base;
+		uint16_t limit;
+	}gdtr;
+
+	uint32_t CR0;
+	uint32_t CR3;
+
+	uint16_t TR;
+
+	bool INTR;
 } x86_CPU_state;
 
 // decode

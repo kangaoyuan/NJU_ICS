@@ -127,7 +127,7 @@ typedef struct {
   uint32_t s         :  1; // Must be 0 (system)
   uint32_t dpl       :  2; // Descriptor(meaning new) privilege level
   uint32_t p         :  1; // Present
-  uint32_t off_31_16 : 16; // High bits of offset in segment
+  uint32_t off_31_16 : 16; // High 16 bits of offset in segment
 } GateDesc32;
 
 typedef struct {

@@ -53,10 +53,10 @@ static inline def_EHelper(gp5) {
 
 /* 0x0f01*/
 static inline def_EHelper(gp7) {
-  switch (s->isa.ext_opcode) {
-    EMPTY(0) EMPTY(1) EMPTY(2) EMPTY(3)
-    EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
-  }
+    switch (s->isa.ext_opcode) {
+        EMPTY(0) EMPTY(1) EMPTY(2) EXW(3, lidt, -1)
+        EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+    }
 }
 
 /* 0x0f */

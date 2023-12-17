@@ -10,5 +10,4 @@ AM_SRCS := x86/qemu/start32.S \
            x86/qemu/mpe.c
 
 run: build-arg
-	@echo smp= $(smp)
 	@qemu-system-i386 $(QEMU_FLAGS)

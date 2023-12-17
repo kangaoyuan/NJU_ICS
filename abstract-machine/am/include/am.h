@@ -12,7 +12,7 @@
 #define MMAP_READ  0x00000001 // can read
 #define MMAP_WRITE 0x00000002 // can write
 
-// Arch-dependent processor context
+// Arch-dependent processor(cpu current process status info) context
 typedef struct Context Context;
 
 // An event of type @event, caused by @cause of pointer @ref
