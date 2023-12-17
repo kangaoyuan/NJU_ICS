@@ -10,6 +10,8 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     rtl_push(s, &cpu.cs);
     rtl_push(s, &ret_addr);  // rtl_push(&cpu.eip);
 
+    printf("NO = %u\n", NO);
+    printf("cpu.idtr_base = %u\n", cpu.idtr_base);
     printf("cpu.idtr_limit = %u\n", cpu.idtr_limit);
     vaddr_t offset = cpu.idtr_base + 8 * NO;
     Assert(NO < cpu.idtr_limit, "Bigger than IDTR limit.");
