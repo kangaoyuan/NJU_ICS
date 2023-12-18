@@ -11,12 +11,33 @@ static inline def_EHelper(mov) {
     print_asm_template2(mov);
 }
 
+/* static inline def_rtl(push, const rtlreg_t* src1) {
+    // esp <- esp - 4
+    // M[esp] <- src1
+    rtl_subi(s,&reg_l(R_ESP), &reg_l(R_ESP), 4);
+    rtl_sm(s, &reg_l(R_ESP), 0, src1, 4);
+} */
 static inline def_EHelper(push) {
     rtl_push(s, ddest);
     print_asm_template1(push);
 }
 
+static inline def_EHelper(push_esp) {
+    vaddr_write(cpu.esp - 4, cpu.esp, 4);
+    cpu.esp -= 4;
+    print_asm_template1(push);
+}
+
 static inline def_EHelper(pop) {
+    rtl_pop(s, s0);
+    operand_write(s, id_dest, s0);
+    print_asm_template1(pop);
+}
+
+static inline def_EHelper(pop_esp) {
+  /*rtl_lm(s, &reg_l(R_ESP), &reg_l(R_ESP), 0, 4);
+    operand_write(s, id_dest, s0);*/
+  // using s0 as a tmp reg to avoid directly modifying the esp.
     rtl_pop(s, s0);
     operand_write(s, id_dest, s0);
     print_asm_template1(pop);

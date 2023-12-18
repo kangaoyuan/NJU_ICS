@@ -4,9 +4,9 @@
 static inline void set_width(DecodeExecState* s, int width) {
     if (width == -1)
         return;
-    if (width == 0) {
+    if (width == 0) 
         width = s->isa.is_operand_size_16 ? 2 : 4;
-    }
+
     s->dest.width = s->src1.width = s->src2.width = width;
 }
 
@@ -100,6 +100,8 @@ static inline def_EHelper(2byte_esc) {
     IDEXW(0x9f, setcc_E, setcc, 1)
     IDEX(0xa4, Ib_G2E, shld)
     IDEX(0xa5, cl_G2E, shld)
+    IDEX(0xac, Ib_G2E, shrd)
+    IDEX(0xad, cl_G2E, shrd)
     IDEX(0xaf, E2G, imul2)
     IDEX(0xb6, movb_E2G, movzx)
     IDEX(0xb7, movw_E2G, movzx)
@@ -235,7 +237,7 @@ again:
     IDEX(0x51, r, push)
     IDEX(0x52, r, push)
     IDEX(0x53, r, push)
-    IDEX(0x54, r, push)
+    IDEX(0x54, r, push_esp)
     IDEX(0x55, r, push)
     IDEX(0x56, r, push)
     IDEX(0x57, r, push)
@@ -244,7 +246,7 @@ again:
     IDEX(0x59, r, pop)
     IDEX(0x5a, r, pop)
     IDEX(0x5b, r, pop)
-    IDEX(0x5c, r, pop)
+    IDEX(0x5c, r, pop_esp)
     IDEX(0x5d, r, pop)
     IDEX(0x5e, r, pop)
     IDEX(0x5f, r, pop)
@@ -284,10 +286,12 @@ again:
 
     IDEXW(0xa8, I2a, test, 1)
     IDEX(0xa9, I2a, test)
+
     EX(0xc3, ret)
     EX(0xc9, leave)
-    EX(0xcf, iret)
     IDEXW(0xcd, I, int, 1)
+    EX(0xcf, iret)
+
     IDEXW(0xe4, in_I2a, in, 1)
     IDEX(0xe5, in_I2a, in)
     IDEXW(0xe6, out_a2I, out, 1)
@@ -299,6 +303,7 @@ again:
     IDEX(0xed, in_dx2a, in)
     IDEXW(0xee, out_a2dx, out, 1)
     IDEX(0xef, out_a2dx, out)
+
     IDEXW(0xf6, E, gp3, 1)
     IDEX (0xf7, E, gp3)
     IDEXW(0xfe, E, gp4, 1)
