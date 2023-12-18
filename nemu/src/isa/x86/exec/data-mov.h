@@ -11,20 +11,15 @@ static inline def_EHelper(mov) {
     print_asm_template2(mov);
 }
 
-/* static inline def_rtl(push, const rtlreg_t* src1) {
-    // esp <- esp - 4
-    // M[esp] <- src1
-    rtl_subi(s,&reg_l(R_ESP), &reg_l(R_ESP), 4);
-    rtl_sm(s, &reg_l(R_ESP), 0, src1, 4);
-} */
 static inline def_EHelper(push) {
     rtl_push(s, ddest);
     print_asm_template1(push);
 }
 
 static inline def_EHelper(push_esp) {
-    vaddr_write(cpu.esp - 4, cpu.esp, 4);
-    cpu.esp -= 4;
+  /*vaddr_write(cpu.esp - 4, cpu.esp, 4);
+    cpu.esp -= 4;*/
+    rtl_push(s, ddest);
     print_asm_template1(push);
 }
 

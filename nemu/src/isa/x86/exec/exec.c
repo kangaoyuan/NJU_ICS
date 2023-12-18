@@ -237,6 +237,7 @@ again:
     IDEX(0x51, r, push)
     IDEX(0x52, r, push)
     IDEX(0x53, r, push)
+    // There are some methods to avoid, but it's esay to make mistake.
     IDEX(0x54, r, push_esp)
     IDEX(0x55, r, push)
     IDEX(0x56, r, push)
@@ -246,6 +247,7 @@ again:
     IDEX(0x59, r, pop)
     IDEX(0x5a, r, pop)
     IDEX(0x5b, r, pop)
+    // There are some methods to avoid, but it's esay to make mistake.
     IDEX(0x5c, r, pop_esp)
     IDEX(0x5d, r, pop)
     IDEX(0x5e, r, pop)

@@ -27,8 +27,12 @@ static inline def_rtl(sr, int r, const rtlreg_t* src1, int width) {
 static inline def_rtl(push, const rtlreg_t* src1) {
     // esp <- esp - 4
     // M[esp] <- src1
+    // However, if directly implementing above sequence will cause esp bug.
+    /*rtl_subi(s,&reg_l(R_ESP), &reg_l(R_ESP), 4);
+    rtl_sm(s, &reg_l(R_ESP), 0, src1, 4);*/
+    // Here not directly use rtl_sm() function, because offset is unsigned.
+    vaddr_write(reg_l(R_ESP)-4, *src1, 4);
     rtl_subi(s,&reg_l(R_ESP), &reg_l(R_ESP), 4);
-    rtl_sm(s, &reg_l(R_ESP), 0, src1, 4);
 }
 
 static inline def_rtl(pop, rtlreg_t* dest) {
