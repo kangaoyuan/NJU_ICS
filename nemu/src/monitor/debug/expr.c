@@ -1,5 +1,5 @@
 #include <isa.h>
-#include <memory/paddr.h>
+#include <memory/vaddr.h>
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions. */
 #include <regex.h>
@@ -61,23 +61,23 @@ void init_regex() {
 }
 
 typedef struct token {
-  int type;
-  char str[32];
+    int  type;
+    char str[32];
 } Token;
+static int   nr_token __attribute__((used)) = 0;
 static Token tokens[32] __attribute__((used)) = {};
-static int nr_token __attribute__((used))  = 0;
 
-static bool make_token(char* e) {
+static bool make_token(char* expr) {
     nr_token = 0;
     regmatch_t pmatch;
-    int i, position = 0;
+    int i = 0, position = 0;
 
-    while (e[position] != '\0') {
+    while (expr[position] != '\0') {
         /* Try all rules one by one. */
         for (i = 0; i < NR_REGEX; i++) {
-            if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 &&
+            if (regexec(&re[i], expr + position, 1, &pmatch, 0) == 0 &&
                 pmatch.rm_so == 0) {
-                char* substr_start = e + position;
+                char* substr_start = expr + position;
                 int   substr_len = pmatch.rm_eo;
 
                 Log("match rules[%d] = \"%s\" at position %d with len %d: "
@@ -89,6 +89,7 @@ static bool make_token(char* e) {
                  * codes to record the token in the array `tokens'. For
                  * certain types of tokens, some extra actions should be
                  * performed. */
+                tokens[nr_token].type = rules[i].token_type;
                 switch (rules[i].token_type) {
                 case '(':
                 case ')':
@@ -96,13 +97,10 @@ static bool make_token(char* e) {
                 case '-':
                 case '*':
                 case '/':
-                    tokens[nr_token].type = rules[i].token_type;
                     break;
                 //case TK_NUM:
                 default:
-                    tokens[nr_token].type = rules[i].token_type;
-                    if (substr_len >= 32)
-                        assert(0);
+                    if (substr_len >= 32) assert(0);
                     memcpy(tokens[nr_token].str, substr_start, substr_len);
                     tokens[nr_token].str[substr_len] = '\0';
                     break;
@@ -114,7 +112,7 @@ static bool make_token(char* e) {
         }
 
         if (i == NR_REGEX) {
-            printf("no match at position %d\n%s\n%*.s^\n", position, e,
+            printf("no match at position %d\n%s\n%*.s^\n", position, expr,
                    position, "");
             return false;
         }
@@ -260,10 +258,12 @@ uint32_t eval(int p, int q) {
         case TK_AND:
             return val1 && val2;
         case TK_DEREF: {
+            /*uint32_t res = 0;
             uint8_t* base = (uint8_t*)guest_to_host(val2);
-            uint32_t res = 0;
             for (int i = 3; i >= 0; --i)
                 res = res * 256 + (*(base + i));
+            return res;*/
+            uint32_t res = vaddr_read(val2, 4);
             return res;
         }
         case TK_NEG:
@@ -275,8 +275,8 @@ uint32_t eval(int p, int q) {
     return 0;
 }
 
-word_t expr(char* e, bool* success) {
-    if (!make_token(e)) {
+word_t expr(char* expr, bool* success) {
+    if (!make_token(expr)) {
         *success = false;
         return 0;
     }

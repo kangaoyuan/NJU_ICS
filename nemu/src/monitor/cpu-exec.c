@@ -93,10 +93,9 @@ void cpu_exec(uint64_t n) {
         /* Execute one instruction, including instruction fetch,
          * instruction decode, and the actual execution. */
         __attribute__((unused)) vaddr_t seq_pc = isa_exec_once();
+        g_nr_guest_instr++;
 
         difftest_step(this_pc, cpu.pc);
-
-        g_nr_guest_instr++;
 
 #ifdef DEBUG
         asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
@@ -108,7 +107,7 @@ void cpu_exec(uint64_t n) {
 #endif
 
 #ifdef HAS_IOE
-        extern void device_update();
+        void device_update();
         device_update();
 #endif
 

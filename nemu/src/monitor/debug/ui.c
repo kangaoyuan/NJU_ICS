@@ -43,7 +43,7 @@ static int cmd_si(char* args) {
         cpu_exec(1);
         return 0;
     }
-    int n;
+    int n = -1;
     if (sscanf(args, "%d", &n) == 1 && n > 0) {
         cpu_exec(n);
     } else {
@@ -65,6 +65,7 @@ static int cmd_info(char* args) {
 
 static int cmd_x(char* args) {
     if (args == NULL) {
+        printf("(nemu) x command missing SUBCMD\n");
         return 0;
     }
 
@@ -72,7 +73,6 @@ static int cmd_x(char* args) {
     int64_t n = -1;
     token = strtok(args, " ");
     int rc = sscanf(token, "%ld", &n);
-
     if (rc != 1 || n < 0) {
         printf("Invalid arg, (nemu) x command args error: \e[0;31m%s\e[0m\n", args);
         return 0;
@@ -82,6 +82,7 @@ static int cmd_x(char* args) {
     token = strtok(NULL, "");
     // If no more tokens are found, strtok() returns NULL.
     if (token == NULL) {
+        printf("(nemu) x command missing SUBCMD\n");
         return 0;
     }
 

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 
 // this should be enough
+uint32_t buf_index = 0;
 static char  buf[65536] = {};
 static char  code_buf[65536 + 128] = {};  // a little larger than `buf`
 static char* code_format = "#include <stdio.h>\n"
@@ -28,7 +29,9 @@ void gen_num() {
     uint32_t num = rand();
     if (num == 0)
         num++;
-    sprintf(buf + buf_index, "%u", num);
+
+    sprintf(&buf[buf_index], "%u", num);
+    //sprintf(buf + buf_index, "%u", num);
 
     while (num) {
         num /= 10;
@@ -57,6 +60,7 @@ static void gen_rand_expr() {
     uint32_t space = choose(2);
     for (int i = 0; i < space; ++i)
         buf[buf_index++] = ' ';
+
     switch (choose(3)) {
     case 0: 
         gen_num();
@@ -89,12 +93,14 @@ static void gen_rand_expr() {
 int main(int argc, char* argv[]) {
     int seed = time(NULL);
     srand(seed);
+
     int loop = 1;
     if (argc > 1) {
         sscanf(argv[1], "%d", &loop);
     }
+
     for (int i = 0; i < loop; i++) {
-        uint32_t buf_index = 0;
+        buf_index = 0;
         gen_rand_expr();
         buf[buf_index] = '\0';
 
@@ -105,15 +111,21 @@ int main(int argc, char* argv[]) {
         fputs(code_buf, fp);
         fclose(fp);
 
-        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+        // system() using execl("/bin/sh", "sh", "-c", command, (char *)NULL); and returns after the command has benn completed.
+        int ret = system("gcc -Werror /tmp/.code.c -o /tmp/.expr");
         if (ret != 0)
             continue;
 
+        // Since a pipe is by definition unidirectional, the type argument may specify only reading or writing, not both.
         fp = popen("/tmp/.expr", "r");
         assert(fp != NULL);
 
         int result;
-        fscanf(fp, "%d", &result);
+        // "r" mode to read the output of the command specifeid in popen().
+        int rc = fscanf(fp, "%d", &result);
+        assert(rc == 1);
+
+        // FILE* returned from popen() must be closed with pclose() not fclose(), which are block buffered by default.
         pclose(fp);
 
         printf("%u %s\n", result, buf);
