@@ -89,17 +89,22 @@ static bool make_token(char* expr) {
                  * codes to record the token in the array `tokens'. For
                  * certain types of tokens, some extra actions should be
                  * performed. */
-                tokens[nr_token].type = rules[i].token_type;
                 switch (rules[i].token_type) {
                 case '(':
                 case ')':
-                case '+':
-                case '-':
                 case '*':
                 case '/':
+                case '+':
+                case '-':
+                case TK_EQ:
+                case TK_NOEQ:
+                case TK_AND:
+                case TK_OR:
+                    tokens[nr_token].type = rules[i].token_type;
                     break;
                 //case TK_NUM:
                 default:
+                    tokens[nr_token].type = rules[i].token_type;
                     if (substr_len >= 32) assert(0);
                     memcpy(tokens[nr_token].str, substr_start, substr_len);
                     tokens[nr_token].str[substr_len] = '\0';
@@ -145,9 +150,10 @@ bool check_parentheses(int p, int q) {
 }
 
 int primary_op(int p, int q) {
-    int num = 0, tag = 0;
+    int num = 0, tag = true;
     int index = 0, priority = 11;
     for (int i = p; i < q; ++i) {
+        // Only when num == 0, we can get the primary_op index(last op).
         switch (tokens[i].type) {
         case '(':
             num++;
@@ -155,18 +161,26 @@ int primary_op(int p, int q) {
         case ')':
             num--;
             break;
-        case '+':
-        case '-':
-            if (num == 0 && priority >= 1) {
+        case TK_NEG:
+        case TK_DEREF:
+            if (num == 0 && priority >= 10 && tag) {
                 index = i;
-                priority = 1;
+                priority = 10;
+                tag = false;
             }
             break;
         case '*':
         case '/':
-            if (num == 0 && priority >= 2) {
+            if (num == 0 && priority >= 9) {
                 index = i;
-                priority = 2;
+                priority = 9;
+            }
+            break;
+        case '+':
+        case '-':
+            if (num == 0 && priority >= 8) {
+                index = i;
+                priority = 8;
             }
             break;
         case TK_EQ:
@@ -182,12 +196,10 @@ int primary_op(int p, int q) {
                 priority = 6;
             }
             break;
-        case TK_NEG:
-        case TK_DEREF:
-            if (num == 0 && priority >= 10 && tag) {
+        case TK_OR:
+            if (num == 0 && priority >= 5) {
                 index = i;
-                priority = 10;
-                tag = 0;
+                priority = 5;
             }
             break;
         default:
@@ -212,8 +224,6 @@ uint32_t eval(int p, int q) {
          * For now this token should be a number.
          * Return the value of the number. */
         char* ptr;
-        word_t res;
-        bool   success;
         /* If endptr is not NULL, strtol(nptr, endptr, base);, which stores the
          * address of the first invalid character in *endptr. */
         switch (tokens[p].type) {
@@ -221,12 +231,14 @@ uint32_t eval(int p, int q) {
             return strtol(tokens[p].str, &ptr, 10);
         case TK_HEX:
             return strtol(tokens[p].str, &ptr, 16);
-        case TK_REG:
-            res = isa_reg_str2val(tokens[p].str + 1, &success);
+        case TK_REG: {
+            bool   success;
+            word_t result = isa_reg_str2val(tokens[p].str + 1, &success);
             if (success)
-                return res;
+                return result;
             else
                 assert(0);
+        }
         default:
             assert(0);
         }
@@ -237,8 +249,10 @@ uint32_t eval(int p, int q) {
     } else {
         /* inner is feasible |= true, so we should split expression. */
         int      op = primary_op(p, q);
-        uint32_t val1 = eval(p, op);
-        uint32_t val2 = eval(op + 1, q);
+        uint32_t val1 = 0, val2 = 0;
+        if(tokens[op].type != TK_DEREF && tokens[op].type != TK_NEG)
+            val1 = eval(p, op);
+        val2 = eval(op + 1, q);
 
         switch (tokens[op].type) {
         case '+':
@@ -257,6 +271,8 @@ uint32_t eval(int p, int q) {
             return val1 != val2;
         case TK_AND:
             return val1 && val2;
+        case TK_OR:
+            return val1 || val2;
         case TK_DEREF: {
             /*uint32_t res = 0;
             uint8_t* base = (uint8_t*)guest_to_host(val2);
@@ -284,13 +300,16 @@ word_t expr(char* expr, bool* success) {
     /* TODO: Insert codes to evaluate the expression. */
     for (int i = 0; i < nr_token; ++i) {
         if (tokens[i].type == '*' && i == 0) {
+            // first token is '*', and the ' ' white spaces is not added. 
             tokens[i].type = TK_DEREF;
         } else if (tokens[i].type == '*' && i >= 1) {
+            // if '*' token previous token is a binary operator, as TK_DEREF
             if (tokens[i - 1].type == '+' || tokens[i - 1].type == '-' ||
                 tokens[i - 1].type == '*' || tokens[i - 1].type == '/' ||
                 tokens[i - 1].type == TK_EQ ||
                 tokens[i - 1].type == TK_NOEQ ||
                 tokens[i - 1].type == TK_AND ||
+                tokens[i - 1].type == TK_OR ||
                 tokens[i - 1].type == TK_DEREF ||
                 tokens[i - 1].type == '(') {
                 tokens[i].type = TK_DEREF;
@@ -307,6 +326,7 @@ word_t expr(char* expr, bool* success) {
                 tokens[i - 1].type == TK_EQ ||
                 tokens[i - 1].type == TK_NOEQ ||
                 tokens[i - 1].type == TK_AND ||
+                tokens[i - 1].type == TK_OR ||
                 tokens[i - 1].type == TK_NEG ||
                 tokens[i - 1].type == '(') {
                 tokens[i].type = TK_NEG;
