@@ -100,7 +100,7 @@ static bool make_token(char* expr) {
                 case TK_NOEQ:
                 case TK_AND:
                 case TK_OR:
-                    tokens[nr_token].type = rules[i].token_type;
+                    tokens[nr_token++].type = rules[i].token_type;
                     break;
                 case TK_NUM:
                 case TK_HEX:
@@ -108,10 +108,9 @@ static bool make_token(char* expr) {
                     tokens[nr_token].type = rules[i].token_type;
                     if (substr_len >= 32) assert(0);
                     memcpy(tokens[nr_token].str, substr_start, substr_len);
-                    tokens[nr_token].str[substr_len] = '\0';
+                    tokens[nr_token++].str[substr_len] = '\0';
                     break;
                 }
-                nr_token++;
                 position += substr_len;
                 break;
             }
