@@ -16,7 +16,7 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 static uintptr_t loader(PCB* pcb, const char* filename) {
     Elf_Ehdr* elf_header = NULL;
 
-    size_t  offset = ramdisk_read(elf_header, 0, sizeof(Elf_Ehdr));
+    size_t offset = ramdisk_read(elf_header, 0, sizeof(Elf_Ehdr));
     assert(offset == sizeof(Elf_Ehdr));
 
     // Attention: . -> () [] have higher precedence than () for casting.
@@ -26,7 +26,7 @@ static uintptr_t loader(PCB* pcb, const char* filename) {
     offset = ramdisk_read(elf_program_header, elf_header->e_phoff,
                           sizeof(Elf_Phdr) * elf_header->e_phnum);
     assert(offset == sizeof(Elf_Phdr) * elf_header->e_phnum);
-    
+
     for (int i = 0; i < elf_header->e_phnum; i++) {
         // only load PT_LOAD type
         if (elf_program_header[i].p_type == PT_LOAD) {
@@ -39,7 +39,7 @@ static uintptr_t loader(PCB* pcb, const char* filename) {
                            elf_program_header[i].p_filesz),
                    0,
                    elf_program_header[i].p_memsz -
-                       elf_program_header[i].p_filesz);
+                   elf_program_header[i].p_filesz);
         }
     }
     return elf_header->e_entry;
