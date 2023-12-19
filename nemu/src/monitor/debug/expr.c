@@ -102,8 +102,9 @@ static bool make_token(char* expr) {
                 case TK_OR:
                     tokens[nr_token].type = rules[i].token_type;
                     break;
-                //case TK_NUM:
-                default:
+                case TK_NUM:
+                case TK_HEX:
+                case TK_REG:
                     tokens[nr_token].type = rules[i].token_type;
                     if (substr_len >= 32) assert(0);
                     memcpy(tokens[nr_token].str, substr_start, substr_len);
@@ -224,8 +225,7 @@ uint32_t eval(int p, int q) {
          * For now this token should be a number.
          * Return the value of the number. */
         char* ptr;
-        /* If endptr is not NULL, strtol(nptr, endptr, base);, which stores the
-         * address of the first invalid character in *endptr. */
+        /* If endptr is not NULL, strtol(nptr, endptr, base);, which stores the address of the first invalid character in *endptr. */
         switch (tokens[p].type) {
         case TK_NUM:
             return strtol(tokens[p].str, &ptr, 10);
