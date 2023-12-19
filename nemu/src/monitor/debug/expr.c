@@ -151,7 +151,7 @@ bool check_parentheses(int p, int q) {
 
 int primary_op(int p, int q) {
     int num = 0, tag = true;
-    int index = 0, priority = 11;
+    int index = -1, priority = 11;
     for (int i = p; i < q; ++i) {
         // Only when num == 0, we can get the primary_op index(last op).
         switch (tokens[i].type) {
@@ -206,7 +206,7 @@ int primary_op(int p, int q) {
             break;
         }
     }
-    assert(index != 0);
+    assert(index != -1);
     return index;
 }
 
