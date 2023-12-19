@@ -20,6 +20,7 @@
       extern void monitor_statistic(); \
       isa_reg_display(); \
       monitor_statistic(); \
+      /* above statements executed before actual assert() be called. */ \
       assert(cond); \
     } \
   } while (0)

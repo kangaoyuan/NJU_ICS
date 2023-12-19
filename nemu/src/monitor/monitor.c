@@ -10,11 +10,11 @@ void init_regex();
 void init_wp_pool();
 void init_difftest(char *ref_so_file, long img_size, int port);
 
-static char *log_file = NULL;
-static char *diff_so_file = NULL;
 static char *img_file = NULL;
-static int batch_mode = false;
-static int difftest_port = 1234;
+static char *log_file = NULL;
+static int  batch_mode = false;
+static int  difftest_port = 1234;
+static char *diff_so_file = NULL;
 
 int is_batch_mode() { return batch_mode; }
 
@@ -42,13 +42,13 @@ static inline long load_img() {
     FILE* fp = fopen(img_file, "rb");
     Assert(fp, "Can not open '%s'", img_file);
 
-    Log("The image is %s", img_file);
-
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
 
+    Log("The image is %s, size = %ld", img_file, size);
+
     fseek(fp, 0, SEEK_SET);
-    int ret = fread(guest_to_host(IMAGE_START), size, 1, fp);
+    int ret = fread(guest_to_host(PMEM_BASE + IMAGE_START), size, 1, fp);
     assert(ret == 1);
 
     fclose(fp);

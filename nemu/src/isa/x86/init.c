@@ -16,8 +16,10 @@ static const uint8_t img[] = {
     0xd6,        // 100026:  nemu_trap
 };
 
+// #define x86_PMEM_BASE 0x0
+// #define x86_IMAGE_START 0x100000
 static void restart() {
-    /* Set the initial instruction pointer. */
+    /* Set the initial instruction pointer(pc). */
     cpu.pc = PMEM_BASE + IMAGE_START;
     cpu.eflags.val = 0x2;
     cpu.cs = 0x8;
@@ -28,7 +30,7 @@ void init_isa() {
     reg_test();
 
     /* Load built-in image. */
-    memcpy(guest_to_host(IMAGE_START), img, sizeof(img));
+    memcpy(guest_to_host(PMEM_BASE + IMAGE_START), img, sizeof(img));
 
     /* Initialize this virtual computer system. */
     restart();

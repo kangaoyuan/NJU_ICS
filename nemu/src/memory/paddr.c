@@ -7,8 +7,13 @@
 
 static uint8_t pmem[PMEM_SIZE] PG_ALIGN = {};
 
-void* guest_to_host(paddr_t paddr) { return &pmem[paddr]; }
-paddr_t host_to_guest(void *haddr) { return haddr - (void *)pmem; }
+// The void* guest_to_host(paddr_t); function maps the memory address(arg) that the CPU will access to the corresponding offset in pmem.
+void* guest_to_host(paddr_t paddr) {
+    return pmem + (paddr - PMEM_BASE);
+}
+paddr_t host_to_guest(void* haddr) {
+    return haddr - (void*)pmem + PMEM_BASE;
+}
 
 void init_mem() {
 #ifndef DIFF_TEST

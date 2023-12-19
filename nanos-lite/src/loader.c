@@ -14,7 +14,7 @@ size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 
 static uintptr_t loader(PCB* pcb, const char* filename) {
-    Elf_Ehdr* elf_header = NULL;
+    Elf_Ehdr* elf_header;
 
     size_t offset = ramdisk_read(elf_header, 0, sizeof(Elf_Ehdr));
     assert(offset == sizeof(Elf_Ehdr));
