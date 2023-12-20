@@ -11,6 +11,8 @@ word_t expr(char *e, bool *success);
 
 void test_expr() {
     for (char *str; (str = rl_gets("(expr) ")) != NULL; ) {
+        if(strcmp("q", str))
+            return;
         char *expression;
         uint32_t real = strtol(str,&expression,10);
 
