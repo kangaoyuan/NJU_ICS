@@ -11,7 +11,7 @@ int is_batch_mode();
 void cpu_exec(uint64_t);
 
 /* We use the `readline' library to read from stdin. */
-static char* rl_gets() {
+char* rl_gets() {
     static char* line_read = NULL;
 
     if (line_read) {

@@ -6,7 +6,7 @@ void init_monitor(int, char *[]);
 void engine_start();
 int is_exit_status_bad();
 
-static char* rl_gets() {
+char* rl_gets(); /* {
     static char* line_read = NULL;
 
     if (line_read) {
@@ -17,7 +17,7 @@ static char* rl_gets() {
     line_read = readline("(expr) ");
 
     return line_read;
-}
+} */
 
 word_t expr(char *e, bool *success);
 void test_expr() {
