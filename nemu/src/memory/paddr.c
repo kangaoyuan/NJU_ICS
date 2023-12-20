@@ -29,6 +29,7 @@ static inline bool in_pmem(paddr_t addr) {
 }
 
 static inline word_t pmem_read(paddr_t addr, int len) {
+    //void* p = guest_to_host(addr);
     void* p = &pmem[addr - PMEM_BASE];
     switch (len) {
     case 1:

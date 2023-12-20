@@ -322,6 +322,7 @@ vaddr_t isa_exec_once() {
     s.isa = (ISADecodeInfo){0};
     s.seq_pc = cpu.pc;
 
+    // instr_fetch -> vaddr_ifetch -> paddr_read -> pmem_read -> host_read
     fetch_decode_exec(&s);
     update_pc(&s);
 
