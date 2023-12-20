@@ -11,7 +11,7 @@ int is_batch_mode();
 void cpu_exec(uint64_t);
 
 /* We use the `readline' library to read from stdin. */
-char* rl_gets() {
+char* rl_gets(const char* prompt) {
     static char* line_read = NULL;
 
     if (line_read) {
@@ -19,7 +19,7 @@ char* rl_gets() {
         line_read = NULL;
     }
 
-    line_read = readline("(nemu) ");
+    line_read = readline(prompt);
 
     if (line_read && *line_read) {
         add_history(line_read);
@@ -179,7 +179,7 @@ void ui_mainloop() {
         return;
     }
 
-    for (char* str; (str = rl_gets()) != NULL;) {
+    for (char* str; (str = rl_gets("(nemu) ")) != NULL;) {
         char* str_end = str + strlen(str);
 
         /* extract the first token as the command. */
