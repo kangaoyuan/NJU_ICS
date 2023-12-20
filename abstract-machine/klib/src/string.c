@@ -60,12 +60,11 @@ int strncmp(const char* s1, const char* s2, size_t n) {
   return 0;
 }
 
-void* memset(void* v,int c,size_t n) {
-  for(int i = 0; i < n;i ++)
-  {
-    ((char*)v)[i] = c; 
-  }
-  return v;
+void* memset(void* s, int c, size_t n) {
+    assert(s);
+    for (int i = 0; i < n; i++) 
+        ((unsigned char*)s)[i] = c;
+    return s;
 }
 
 void* memmove(void* dst,const void* src,size_t n) {
@@ -74,24 +73,18 @@ void* memmove(void* dst,const void* src,size_t n) {
 }
 
 void* memcpy(void* out, const void* in, size_t n) {
-  size_t i = 0;
-  while(n--)
-  {
-    ((char*) out)[i] = *(char*)in;
-    in++;
-    i++;
-  }
-  return out;
+    assert(out && in);
+    for (size_t i = 0; n--; ++i)
+        ((unsigned char*)out)[i] = *(unsigned char*)in++;
+    return out;
 }
 
 int memcmp(const void* s1, const void* s2, size_t n) {
-  size_t i = 0;
-  while(((char*)s1)[i] == ((char *)s2)[i] && i < n)
-  {
-    i++;
-  }
-  return i == n? 0:((char*)s1)[i] - ((char *)s2)[i];
-  
+    assert(s1 && s2);
+    size_t i = 0;
+    while (((unsigned char*)s1)[i] == ((unsigned char*)s2)[i] && i < n) 
+        i++;
+    return i == n ? 0 : ((unsigned char*)s1)[i] - ((unsigned char*)s2)[i];
 }
 
 #endif
