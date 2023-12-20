@@ -4,7 +4,7 @@ ISA=${1#*ISA=}
 CPUTEST_PATH=$NEMU_HOME/../am-kernels/tests/cpu-tests
 
 echo "compiling NEMU..."
-if make ISA=$ISA; then
+if make -C $NEMU_HOME ISA=$ISA; then
   echo "NEMU compile OK"
 else
   echo "NEMU compile error... exit..."

@@ -67,9 +67,16 @@ void* memset(void* s, int c, size_t n) {
     return s;
 }
 
-void* memmove(void* dst,const void* src,size_t n) {
-  assert(0);
-  return NULL;
+void* memmove(void* dst, const void* src, size_t n) {
+    assert(dst && src);
+    if (src > dst) {
+        for (size_t i = 0; n--; ++i)
+            ((unsigned char*)dst)[i] = *(unsigned char*)src++;
+    } else {
+        for (size_t i = n - 1; i >= 0; --i)
+            ((unsigned char*)dst)[i] = *(unsigned char*)src++;
+    }
+    return dst;
 }
 
 void* memcpy(void* out, const void* in, size_t n) {
