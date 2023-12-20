@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
         fclose(fp);
 
         // system() using execl("/bin/sh", "sh", "-c", command, (char *)NULL); and returns after the command has benn completed.
-        int ret = system("gcc -Werror /tmp/.code.c -o /tmp/.expr");
+        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
         if (ret != 0)
             continue;
 

@@ -20,6 +20,7 @@ void init_wp_pool() {
 void new_wp(char* arg) {
     if (free_ == NULL)
         panic("No more wp_pool memory space.");
+    // get a now node for new action from head of free_ list.
     WP* now = free_;
     free_ = free_->next;
     now->next = NULL;
@@ -31,14 +32,16 @@ void new_wp(char* arg) {
         now->val = init;
         Log("Watchpoint %d: %s\nInitial value %u\n", now->NO, now->str,
             now->val);
-    } else {
-        assert(0);
-    }
+    } else
+        panic("watchpoint expr() eval failure.");
 
+    // Attention 
     if (head == NULL)
         head = now;
-    else
+    else {
+        now->next = head->next;
         head->next = now;
+    }
     return;
 }
 
@@ -46,9 +49,9 @@ void free_wp(int index) {
     if (index < 0 || head == NULL)
         assert(0);
 
+    int num = 0;
     WP* now = head;
     WP* target = NULL;
-    int num = 0;
     while (now) {
         if (now->NO == index) {
             target = now;
@@ -57,10 +60,8 @@ void free_wp(int index) {
         if (now->next != NULL) {
             num++;
             now = now->next;
-        } else
-            break;
+        }
     }
-
     if (target == NULL) {
         Log("Watchpoint %d not found!\n", index);
         return;
@@ -80,6 +81,7 @@ void free_wp(int index) {
         before->next = after;
     }
 
+    // Insert target node into the head of free_ list.
     target->next = free_;
     free_ = target;
     free_->val = 0;
@@ -100,10 +102,9 @@ void wp_display() {
 
 bool check_wp(){
     bool flag = false;
-    WP *now = head;
-    while(now){
-        uint32_t val = now->val; 
+    for(WP *now = head; now; now = now->next){
         bool success;
+        uint32_t val = now->val; 
         uint32_t real = expr(now->str, &success);
         if (success) {
             if (val != real) {
@@ -113,10 +114,8 @@ bool check_wp(){
                 now->val = real;
                 flag = true;
             }
-        } else {
-            assert(0);
-        }
-        now = now->next;
+        } else
+            panic("watchpoint expr() eval failure.");
     }
     return flag;
 }
