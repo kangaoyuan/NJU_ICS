@@ -6,22 +6,11 @@ void init_monitor(int, char *[]);
 void engine_start();
 int is_exit_status_bad();
 
-char* rl_gets(); /* {
-    static char* line_read = NULL;
-
-    if (line_read) {
-        free(line_read);
-        line_read = NULL;
-    }
-
-    line_read = readline("(expr) ");
-
-    return line_read;
-} */
-
+char* rl_gets(const char* prompt); 
 word_t expr(char *e, bool *success);
+
 void test_expr() {
-    for (char *str; (str = rl_gets()) != NULL; ) {
+    for (char *str; (str = rl_gets("(expr) ")) != NULL; ) {
         char *expression;
         uint32_t real = strtol(str,&expression,10);
 
