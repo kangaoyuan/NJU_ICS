@@ -12,12 +12,12 @@ int main(int argc, char* argv[]) {
     init_monitor(argc, argv);
 
     /* Test expression eval.*/
-#ifdef TEST_EXPR
+#if defined(EXPR_TEST)
     test_expr();
-#endif
-
+#else
     /* Start engine. */
     engine_start();
+#endif
 
     return is_exit_status_bad();
 }

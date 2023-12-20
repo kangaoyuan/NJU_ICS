@@ -6,6 +6,7 @@
 #endif
 
 //#define DEBUG
+//#define EXPR_TEST
 //#define DIFF_TEST
 
 #if _SHARE
