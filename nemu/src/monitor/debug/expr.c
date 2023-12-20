@@ -1,5 +1,6 @@
 #include <isa.h>
 #include <memory/vaddr.h>
+#include "monitor/monitor.h"
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions. */
 #include <regex.h>
@@ -335,4 +336,29 @@ word_t expr(char* expr, bool* success) {
 
     *success = true;
     return eval(0, nr_token);
+}
+
+char* rl_gets(const char* prompt); 
+void test_expr() {
+    for (char *str; (str = rl_gets("(expr) ")) != NULL; ) {
+        if(!strcmp("q", str)) {
+            nemu_state.state = NEMU_QUIT;
+            return;
+        }
+        char *expression;
+        uint32_t real = strtol(str,&expression,10);
+
+        bool success;
+        uint32_t actual = expr(expression,&success);
+        if (success) {
+            if (real != actual) {
+                printf("Wrong: %s, real is %u, actual is %u\n", expression, real, actual);
+                assert(0);
+            }
+            else
+                printf("Accept!\n");
+        }
+        else
+            assert(0);
+    }
 }
