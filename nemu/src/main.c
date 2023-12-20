@@ -1,6 +1,7 @@
 #include <common.h>
 #include <stdlib.h>
 #include <readline/readline.h>
+#include "monitor/monitor.h"
 
 void init_monitor(int, char *[]);
 void engine_start();
@@ -11,8 +12,10 @@ word_t expr(char *e, bool *success);
 
 void test_expr() {
     for (char *str; (str = rl_gets("(expr) ")) != NULL; ) {
-        if(!strcmp("q", str))
+        if(!strcmp("q", str)) {
+            nemu_state.state = NEMU_QUIT;
             return;
+        }
         char *expression;
         uint32_t real = strtol(str,&expression,10);
 
