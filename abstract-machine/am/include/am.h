@@ -15,7 +15,7 @@
 // Arch-dependent processor(cpu current process status info) context
 typedef struct Context Context;
 
-// An event of type @event, caused by @cause of pointer @ref
+// An event of enum type @event, caused by @cause of pointer @ref, which is used for CTE and MPE part of AM.
 typedef struct {
     enum {
         EVENT_NULL = 0,
@@ -30,8 +30,7 @@ typedef struct {
     const char* msg;
 } Event;
 
-// A protected address space with user memory @area
-// and arch-dependent @ptr
+// A protected address space with user memory @area and arch-dependent @ptr location, which is used for VME part of AM.
 typedef struct {
     int   pgsize;
     Area  area;

@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+// __NATIVE_USE_KLIB__ Macro is used to compile abstract machine with glic library implementation.
 //#define __NATIVE_USE_KLIB__
 
 // string.h

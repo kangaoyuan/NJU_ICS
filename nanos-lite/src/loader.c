@@ -14,21 +14,21 @@ size_t ramdisk_read(void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 
 static uintptr_t loader(PCB* pcb, const char* filename) {
-    Elf_Ehdr* elf_header;
-
-    size_t offset = ramdisk_read(elf_header, 0, sizeof(Elf_Ehdr));
+    Elf_Ehdr elf_header;
+    size_t offset = ramdisk_read(&elf_header, 0, sizeof(Elf_Ehdr));
+    // offset(return val) is equal to ramdisk_read() third arg.
     assert(offset == sizeof(Elf_Ehdr));
-    printf("whether run here\n");
 
     // Attention: . -> () [] have higher precedence than () for casting.
     //assert(*(uint32_t*)elf_header->e_ident == 0x464c457f);
 
-    Elf_Phdr elf_program_header[elf_header->e_phnum];
-    offset = ramdisk_read(elf_program_header, elf_header->e_phoff,
-                          sizeof(Elf_Phdr) * elf_header->e_phnum);
-    assert(offset == sizeof(Elf_Phdr) * elf_header->e_phnum);
+    Elf_Phdr elf_program_header[elf_header.e_phnum];
+    offset = ramdisk_read(elf_program_header, elf_header.e_phoff,
+                          sizeof(Elf_Phdr) * elf_header.e_phnum);
+    // offset(return val) is equal to ramdisk_read() third arg.
+    assert(offset == sizeof(Elf_Phdr) * elf_header.e_phnum);
 
-    for (int i = 0; i < elf_header->e_phnum; i++) {
+    for (int i = 0; i < elf_header.e_phnum; i++) {
         // only load PT_LOAD type
         if (elf_program_header[i].p_type == PT_LOAD) {
             ramdisk_read((void*)elf_program_header[i].p_vaddr,
@@ -43,7 +43,7 @@ static uintptr_t loader(PCB* pcb, const char* filename) {
                    elf_program_header[i].p_filesz);
         }
     }
-    return elf_header->e_entry;
+    return elf_header.e_entry;
 }
 
 void naive_uload(PCB* pcb, const char* filename) {

@@ -49,7 +49,7 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
     idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
     set_idt(idt, sizeof(idt));
 
-    // register event handler
+    // register interrupt event handler
     user_handler = handler;
     return true;
 }
