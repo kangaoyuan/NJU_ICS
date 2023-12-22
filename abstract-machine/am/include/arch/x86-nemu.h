@@ -12,10 +12,12 @@ struct Context {
     uintptr_t eip, cs, eflags;
 };
 
+// first arg regs to record the event number.
 #define GPR1 eax
 #define GPR2 ebx
 #define GPR3 ecx
 #define GPR4 edx
+// last reg to store the return value of system call.
 #define GPRx eax
 
 #endif

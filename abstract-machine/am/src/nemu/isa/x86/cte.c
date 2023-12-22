@@ -14,16 +14,16 @@ void __am_vectrap();
 void __am_vecnull();
 
 Context* __am_irq_handle(Context* c) {
-    printf("eax:%08x\necx:%08x\nedx:%08x\nebx:%08x\nesp:%08x\nebp:%"
+    /*printf("eax:%08x\necx:%08x\nedx:%08x\nebx:%08x\nesp:%08x\nebp:%"
            "08x\nesi:%08x\nedi:%08x\n",
            c->eax, c->ecx, c->edx, c->ebx, c->esp, c->ebp, c->esi, c->edi);
     printf("cr3:%p\n", c->cr3);
     printf("irq:%d\n", c->irq);
-    printf("pc:%08x\ncs:%08x\neflags:%08x\n", c->eip, c->cs, c->eflags);
+    printf("pc:%08x\ncs:%08x\neflags:%08x\n", c->eip, c->cs, c->eflags);*/
     if (user_handler) {
         Event ev = {0};
         switch (c->irq) {
-        case 0x81:
+        case 0x80:
             ev.event = EVENT_YIELD;
             break;
         default:

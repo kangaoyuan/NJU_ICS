@@ -24,12 +24,12 @@ static inline def_EHelper(mov_cr2r) {
 
 void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr);
 static inline def_EHelper(int) {
-    printf("eax:%08x\necx:%08x\nedx:%08x\nebx:%08x\nesp:%08x\nebp:%"
+    /*printf("eax:%08x\necx:%08x\nedx:%08x\nebx:%08x\nesp:%08x\nebp:%"
            "08x\nesi:%08x\nedi:%08x\n",
            cpu.eax, cpu.ecx, cpu.edx, cpu.ebx, cpu.esp, cpu.ebp, cpu.esi,
            cpu.edi);
     printf("pc:%08x\ncs:%08x\neflags:%08x\n", s->seq_pc, cpu.cs,
-           cpu.eflags.val);
+           cpu.eflags.val); */
     raise_intr(s, *ddest, s->seq_pc);
     print_asm("int %s", id_dest->str);
 
