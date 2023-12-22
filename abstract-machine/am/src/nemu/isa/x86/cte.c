@@ -24,7 +24,13 @@ Context* __am_irq_handle(Context* c) {
         Event ev = {0};
         switch (c->irq) {
         case 0x80:
+            ev.event = EVENT_SYSCALL;
+            break;
+        case 0x81:
             ev.event = EVENT_YIELD;
+            break;
+        case 0x32:
+            ev.event = EVENT_IRQ_TIMER;
             break;
         default:
             ev.event = EVENT_ERROR;

@@ -1,10 +1,25 @@
 #include <common.h>
 
+void do_syscall(Context* c);
+Context* schedule(Context* prev);
+
 static Context* do_event(Event e, Context* c) {
     switch (e.event) {
-    case EVENT_YIELD:
-        Log("EVENT_YIELD recognized");
+    case EVENT_SYSCALL:
+        Log("EVENT_SYSCALL recognized in do_event(Event, Context)");
+        do_syscall(c);
         break;
+    case EVENT_YIELD:
+        Log("EVENT_YIELD recognized in do_event(Event, Context)");
+        schedule(c);
+        break;
+    case EVENT_IRQ_TIMER:
+        Log("EVENT_IRQ_TIMER recognized in do_event(Event, Context)");
+        schedule(c);
+        break; 
+    case EVENT_IRQ_IODEV:
+        Log("EVENT_IRQ_IODEV recognized in do_event(Event, Context)");
+        break; 
     default:
         panic("Unhandled event ID = %d", e.event);
     }
