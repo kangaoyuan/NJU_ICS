@@ -36,6 +36,7 @@ Context* __am_irq_handle(Context* c) {
             ev.event = EVENT_ERROR;
             break;
         }
+        // user_handler is register as do_event() in init_irq() -> cte_init().
         c = user_handler(ev, c);
         assert(c != NULL);
     }
@@ -45,17 +46,20 @@ Context* __am_irq_handle(Context* c) {
 bool cte_init(Context* (*handler)(Event, Context*)) {
     static GateDesc32 idt[NR_IRQ];
 
-    // initialize IDT
+    // initialize IDT, for int instruction executing.
     for (unsigned int i = 0; i < NR_IRQ; i++) 
         idt[i] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecnull, DPL_KERN);
     // ----------------------- interrupts ----------------------------
+    // IRQ_TIMER
     idt[32] = GATE32(STS_IG, KSEL(SEG_KCODE), __am_irq0, DPL_KERN);
     // ---------------------- system call ----------------------------
+    // SYSCALL
     idt[0x80] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecsys, DPL_USER);
+    // YIELD
     idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
     set_idt(idt, sizeof(idt));
 
-    // register interrupt event handler
+    // register interrupt event handler, for above __am_irq_handle to run.
     user_handler = handler;
     return true;
 }
@@ -65,7 +69,7 @@ Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
 }
 
 void yield() {
-  asm volatile("int $0x81");
+    asm volatile("int $0x81");
 }
 
 bool ienabled() {

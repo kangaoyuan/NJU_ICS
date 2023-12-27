@@ -24,7 +24,7 @@ ifeq ($(wildcard $(NAVY_HOME)/libs/libos/src/syscall.h),)
   $(error $$NAVY_HOME must be a Navy-apps repo)
 endif
 
-### Check: environment variable `$ISA` must be in the supported list
+### Check: environment variable `$ISA`(in cli) must be in the supported list
 ISAS = $(basename $(notdir $(shell ls $(NAVY_HOME)/scripts/*.mk)))
 ifeq ($(filter $(ISAS), $(ISA)), )
   $(error Expected $$ISA in {$(ISAS)}, Got "$(ISA)")

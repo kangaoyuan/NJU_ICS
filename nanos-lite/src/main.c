@@ -25,6 +25,7 @@ int main() {
 
     init_fs();
 
+    // Including os to loader img file to memory.
     init_proc();
 
     Log("Finish initialization");

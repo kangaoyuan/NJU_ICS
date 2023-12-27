@@ -24,6 +24,7 @@ static Context* do_event(Event e, Context* c) {
         panic("Unhandled event ID = %d", e.event);
     }
 
+    // do_event() as a user __am_irq_handle() callback, returan value go to the calling point in __am_irq_handle() 
     return c;
 }
 
