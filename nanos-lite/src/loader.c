@@ -21,7 +21,6 @@ static uintptr_t loader(PCB* pcb, const char* filename) {
 
     // Attention: . -> () [] have higher precedence than () for casting.
     //assert(*(uint32_t*)elf_header->e_ident == 0x464c457f);
-
     Elf_Phdr elf_program_header[elf_header.e_phnum];
     offset = ramdisk_read(elf_program_header, elf_header.e_phoff,
                           sizeof(Elf_Phdr) * elf_header.e_phnum);
