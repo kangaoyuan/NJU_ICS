@@ -150,7 +150,7 @@ size_t fs_lseek(int fd, size_t offset, int whence){
         if (open_offset + offset > file_size)
             new_offset = file_size;
         else
-            new_offset = open_offset + offset;
+            new_offset = offset + open_offset;
         break;
     case SEEK_END:
         if (file_size + offset > file_size)
