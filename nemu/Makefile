@@ -55,7 +55,7 @@ endif
 OBJ_DIR ?= $(BUILD_DIR)/obj-$(ISA)-$(ENGINE)$(SO)
 BINARY ?= $(BUILD_DIR)/$(ISA)-$(NAME)-$(ENGINE)$(SO)
 
-include Makefile.git
+-include Makefile.git
 
 .DEFAULT_GOAL = app
 
@@ -71,6 +71,7 @@ CFLAGS   += -O2 -MMD -Wall -Werror -ggdb3 $(INCLUDES) \
 SRCS = $(shell find src/ -name "*.c" | grep -v "isa\|engine")
 SRCS += $(shell find src/isa/$(ISA) -name "*.c")
 SRCS += $(shell find src/engine/$(ENGINE) -name "*.c")
+# pattern substitution $(var:pattern=substitution)
 OBJS = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
 
 # Compilation patterns
@@ -87,7 +88,6 @@ $(OBJ_DIR)/%.o: src/%.c
 # Some convenient rules
 
 .PHONY: app run gdb clean run-env $(DIFF_REF_SO)
-app: $(BINARY)
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += --diff=$(DIFF_REF_SO)
@@ -104,6 +104,8 @@ $(BINARY): $(OBJS)
 	$(call git_commit, "compile")
 	@echo + LD $@
 	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
+
+app: $(BINARY)
 
 run-env: $(BINARY) $(DIFF_REF_SO)
 

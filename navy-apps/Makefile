@@ -68,7 +68,7 @@ endif
 ### Files to be linked: object files (`.o`) and libraries (`.a`)
 OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
 LIBS     := $(sort $(LIBS)) # lazy evaluation ("=") causes infinite recursions
-LINKAGE   = $(OBJS) $(foreach l,$(LIBS),$(NAVY_HOME)/libs/$(l)/build/$(l)-$(ISA).a)
+LINKAGE   = $(OBJS) $(foreach l,$(LIBS), $(NAVY_HOME)/libs/$(l)/build/$(l)-$(ISA).a)
 
 ## 3. General Compilation Flags
 
@@ -82,7 +82,7 @@ CXX       = $(CCACHE) $(CROSS_COMPILE)g++
 LD        = $(CROSS_COMPILE)ld
 
 ### Compilation flags
-INC_PATH += $(WORK_DIR)/include $(foreach l,$(LIBS_INC),$(NAVY_HOME)/libs/$(l)/include/)
+INC_PATH += $(WORK_DIR)/include $(foreach l,$(LIBS_INC), $(NAVY_HOME)/libs/$(l)/include/)
 INCFLAGS += $(addprefix -I, $(INC_PATH))
 
 CFLAGS   += -O2 -MMD $(INCFLAGS) -static -D__NAVY__ \
@@ -170,8 +170,7 @@ $(CLEAN_ALL):
 
 ### Build fsimg and ramdisk for Nanos-lite
 APPS =
-TESTS = dummy hello
-
+TESTS = dummy hello file-test
 fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
 	-for t in $^; do $(MAKE) -s -C $(NAVY_HOME)/$$t install; done
 
@@ -179,6 +178,7 @@ RAMDISK = build/ramdisk.img
 RAMDISK_H = build/ramdisk.h
 $(RAMDISK): fsimg
 	$(eval FSIMG_FILES := $(shell find -L ./fsimg -type f))
+	# creates the directory structure for the target file $(RAMDISK).
 	@mkdir -p $(@D)
 	@cat $(FSIMG_FILES) > $@
 	@truncate -s \%512 $@

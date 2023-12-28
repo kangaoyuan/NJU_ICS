@@ -10,6 +10,12 @@ void sys_exit(int status) {
     halt(status);
 }
 
+int fs_open(const char *pathname, int flags, int mode);
+int fs_close(int fd);
+size_t fs_read(int fd, void *buf, size_t len);
+size_t fs_write(int fd,const void *buf,size_t len);
+size_t fs_lseek(int fd, size_t offset, int whence);
+
 void do_syscall(Context* c) {
     uintptr_t a[4];
     a[0] = c->GPR1;
@@ -23,19 +29,26 @@ void do_syscall(Context* c) {
     case SYS_exit: sys_exit(c->GPR2); break;
     case SYS_yield: c->GPRx = sys_yield(); break;
     case SYS_brk: c->GPRx = 0; break;
-    case SYS_write: {
-        int    fd = (int)a[1];
-        char*  buf = (char*)a[2];
-        size_t len = (size_t)a[3];
-        if (fd == 1 || fd == 2) {
-            for (int i = 0; i < len; ++i, ++buf)
-                putch(*buf);
-            c->GPRx = len;
-        } else {
-            c->GPRx = -1;
-        }
+    case SYS_open:
+        c->GPRx = fs_open((const char *)c->GPR2, c->GPR3, c->GPR4);
+        Log("fs_open(%s, %d, %d) = %d",(const char *)c->GPR2, c->GPR3, c->GPR4, c->GPRx);
         break;
-    }
+    case SYS_read:
+        c->GPRx = fs_read(c->GPR2, (void *)c->GPR3, (size_t)c->GPR4);
+        Log("fs_read(%d, %p, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
+        break;
+    case SYS_close:
+        c->GPRx = fs_close(c->GPR2);
+        Log("fs_close(%d, %d, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
+        break;
+    case SYS_write:
+        c->GPRx = fs_write(c->GPR2, (void *)c->GPR3, (size_t)c->GPR4);
+        Log("fs_write(%d, %p, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
+        break;
+    case SYS_lseek:
+        c->GPRx = fs_lseek(c->GPR2, (size_t)c->GPR3, c->GPR4);
+        Log("fs_lseek(%d, %d, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
+        break;
     default:
         panic("Unhandled syscall ID = %d", a[0]);
     }
