@@ -15,8 +15,8 @@ int main() {
         assert(gettimeofday(&now, NULL) == 0);
         time_t now_sec = now.tv_sec;
         suseconds_t now_usec = now.tv_usec;
-        uint64_t time_gap = (now_sec - init_sec) * 10e6 + (now_usec - init_usec); 
-        if(time_gap > 5 * 10e5)
+        uint64_t time_gap = (now_sec - init_sec) * 1000000 + (now_usec - init_usec); 
+        if(time_gap > 500000 * cnt)
             printf("Half a second flowed, %u time\n", cnt++); 
     } 
 
