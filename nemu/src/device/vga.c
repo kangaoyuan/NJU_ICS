@@ -1,6 +1,7 @@
+#include <common.h>
+
 #ifdef HAS_IOE
 #include <SDL2/SDL.h>
-#include <common.h>
 #include <device/map.h>
 
 #define SHOW_SCREEN
@@ -26,7 +27,7 @@ static uint32_t (*vmem_base) [SCREEN_W] = NULL;
 
 static inline void update_screen() {
 #ifdef SHOW_SCREEN
-    SDL_UpdateTexture(texture, NULL, vmem, SCREEN_W * sizeof(vmem[0][0]));
+    SDL_UpdateTexture(texture, NULL, vmem_base, SCREEN_W * sizeof(vmem_base[0][0]));
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
     SDL_RenderPresent(renderer);
