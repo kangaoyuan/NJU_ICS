@@ -118,10 +118,6 @@ $(DST_DIR)/%.o: %.S
 	@mkdir -p $(dir $@) && echo + AS $<
 	@$(AS) $(ASFLAGS) -c -o $@ $(realpath $<)
 
-### Rule (recursive make): build dependent libraries (libc, libos, ...)
-libs:
-	@for t in $(LIBS); do $(MAKE) -s -C $(NAVY_HOME)/libs/$$t archive; done
-
 ### Rule (link): objects (`*.o`) and libraries (`*.a`) -> `$(APP)`, the final ELF binary to be packed into application (ld)
 $(APP): $(OBJS) libs
 	@echo + LD "->" $(shell realpath $@ --relative-to .)
@@ -142,37 +138,25 @@ ifeq ($(wildcard $(NAVY_HOME)/libs/libc/Makefile),)
   $(shell cd $(NAVY_HOME)/libs && git clone git@github.com:NJU-ProjectN/newlib-navy.git libc)
 endif
 
+.PHONY: app archive libs
 ### Build order control
 app: $(APP)
 archive: $(ARCHIVE)
-.PHONY: app archive libs
 
+### Rule (recursive make): build dependent libraries (libc, libos, ...)
+libs:
+	@for t in $(LIBS); do $(MAKE) -s -C $(NAVY_HOME)/libs/$$t archive; done
+
+.PHONY: install
 ### Install an application to fsimg
 install: app
 	@echo + INSTALL "->" $(NAME)
 	@mkdir -p $(NAVY_HOME)/fsimg/bin
 	@cp $(APP) $(NAVY_HOME)/fsimg/bin/$(NAME)
 
-.PHONY: install
-
-### Clean a single project (remove `build/`)
-clean:
-	rm -rf Makefile.html $(WORK_DIR)/build/ build/
-.PHONY: clean
-
-### Clean all sub-projects within depth 2 (and ignore errors)
-CLEAN_ALL = $(dir $(shell find . -mindepth 2 -maxdepth 3 -name Makefile))
-clean-all: $(CLEAN_ALL) clean
-	-@rm -f $(NAVY_HOME)/fsimg/bin/*
-$(CLEAN_ALL):
-	-@$(MAKE) -s -C $@ clean
-.PHONY: clean-all $(CLEAN_ALL)
-
 ### Build fsimg and ramdisk for Nanos-lite
 APPS =
-TESTS = dummy hello file-test
-fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
-	-for t in $^; do $(MAKE) -s -C $(NAVY_HOME)/$$t install; done
+TESTS = dummy hello file-test timer-test
 
 RAMDISK = build/ramdisk.img
 RAMDISK_H = build/ramdisk.h
@@ -185,6 +169,23 @@ $(RAMDISK): fsimg
 	@echo "// file path, file size, offset in disk" > $(RAMDISK_H)
 	@wc -c $(FSIMG_FILES) | grep -v 'total$$' | sed -e 's+ ./fsimg+ +' | awk -v sum=0 '{print "\x7b\x22" $$2 "\x22\x2c " $$1 "\x2c " sum "\x7d\x2c";sum += $$1}' >> $(RAMDISK_H)
 
+.PHONY: ramdisk fsimg
 ramdisk: $(RAMDISK)
 
-.PHONY: fsimg ramdisk
+fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
+	-for t in $^; do \
+	       	$(MAKE) -s -C $(NAVY_HOME)/$$t install; \
+	done
+
+.PHONY: clean clean-all $(CLEAN_ALL)
+### Clean a single project (remove `build/`)
+clean:
+	rm -rf Makefile.html $(WORK_DIR)/build/ build/
+
+### Clean all sub-projects within depth 2 (and ignore errors)
+CLEAN_ALL = $(dir $(shell find . -mindepth 2 -maxdepth 3 -name Makefile))
+clean-all: $(CLEAN_ALL) clean
+	-@rm -f $(NAVY_HOME)/fsimg/bin/*
+$(CLEAN_ALL):
+	-@$(MAKE) -s -C $@ clean
+

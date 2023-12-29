@@ -123,7 +123,11 @@ int fs_write(int fd, void* buf, size_t len){
     if(open_offset + len > file_size)
         len = file_size - open_offset;
 
-    ramdisk_write(buf, disk_offset + open_offset, len);
+    if (file_table[fd].write == NULL)
+        len = ramdisk_write(buf, disk_offset + open_offset, len);
+    else
+        len = file_table[fd].write(buf, open_offset, len);
+
     open_file_table[target_index].open_offset += len;
     return len;
 }

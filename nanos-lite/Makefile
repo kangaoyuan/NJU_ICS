@@ -18,7 +18,7 @@ ifeq ($(HAS_NAVY),)
     # create an empty file if it does not exist
     # $(foreach f, $(files), loop-body)
     # $(if cond, true-part, false-part)
-    $(foreach f,$(files), $(if $(wildcard $f),, $(shell touch $f)))
+    $(foreach f,$(files), $(if $(wildcard $f), , $(shell touch $f)))
 else
     ifeq ($(wildcard $(NAVY_HOME)/libs/libos/src/syscall.h),)
         $(error $$NAVY_HOME must be a Navy-apps repo)

@@ -10,6 +10,26 @@ void sys_exit(int status) {
     halt(status);
 }
 
+#define time_t uint64_t
+typedef uint64_t susconds_t;
+
+struct timeval{
+    time_t tv_sec;
+    susconds_t tv_usec;
+};
+
+struct timezone{
+    int tz_minuteswest;
+    int tz_dsttime;
+};
+
+int sys_gettimeofday(struct timeval* tv, struct timezone* tz){
+    uint64_t us = io_read(AM_TIMER_UPTIME).us;
+    tv->tv_sec = us / 10e6;
+    tv->tv_usec = us - us / 10e6 * 10e6;
+    return 0;
+}
+
 int fs_open(const char *pathname, int flags, int mode);
 int fs_close(int fd);
 size_t fs_read(int fd, void *buf, size_t len);
@@ -47,6 +67,9 @@ void do_syscall(Context* c) {
         c->GPRx = fs_lseek(c->GPR2, (size_t)c->GPR3, c->GPR4);
         Log("fs_lseek(%d, %d, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
         break;
+    case SYS_gettimeofday:
+        c->GPRx = sys_gettimeofday((struct timeval*)c->GPR2, (struct timezone*)c->GPR3);
+        Log("sys_gettimeofday(%p, %p, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
     default:
         panic("Unhandled syscall ID = %d", a[0]);
     }
