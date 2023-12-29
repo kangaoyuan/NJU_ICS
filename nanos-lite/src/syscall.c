@@ -25,8 +25,8 @@ struct timezone{
 
 int sys_gettimeofday(struct timeval* tv, struct timezone* tz){
     uint64_t us = io_read(AM_TIMER_UPTIME).us;
-    tv->tv_sec = us / 10e6;
-    tv->tv_usec = us - us / 10e6 * 10e6;
+    tv->tv_sec = us / 1000000;
+    tv->tv_usec = us - us / 1000000 * 1000000;
     return 0;
 }
 
