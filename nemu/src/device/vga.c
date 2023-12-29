@@ -1,11 +1,13 @@
-#include <common.h>
-
 #ifdef HAS_IOE
-#include <device/map.h>
 #include <SDL2/SDL.h>
+#include <common.h>
+#include <device/map.h>
 
 #define SHOW_SCREEN
-//#define MODE_800x600
+#define MODE_800x600
+#define VMEM 0xa0000000   // VMEM is equal to FB_ADDR
+#define VGACTL_PORT 0x100 // Note that this is not the standard
+#define VGACTL_MMIO 0xa1000100
 
 #ifdef MODE_800x600
 # define SCREEN_W 800
@@ -16,22 +18,18 @@
 #endif
 #define SCREEN_SIZE ((SCREEN_H * SCREEN_W) * sizeof(uint32_t))
 
-#define VMEM 0xa0000000   // VMEM is equal to FB_ADDR
-#define VGACTL_PORT 0x100 // Note that this is not the standard
-#define VGACTL_MMIO 0xa1000100
-
 static SDL_Texture *texture = NULL;
 static SDL_Renderer *renderer = NULL;
 
 static uint32_t *vgactl_port_base = NULL;
-static uint32_t (*vmem) [SCREEN_W] = NULL;
+static uint32_t (*vmem_base) [SCREEN_W] = NULL;
 
 static inline void update_screen() {
 #ifdef SHOW_SCREEN
-  SDL_UpdateTexture(texture, NULL, vmem, SCREEN_W * sizeof(vmem[0][0]));
-  SDL_RenderClear(renderer);
-  SDL_RenderCopy(renderer, texture, NULL, NULL);
-  SDL_RenderPresent(renderer);
+    SDL_UpdateTexture(texture, NULL, vmem, SCREEN_W * sizeof(vmem[0][0]));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
 #endif
 }
 
@@ -66,7 +64,7 @@ void init_vga() {
     add_pio_map("screen", VGACTL_PORT, (void*)vgactl_port_base, 8, NULL);
     add_mmio_map("screen", VGACTL_MMIO, (void*)vgactl_port_base, 8, NULL);
 
-    vmem = (void*)new_space(SCREEN_SIZE);
-    add_mmio_map("vmem", VMEM, (void*)vmem, SCREEN_SIZE, NULL);
+    vmem_base = (void*)new_space(SCREEN_SIZE);
+    add_mmio_map("vmem", VMEM, (void*)vmem_base, SCREEN_SIZE, NULL);
 }
 #endif	/* HAS_IOE */

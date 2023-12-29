@@ -7,13 +7,13 @@
 #include <monitor/monitor.h>
 
 void init_serial();
-void init_alarm();
-void init_vga();
-void init_i8042();
-void init_audio();
 void init_timer();
+void init_alarm();
+void init_i8042();
+void init_vga();
+void init_audio();
 
-
+// set_device_update_flag() function is registered as an alarm signal handler, which updates devices at a fixed timer frequency(alarm).
 static int device_update_flag = false;
 static void set_device_update_flag() {
     device_update_flag = true;
@@ -21,15 +21,12 @@ static void set_device_update_flag() {
 
 void vga_update_screen();
 void send_key(uint8_t, bool);
-// device_update() function applied in cpu_exec() function,
-// when every intruction be executed.
 void device_update() {
-    // set_device_update_flag() fucntion registered in alarm signal handler,
-    // which is to control the device_update frequency.
-    if (!device_update_flag) {
+    // device_update() is executed as a same timer frequency, which is called in cpu_exec() when every intruction be executed.
+    if (!device_update_flag) 
         return;
-    }
     device_update_flag = false;
+    
     vga_update_screen();
 
     SDL_Event event;
