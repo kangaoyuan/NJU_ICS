@@ -10,8 +10,9 @@ typedef struct {
     void *start, *end;
 } Area;
 
-// AM register enum and struct definitions.
-// which are independent of archs, every arch has same interfaces.
+// AM device registers enum and struct definitions.
+// Althogh devices registers are independent of archs, 
+// they has same interfaces to AM to use.
 #define AM_DEVREG(id, reg, perm, ...) \
   enum { AM_##reg = (id) }; \
   typedef struct { __VA_ARGS__; } AM_##reg##_T;
