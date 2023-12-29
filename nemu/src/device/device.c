@@ -62,12 +62,12 @@ void sdl_clear_event_queue() {
 void init_device() {
     init_serial();  // serial 
     init_timer();   // timer
-    init_vga();     // vga
     init_i8042();   // keyboard
+    init_vga();     // vga
     init_audio();   // audio
 
-    add_alarm_handle(set_device_update_flag);   // alarm handler
-    init_alarm();   // alarm, attention for alarm signal register
+    add_alarm_handle(set_device_update_flag);   // register alarm handler
+    init_alarm();   // alarm
 }
 #else
 

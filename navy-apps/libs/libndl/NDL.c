@@ -1,8 +1,9 @@
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <assert.h>
+#include <sys/time.h>
 
 static int evtdev = -1;
 static int fbdev = -1;
@@ -13,7 +14,9 @@ uint32_t NDL_GetTicks() {
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+    struct timeval tv;
+    assert(gettimeofday(&tv, NULL) == 0);
+    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {

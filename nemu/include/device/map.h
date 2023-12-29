@@ -3,20 +3,31 @@
 
 #include <monitor/difftest.h>
 
+// IOMap struct mapped space allocation.
 uint8_t* new_space(int size);
 typedef void(*io_callback_t)(uint32_t, int, bool);
 
 typedef struct {
     char* name;
-    // we treat ioaddr_t as paddr_t here
+    // [low, high] is the source address.
     paddr_t       low;
     paddr_t       high;
+    // space is the destination mapped address.
     uint8_t*      space;
     io_callback_t callback;
 } IOMap;
 
+// port-mapped-I/O, memory-mapped-I/O
+void add_pio_map(char *name, ioaddr_t addr, uint8_t *space, int len, io_callback_t callback);
+void add_mmio_map(char *name, paddr_t addr, uint8_t* space, int len, io_callback_t callback);
+
+word_t map_read(paddr_t addr, int len, IOMap *map);
+void map_write(paddr_t addr, word_t data, int len, IOMap *map);
+
+
+
 static inline bool map_inside(IOMap* map, paddr_t addr) {
-    return (addr >= map->low && addr <= map->high);
+    return (map->low <= addr && addr <= map->high);
 }
 
 static inline int find_mapid_by_addr(IOMap *maps, int size, paddr_t addr) {
@@ -28,11 +39,5 @@ static inline int find_mapid_by_addr(IOMap *maps, int size, paddr_t addr) {
     }
     return -1;
 }
-
-void add_pio_map(char *name, ioaddr_t addr, uint8_t *space, int len, io_callback_t callback);
-void add_mmio_map(char *name, paddr_t addr, uint8_t* space, int len, io_callback_t callback);
-
-word_t map_read(paddr_t addr, int len, IOMap *map);
-void map_write(paddr_t addr, word_t data, int len, IOMap *map);
 
 #endif

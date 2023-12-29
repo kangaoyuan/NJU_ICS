@@ -68,7 +68,6 @@ static inline def_EHelper(in) {
         *s0 = pio_read_l(*dsrc1);
         break;
     } 
-  //  Warning("in %x:%x -> @%s",id_src1->val, *s0, id_dest->str);
     operand_write(s, id_dest, s0);
     print_asm_template2(in);
 }
@@ -85,6 +84,5 @@ static inline def_EHelper(out) {
         pio_write_l(*ddest, *dsrc1);
         break;
     }
-  //  Warning("out %x -> @%x",id_src1->val,id_dest->val);
     print_asm_template2(out);
 }

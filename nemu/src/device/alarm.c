@@ -31,7 +31,7 @@ void init_alarm() {
     memset(&s, 0, sizeof(s));
     s.sa_handler = alarm_sig_handler;
     int ret = sigaction(SIGVTALRM, &s, NULL);
-    Assert(ret == 0, "Can not set signal handler");
+    Assert(ret == 0, "Can not set alarm signal handler");
 
     struct itimerval it = {};
     it.it_value.tv_sec = 0;

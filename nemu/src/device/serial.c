@@ -1,27 +1,26 @@
 #include <device/map.h>
 
-/* http://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming */
 // NOTE: this is compatible to 16550
+/* http://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming */
 
+// serial is char stream device, which doesn't support offset.
+#define CH_OFFSET 0
 #define SERIAL_PORT 0x3F8
 #define SERIAL_MMIO 0xa10003F8
-
-#define CH_OFFSET 0
 static uint8_t *serial_base = NULL;
 
 /* io_callback */
 static void serial_io_handler(uint32_t offset, int len, bool is_write) {
     assert(len == 1);
     switch (offset) {
-    /* We bind the serial port with the host stderr in NEMU. */
     case CH_OFFSET:
         // only valid when map_write() to callback.
         if (is_write)
+            // We bind the serial device with stderr stream to unbuffered 
             putc(serial_base[0], stderr);
         else
-            panic("serial_io_handler do not support read");
+            panic("I/O device handler, serial_io do not support read");
         break;
-    // assert(offset == 0);
     default:
         panic("serial_io_handler do not support offset = %d", offset);
     }

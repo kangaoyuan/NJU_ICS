@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include <sys/time.h>
 
+#define HAS_NDL
+
+#ifndef HAS_NDL
+
 int main() {
     size_t cnt = 0;
     struct timeval init, now;
@@ -22,4 +26,25 @@ int main() {
     } 
 
     return 0;
+}
+
+#else
+
+#include <NDL.h>
+
+int main() {
+    NDL_Init(0);
+    printf("NDL_GetTicks test start...\n");
+
+    uint32_t init = NDL_GetTicks();
+    size_t times = 1;
+
+    while (1) {
+        uint32_t now = NDL_GetTicks();
+        uint32_t time_gap = now - init;
+        if (time_gap > 500 * times) {
+            printf("Half a second passed, %u time(s)\n", times);
+            times++;
+        }
+    }
 }

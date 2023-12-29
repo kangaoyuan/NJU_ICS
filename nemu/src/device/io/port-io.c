@@ -6,7 +6,7 @@
 static int nr_map = 0;
 static IOMap maps[NR_MAP] = {};
 
-/* device interface */
+/* port-mapped-I/O device interface */
 void add_pio_map(char* name, ioaddr_t addr, uint8_t* space, int len,
                  io_callback_t callback) {
     assert(nr_map < NR_MAP);

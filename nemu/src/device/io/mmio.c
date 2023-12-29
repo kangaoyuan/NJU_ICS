@@ -4,7 +4,7 @@
 static int nr_map = 0;
 static IOMap maps[NR_MAP] = {};
 
-/* device interface */
+/* memory-mapped-I/O device interface */
 void add_mmio_map(char* name, paddr_t addr, uint8_t* space, int len,
                   io_callback_t callback) {
     assert(nr_map < NR_MAP);
@@ -18,10 +18,10 @@ void add_mmio_map(char* name, paddr_t addr, uint8_t* space, int len,
     nr_map++;
 }
 
-/* bus interface */
+/* device bus interface */
 IOMap* fetch_mmio_map(paddr_t addr) {
     int mapid = find_mapid_by_addr(maps, nr_map, addr);
-    //assert(mapid != -1);
-    //return &maps[mapid];
-     return (mapid == -1 ? NULL : &maps[mapid]);
+    assert(mapid != -1);
+    return &maps[mapid];
+    // return (mapid == -1 ? NULL : &maps[mapid]);
 }
