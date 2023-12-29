@@ -88,7 +88,11 @@ int fs_read(int fd, void* buf, size_t len){
     if(open_offset + len > file_size)
         len = file_size - open_offset;
 
-    ramdisk_read(buf, disk_offset + open_offset, len);
+    if (file_table[fd].read == NULL)
+        len = ramdisk_read(buf, disk_offset + open_offset, len);
+    else
+        len = file_table[fd].read(buf, open_offset, len);
+
     open_file_table[target_index].open_offset += len;
     return len;
 }
