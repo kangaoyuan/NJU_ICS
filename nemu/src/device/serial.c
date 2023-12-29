@@ -17,7 +17,7 @@ static void serial_io_handler(uint32_t offset, int len, bool is_write) {
         // only valid when map_write() to callback.
         if (is_write)
             // We bind the serial device with stderr stream to unbuffered 
-            putc(serial_base[0], stderr);
+            putc(serial_base[offset], stderr);
         else
             panic("I/O device handler, serial_io do not support read");
         break;
