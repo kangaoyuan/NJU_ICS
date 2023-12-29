@@ -15,11 +15,22 @@ void __am_audio_ctrl(AM_AUDIO_CTRL_T *);
 void __am_audio_status(AM_AUDIO_STATUS_T *);
 void __am_audio_play(AM_AUDIO_PLAY_T *);
 
-static void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg->has_rtc = true; }
-static void __am_input_config(AM_INPUT_CONFIG_T *cfg) { cfg->present = true;  }
-static void __am_uart_config(AM_UART_CONFIG_T *cfg)   { cfg->present = false; }
-static void __am_disk_config(AM_DISK_CONFIG_T *cfg)   { cfg->present = false; }
-static void __am_net_config (AM_NET_CONFIG_T *cfg)    { cfg->present = false; }
+static void __am_timer_config(AM_TIMER_CONFIG_T* cfg) {
+    cfg->present = true;
+    cfg->has_rtc = true;
+}
+static void __am_input_config(AM_INPUT_CONFIG_T* cfg) {
+    cfg->present = true;
+}
+static void __am_uart_config(AM_UART_CONFIG_T* cfg) {
+    cfg->present = false;
+}
+static void __am_disk_config(AM_DISK_CONFIG_T* cfg) {
+    cfg->present = false;
+}
+static void __am_net_config(AM_NET_CONFIG_T* cfg) {
+    cfg->present = false;
+}
 
 static void* lut[128] = {
     [AM_TIMER_CONFIG] = __am_timer_config,
@@ -39,7 +50,9 @@ static void* lut[128] = {
     [AM_NET_CONFIG] = __am_net_config,
 };
 
-static void fail(void *buf) { panic("access nonexist register"); }
+static void fail(void* buf) {
+    panic("access nonexist register");
+}
 
 bool ioe_init() {
     for (int i = 0; i < LENGTH(lut); i++){
@@ -53,5 +66,9 @@ bool ioe_init() {
 }
 
 typedef void (*handler_t)(void *buf);
-void ioe_read (int reg, void *buf) { ((handler_t)lut[reg])(buf); }
-void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); }
+void ioe_read(int reg, void* buf) {
+    ((handler_t)lut[reg])(buf);
+}
+void ioe_write(int reg, void* buf) {
+    ((handler_t)lut[reg])(buf);
+}
