@@ -22,8 +22,6 @@ void do_syscall(Context* c) {
     a[1] = c->GPR2;
     a[2] = c->GPR3;
     a[3] = c->GPR4;
-    printf("In do_syscall(Context*); the val of c->GPR1 is %u \n", a[0]);
-
 
     switch (a[0]) {
     case SYS_exit: sys_exit(c->GPR2); break;
