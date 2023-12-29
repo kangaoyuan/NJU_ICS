@@ -18,6 +18,7 @@ int main() {
         uint64_t time_gap = (now_sec - init_sec) * 1000000 + (now_usec - init_usec); 
         if(time_gap > 500000 * cnt)
             printf("Half a second flowed, %u time\n", cnt++); 
+        printf("%d loop\n", cnt);
     } 
 
     return 0;
