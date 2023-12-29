@@ -104,7 +104,7 @@ int fs_write(int fd, void* buf, size_t len){
     }
     if(fd == 1 || fd == 2){
         for(size_t i = 0; i < len; ++i) 
-            putch(*(char *)buf + i);
+            putch(((char *)buf)[i]);
         return len;
     }
 
