@@ -1,10 +1,10 @@
+#include <NDL.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
 #include <sys/time.h>
 
-#define HAS_NDL
-
+#define HSA_NDL
 #ifndef HAS_NDL
 
 int main() {
@@ -30,7 +30,6 @@ int main() {
 
 #else
 
-#include <NDL.h>
 
 int main() {
     NDL_Init(0);
@@ -48,3 +47,5 @@ int main() {
         }
     }
 }
+
+#endif

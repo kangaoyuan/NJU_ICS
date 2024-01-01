@@ -156,7 +156,7 @@ install: app
 
 ### Build fsimg and ramdisk for Nanos-lite
 APPS =
-TESTS = dummy hello file-test timer-test
+TESTS = dummy hello event-test
 
 RAMDISK = build/ramdisk.img
 RAMDISK_H = build/ramdisk.h

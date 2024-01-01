@@ -36,6 +36,7 @@ size_t fs_read(int fd, void *buf, size_t len);
 size_t fs_write(int fd,const void *buf,size_t len);
 size_t fs_lseek(int fd, size_t offset, int whence);
 
+// be called from do_event(), from __am_irq_handle(), from _[syscall_name](), for [syscall_name]().
 void do_syscall(Context* c) {
     uintptr_t a[4];
     a[0] = c->GPR1;
