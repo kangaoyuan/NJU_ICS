@@ -18,6 +18,7 @@ uint32_t NDL_GetTicks() {
 int NDL_PollEvent(char* buf, int len) {
     int fd = open("/dev/events", 0, 0);
     int rc = read(fd, buf, len);
+    printf("In the NDL_PollEvent(), the return val is %d\n", rc);
     printf("In the NDL_PollEvent(), the read result is %s\n", buf);
     assert(close(fd) == 0);
     return rc == 0 ? 0 : 1;
