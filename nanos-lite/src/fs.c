@@ -75,6 +75,9 @@ int fs_read(int fd, void* buf, size_t len){
         return 0;
     }
 
+    if(file_table[fd].read != NULL)
+        return file_table[fd].read(buf, 0, len);
+
     int target_index = get_open_file_index(fd);
     if (target_index == -1) {
         Log("file %s not fs_open before fs_read", file_table[fd].name);
@@ -90,10 +93,7 @@ int fs_read(int fd, void* buf, size_t len){
     if(open_offset + len > file_size)
         len = file_size - open_offset;
 
-    if (file_table[fd].read == NULL)
-        len = ramdisk_read(buf, disk_offset + open_offset, len);
-    else
-        len = file_table[fd].read(buf, open_offset, len);
+    len = ramdisk_read(buf, disk_offset + open_offset, len);
 
     open_file_table[target_index].open_offset += len;
     return len;
@@ -104,11 +104,9 @@ int fs_write(int fd, void* buf, size_t len){
         Log("ignore wrtie to stand stream %s", file_table[fd].name);
         return 0; 
     }
-    if(fd == 1 || fd == 2){
-        for(size_t i = 0; i < len; ++i) 
-            putch(((char *)buf)[i]);
-        return len;
-    }
+
+    if(file_table[fd].write != NULL)
+        return file_table[fd].write(buf, 0, len);
 
     int target_index = get_open_file_index(fd);
     if (target_index == -1) {
@@ -125,10 +123,7 @@ int fs_write(int fd, void* buf, size_t len){
     if(open_offset + len > file_size)
         len = file_size - open_offset;
 
-    if (file_table[fd].write == NULL)
-        len = ramdisk_write(buf, disk_offset + open_offset, len);
-    else
-        len = file_table[fd].write(buf, open_offset, len);
+    len = ramdisk_write(buf, disk_offset + open_offset, len);
 
     open_file_table[target_index].open_offset += len;
     return len;
