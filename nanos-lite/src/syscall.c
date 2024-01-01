@@ -49,8 +49,12 @@ void do_syscall(Context* c) {
     a[3] = c->GPR4;
 
     switch (a[0]) {
-    case SYS_exit: sys_exit(c->GPR2); break;
-    case SYS_yield: c->GPRx = sys_yield(); break;
+    case SYS_exit:
+        sys_exit(c->GPR2);
+        break;
+    case SYS_yield:
+        c->GPRx = sys_yield();
+        break;
     case SYS_brk:
         c->GPRx = sys_brk((void *)c->GPR2);
         Log("sys_brk(%p, %d, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);

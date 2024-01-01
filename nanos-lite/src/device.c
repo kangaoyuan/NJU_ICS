@@ -1,9 +1,9 @@
 #include <common.h>
 
 #if defined(MULTIPROGRAM) && !defined(TIME_SHARING)
-# define MULTIPROGRAM_YIELD() yield()
+#define MULTIPROGRAM_YIELD() yield()
 #else
-# define MULTIPROGRAM_YIELD()
+#define MULTIPROGRAM_YIELD()
 #endif
 
 // It's worth to learn the #define, #, ## methods
@@ -11,8 +11,8 @@
   [AM_KEY_##key] = #key,
 
 static const char *keyname[256] __attribute__((used)) = {
-  [AM_KEY_NONE] = "NONE",
-  AM_KEYS(NAME)
+    [AM_KEY_NONE] = "NONE",
+    AM_KEYS(NAME)
 };
 
 size_t serial_write(const void *buf, size_t offset, size_t len) {
@@ -28,6 +28,8 @@ size_t events_read(void *buf, size_t offset, size_t len) {
         return 0;
 
     printf("In events_read()\n");
+    printf("receive keyboard kd %s\n", keyname[ev.keycode]);
+    printf("receive keyboard ku %s\n", keyname[ev.keycode]);
     if(ev.keydown)
         return snprintf(buf, len, "kd %s\n", keyname[ev.keycode]);
     else
