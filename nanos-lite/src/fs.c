@@ -58,7 +58,7 @@ int fs_open(const char* path_name, int flags, int mode) {
     for(int i = 0; i < LENGTH(file_table); ++i) {
         if(strcmp(file_table[i].name, path_name) == 0) {
             if(i < FD_FB) {
-                Log("ignore open %s file", path_name); 
+                Log("fs_open ignore open %s file", path_name); 
                 return i;
             } 
             open_file_table[open_file_table_index].fd = i;
@@ -75,7 +75,7 @@ int fs_read(int fd, void* buf, size_t len){
 
     int target_index = get_open_file_index(fd);
     if (target_index == -1) {
-        Log("file %s not fs_open before fs_read", file_table[fd].name);
+        Log("fs_read file %s not opened", file_table[fd].name);
         return -1;
     }
 
