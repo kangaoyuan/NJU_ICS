@@ -6,6 +6,10 @@ int sys_yield() {
     return 0;
 }
 
+int sys_brk(void *addr) {
+    return 0;
+}
+
 void sys_exit(int status) {
     halt(status);
 }
@@ -47,7 +51,10 @@ void do_syscall(Context* c) {
     switch (a[0]) {
     case SYS_exit: sys_exit(c->GPR2); break;
     case SYS_yield: c->GPRx = sys_yield(); break;
-    case SYS_brk: c->GPRx = 0; break;
+    case SYS_brk:
+        c->GPRx = sys_brk((void *)c->GPR2);
+        Log("sys_brk(%p, %d, %d) = %d", c->GPR2, c->GPR3, c->GPR4, c->GPRx);
+        break;
     case SYS_open:
         c->GPRx = fs_open((const char *)c->GPR2, c->GPR3, c->GPR4);
         Log("fs_open(%s, %d, %d) = %d",(const char *)c->GPR2, c->GPR3, c->GPR4, c->GPRx);

@@ -21,6 +21,7 @@ int fs_close(int fd);
 
 static uintptr_t loader(PCB* pcb, const char* filename) {
     int fd = fs_open(filename, 0, 0);
+    assert(fd >= 2);
     Log("filename: %s, fd: %d", filename, fd);
 
     Elf_Ehdr elf_header;
@@ -52,7 +53,6 @@ static uintptr_t loader(PCB* pcb, const char* filename) {
                    elf_program_header[i].p_filesz);
         }
     }
-    fd = fs_close(fd);
     return elf_header.e_entry;
 }
 

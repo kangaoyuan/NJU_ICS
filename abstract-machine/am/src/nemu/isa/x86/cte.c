@@ -49,10 +49,9 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
     // initialize IDT, for int instruction executing.
     for (unsigned int i = 0; i < NR_IRQ; i++) 
         idt[i] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecnull, DPL_KERN);
-    // ----------------------- interrupts ----------------------------
+
     // IRQ_TIMER
     idt[32] = GATE32(STS_IG, KSEL(SEG_KCODE), __am_irq0, DPL_KERN);
-    // ---------------------- system call ----------------------------
     // SYSCALL
     idt[0x80] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecsys, DPL_USER);
     // YIELD
