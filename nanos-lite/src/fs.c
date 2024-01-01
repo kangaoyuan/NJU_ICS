@@ -11,8 +11,6 @@ typedef struct {
     WriteFn write;
 } Finfo;
 
-enum {FD_STDIN = 0, FD_STDOUT, FD_STDERR, DEV_EVENTS, FD_FB};
-
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
   return 0;
@@ -29,6 +27,8 @@ size_t serial_write(const void *buf, size_t offset, size_t len);
 size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 
 /* This is the information about all files in disk. */
+enum {FD_STDIN = 0, FD_STDOUT, FD_STDERR, DEV_EVENTS, FD_FB};
+
 static Finfo file_table[] __attribute__((used)) = {
     [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write},
     [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
