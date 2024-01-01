@@ -75,10 +75,8 @@ int fs_read(int fd, void* buf, size_t len){
         return 0;
     }
 
-    if(file_table[fd].read != NULL){
-        printf("fd == %d, file name = %s\n", fd, file_table[fd].name);
+    if(file_table[fd].read != NULL)
         return file_table[fd].read(buf, 0, len);
-    }
 
     int target_index = get_open_file_index(fd);
     if (target_index == -1) {
