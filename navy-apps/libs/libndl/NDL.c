@@ -45,8 +45,8 @@ static void parse_dispinfo() {
     }
     assert(buf[i++] == '\n');
 
-    while (buf[i++] == ' ')
-        ;
+    while (buf[i] == ' ')
+        i++;
     assert(strncmp(buf + i, "HEIGHT", 6) == 0);
     i += 6;
     while (i < buf_size) {
