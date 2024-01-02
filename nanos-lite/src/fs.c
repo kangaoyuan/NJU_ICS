@@ -61,7 +61,7 @@ int fs_open(const char* path_name, int flags, int mode) {
     for(int i = 0; i < LENGTH(file_table); ++i) {
         if(strcmp(file_table[i].name, path_name) == 0) {
             if(i < FD_FB) {
-                Log("fs_open ignore open %s file", path_name); 
+                Log("fs_open() open char file: %s", path_name); 
                 return i;
             } 
             open_file_table[open_file_table_index].fd = i;
@@ -127,7 +127,7 @@ int fs_write(int fd, void* buf, size_t len){
 
 size_t fs_lseek(int fd, size_t offset, int whence){
     if(fd < FD_FB) {
-        Log("ignore fs_lseek %s file", file_table[fd].name); 
+        Log("fs_lseek() seel char file %s", file_table[fd].name); 
         return 0;
     }
 
@@ -169,7 +169,7 @@ size_t fs_lseek(int fd, size_t offset, int whence){
 
 int fs_close(int fd){
     if(fd <= FD_FB) {
-        Log("ignore fs_close %s file", file_table[fd].name); 
+        Log("fs_close() close char file %s", file_table[fd].name); 
         return 0;
     }
 
