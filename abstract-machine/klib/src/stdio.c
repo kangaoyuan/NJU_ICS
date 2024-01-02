@@ -17,7 +17,6 @@ static int isdigit(char c) {
 //}
 
 void itoa_base(long long dec, char *dest, int base) {
-    printf("base == %d, result = %d", base, base == 16);
     assert(base == 2 || base == 8 || base == 10 || base == 16); 
 
     if(dec == 0){
