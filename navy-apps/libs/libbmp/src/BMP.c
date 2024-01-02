@@ -24,11 +24,13 @@ void* BMP_Load(const char* filename, int* width, int* height) {
     if (!fp)
         return NULL;
 
+    printf("fp == %p", fp);
     struct BitmapHeader hdr;
     assert(sizeof(hdr) == 54);
     printf("before loop!\n");
-    assert(1 == fread(&hdr, sizeof(struct BitmapHeader), 1, fp));
+    fread(&hdr, sizeof(struct BitmapHeader), 1, fp);
     printf("after loop!\n");
+    assert(1 == 1);
 
     if (hdr.bitcount != 24)
         return NULL;
