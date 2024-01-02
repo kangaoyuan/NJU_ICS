@@ -28,8 +28,11 @@ size_t events_read(void *buf, size_t offset, size_t len) {
         return 0;
 
     printf("In events_read()\n");
-    printf("receive keyboard kd %s\n", keyname[ev.keycode]);
-    printf("receive keyboard ku %s\n", keyname[ev.keycode]);
+    if (ev.keydown)
+        printf("receive keyboard kd %s\n", keyname[ev.keycode]);
+    else
+        printf("receive keyboard ku %s\n", keyname[ev.keycode]);
+
     if(ev.keydown)
         return snprintf(buf, len, "kd %s\n", keyname[ev.keycode]);
     else
@@ -37,14 +40,21 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  return 0;
+    AM_GPU_CONFIG_T conf = io_read(AM_GPU_CONFIG);
+    int width = conf.width, height = conf.height;
+    return snprintf(buf, len, "WIDTH : %d\nHEIGHT : %d\n", width, height);
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  return 0;
+    AM_GPU_CONFIG_T conf = io_read(AM_GPU_CONFIG);
+    int width = conf.width;
+    int y = offset / width;
+    int x = offset - y * width;
+    io_write(AM_GPU_FBDRAW, x, y, (void *)buf, len, 1, true);
+    return 0;
 }
 
 void init_device() {
-  Log("Initializing devices...");
-  ioe_init();
+    Log("Initializing devices...");
+    ioe_init();
 }

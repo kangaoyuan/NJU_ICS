@@ -328,22 +328,26 @@ static void *lut[128] = {
   [AM_NET_CONFIG  ] = net_config,
 };
 
-
 bool ioe_init() {
-  panic_on(cpu_current() != 0, "init IOE in non-bootstrap CPU");
+    panic_on(cpu_current() != 0, "init IOE in non-bootstrap CPU");
 
-  for (int i = 0; i < LENGTH(lut); i++)
-    if (!lut[i]) lut[i] = fail;
+    for (int i = 0; i < LENGTH(lut); i++)
+        if (!lut[i])
+            lut[i] = fail;
 
-  uart_init();
-  timer_init();
-  gpu_init();
+    uart_init();
+    timer_init();
+    gpu_init();
 
-  return true;
+    return true;
 }
 
-void ioe_read (int reg, void *buf) { ((handler_t)lut[reg])(buf); }
-void ioe_write(int reg, void *buf) { ((handler_t)lut[reg])(buf); }
+void ioe_read(int reg, void* buf) {
+    ((handler_t)lut[reg])(buf);
+}
+void ioe_write(int reg, void* buf) {
+    ((handler_t)lut[reg])(buf);
+}
 
 // LAPIC/IOAPIC (from xv6)
 

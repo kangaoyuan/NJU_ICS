@@ -11,6 +11,16 @@ typedef struct {
     WriteFn write;
 } Finfo;
 
+size_t events_read(void *buf, size_t offset, size_t len);
+size_t ramdisk_read(void *buf, size_t offset, size_t len);
+size_t dispinfo_read(void *buf, size_t offset, size_t len);
+size_t fb_write(const void *buf, size_t offset, size_t len);
+size_t serial_write(const void *buf, size_t offset, size_t len);
+size_t ramdisk_write(const void *buf, size_t offset, size_t len);
+
+/* This is the information about all files in disk. */
+enum {FD_STDIN = 0, FD_STDOUT, FD_STDERR, DEV_EVENTS, PROC_DISPINFO, FD_FB};
+
 size_t invalid_read(void *buf, size_t offset, size_t len) {
   panic("should not reach here");
   return 0;
@@ -21,19 +31,13 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
   return 0;
 }
 
-size_t events_read(void *buf, size_t offset, size_t len);
-size_t ramdisk_read(void *buf, size_t offset, size_t len);
-size_t serial_write(const void *buf, size_t offset, size_t len);
-size_t ramdisk_write(const void *buf, size_t offset, size_t len);
-
-/* This is the information about all files in disk. */
-enum {FD_STDIN = 0, FD_STDOUT, FD_STDERR, DEV_EVENTS, FD_FB};
-
 static Finfo file_table[] __attribute__((used)) = {
     [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write},
     [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
     [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
     [DEV_EVENTS] = {"/dev/events", 0, 0, events_read, invalid_write},
+    [PROC_DISPINFO] = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
+    [FD_FB] = {"/dev/fb", 0, 0, invalid_read, fb_write},
 #include "files.h"
 };
 
@@ -52,7 +56,6 @@ static int get_open_file_index(int fd) {
     }
     return -1;
 }
-
 
 int fs_open(const char* path_name, int flags, int mode) {
     for(int i = 0; i < LENGTH(file_table); ++i) {
@@ -95,7 +98,7 @@ int fs_read(int fd, void* buf, size_t len){
 }
 
 int fs_write(int fd, void* buf, size_t len){
-    if(file_table[fd].write != NULL)
+    if(file_table[fd].write != NULL && fd < FD_FB)
         return file_table[fd].write(buf, 0, len);
 
     int target_index = get_open_file_index(fd);
@@ -113,7 +116,10 @@ int fs_write(int fd, void* buf, size_t len){
     if(open_offset + len > file_size)
         len = file_size - open_offset;
 
-    len = ramdisk_write(buf, disk_offset + open_offset, len);
+    if(file_table[fd].write)
+        len = file_table[fd].write(buf, disk_offset + open_offset, len);
+    else
+        len = ramdisk_write(buf, disk_offset + open_offset, len);
 
     open_file_table[target_index].open_offset += len;
     return len;
@@ -182,5 +188,9 @@ int fs_close(int fd){
 }
 
 void init_fs() {
-  // TODO: initialize the size of /dev/fb
+    // TODO: initialize the size of /dev/fb
+    AM_GPU_CONFIG_T conf = io_read(AM_GPU_CONFIG);
+    int             width = conf.width;
+    int             height = conf.height;
+    file_table[FD_FB].size = width * height * 4;
 }
