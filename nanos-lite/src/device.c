@@ -27,12 +27,6 @@ size_t events_read(void *buf, size_t offset, size_t len) {
     if(ev.keycode == AM_KEY_NONE)
         return 0;
 
-    printf("In events_read()\n");
-    if (ev.keydown)
-        printf("receive keyboard kd %s\n", keyname[ev.keycode]);
-    else
-        printf("receive keyboard ku %s\n", keyname[ev.keycode]);
-
     if(ev.keydown)
         return snprintf(buf, len, "kd %s\n", keyname[ev.keycode]);
     else

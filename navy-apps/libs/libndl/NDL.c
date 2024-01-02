@@ -72,6 +72,7 @@ static void parse_dispinfo() {
 
     free(buf);
 
+    printf("width = %d, height = %d\n", width, height);
     screen_w = width;
     screen_h = height;
 }
