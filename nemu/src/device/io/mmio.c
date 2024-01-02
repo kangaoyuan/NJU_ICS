@@ -23,5 +23,4 @@ IOMap* fetch_mmio_map(paddr_t addr) {
     int mapid = find_mapid_by_addr(maps, nr_map, addr);
     assert(mapid != -1);
     return &maps[mapid];
-    // return (mapid == -1 ? NULL : &maps[mapid]);
 }

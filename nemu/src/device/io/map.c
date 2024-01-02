@@ -9,12 +9,12 @@ static uint8_t io_space[IO_SPACE_MAX] PG_ALIGN = {};
 static uint8_t *p_space = io_space;
 
 uint8_t* new_space(int size) {
-    uint8_t* p = p_space;
+    uint8_t* p_alloc = p_space;
     // upper to align
     size = (size + (PAGE_SIZE - 1)) & ~PAGE_MASK;
     p_space += size;
     assert(p_space - io_space < IO_SPACE_MAX);
-    return p;
+    return p_alloc;
 }
 
 static inline void invoke_callback(io_callback_t c,
@@ -34,8 +34,8 @@ static inline void check_bound(IOMap* map, paddr_t addr) {
 // map_read or map_write is the paddr access of I/O address.
 // Attention: map_read or map_write once access length range is [1, 8].
 word_t map_read(paddr_t addr, int len, IOMap* map) {
-    assert(len >= 1 && len <= 8);
     check_bound(map, addr);
+    assert(len >= 1 && len <= 8);
     paddr_t offset = addr - map->low;
 
     invoke_callback(map->callback, offset, len, false);
@@ -44,8 +44,8 @@ word_t map_read(paddr_t addr, int len, IOMap* map) {
 }
 
 void map_write(paddr_t addr, word_t data, int len, IOMap* map) {
-    assert(len >= 1 && len <= 8);
     check_bound(map, addr);
+    assert(len >= 1 && len <= 8);
     paddr_t offset = addr - map->low;
 
     memcpy(map->space + offset, &data, len);
