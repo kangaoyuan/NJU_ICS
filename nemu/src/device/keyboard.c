@@ -5,9 +5,9 @@
 #define I8042_DATA_PORT 0x60
 #define I8042_DATA_MMIO 0xa1000060
 
+// Note that this is not the standard
 #define KEYDOWN_MASK 0x8000
 
-// Note that this is not the standard
 #define _KEYS(f) \
   f(ESCAPE) f(F1) f(F2) f(F3) f(F4) f(F5) f(F6) f(F7) f(F8) f(F9) f(F10) f(F11) f(F12) \
 f(GRAVE) f(1) f(2) f(3) f(4) f(5) f(6) f(7) f(8) f(9) f(0) f(MINUS) f(EQUALS) f(BACKSPACE) \
@@ -27,7 +27,6 @@ static uint32_t keymap[256] = {MAP(_KEYS, SDL_KEYMAP)};
 #define KEY_QUEUE_LEN 1024
 static int key_f = 0, key_r = 0;
 static int key_queue[KEY_QUEUE_LEN] = {};
-
 static uint32_t *i8042_data_port_base = NULL;
 
 void send_key(uint8_t scancode, bool is_keydown) {
