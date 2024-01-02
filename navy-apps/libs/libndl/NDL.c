@@ -18,6 +18,7 @@ static void parse_dispinfo() {
     int ret = read(fd, buf, buf_size);
     assert(ret < buf_size);
     assert(close(fd) == 0);
+    printf("buf content is %s\n", buf);
 
     while (*buf == ' ')
         buf++;
