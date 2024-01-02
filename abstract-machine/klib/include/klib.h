@@ -32,7 +32,6 @@ void  *malloc    (size_t size);
 void   free      (void *ptr);
 
 // stdio.h
-void itoa_base(long long dec, char *dest, int base);
 int    printf    (const char *format, ...);
 int    sprintf   (char *str, const char *format, ...);
 int    sscanf    (const char *str, const char *format, ...);
