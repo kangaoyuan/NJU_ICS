@@ -7,6 +7,7 @@
 int main() {
   NDL_Init(0);
   int w, h;
+  printf("before loading picture\n");
   void *bmp = BMP_Load("/share/pictures/projectn.bmp", &w, &h);
   printf("width: %d, height: %d\n", w, h);
   assert(bmp);
