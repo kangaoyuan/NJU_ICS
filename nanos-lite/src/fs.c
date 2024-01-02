@@ -94,6 +94,7 @@ int fs_read(int fd, void* buf, size_t len){
     len = ramdisk_read(buf, disk_offset + open_offset, len);
 
     open_file_table[target_index].open_offset += len;
+    printf("ramdisk_read finishing\n");
     return len;
 }
 
