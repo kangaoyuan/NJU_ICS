@@ -17,7 +17,6 @@ static void parse_dispinfo() {
   int ret = read(fd, buf, buf_size);
   assert(ret < buf_size); // to be cautious...
   assert(close(fd) == 0);
-    printf("buf content is %s\n", buf);
 
   int i = 0;
   int width = 0, height = 0;
@@ -61,7 +60,6 @@ static void parse_dispinfo() {
 
   free(buf);
 
-    printf("width = %d, height = %d\n", width, height);
   screen_w = width;
   screen_h = height;
 }
