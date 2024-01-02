@@ -11,71 +11,59 @@ static int canvas_w, canvas_h, canvas_relative_screen_h, canvas_relative_screen_
 
 
 static void parse_dispinfo() {
-    int   buf_size = 1024;
-    char* buf = (char*)malloc(buf_size * sizeof(char));
-
-    int fd = open("/proc/dispinfo", 0, 0);
-    int ret = read(fd, buf, buf_size);
-    assert(ret < buf_size);
-    assert(close(fd) == 0);
+    int buf_size = 1024; // TODO: may be insufficient
+  char * buf = (char *)malloc(buf_size * sizeof(char));
+  int fd = open("/proc/dispinfo", 0, 0);
+  int ret = read(fd, buf, buf_size);
+  assert(ret < buf_size); // to be cautious...
+  assert(close(fd) == 0);
     printf("buf content is %s\n", buf);
 
-    while (*buf == ' ')
-        buf++;
-    assert(strncmp(buf, "WIDTH", 5) == 0);
-    int i = 5, width = 0, height = 0;
-    while (i < buf_size) {
-        if (buf[i] == ':') {
-            i++;
-            break;
-        }
-        assert(buf[i++] == ' ');
-    }
-    while (i < buf_size) {
-        if ('0' <= buf[i] && buf[i] <= '9') {
-            i++;
-            break;
-        }
-        assert(buf[i++] == ' ');
-    }
-    while (i < buf_size) {
-        if ('0' <= buf[i] && buf[i] <= '9')
-            width = width * 10 + buf[i++] - '0';
-        else
-            break;
-    }
-    assert(buf[i++] == '\n');
+  int i = 0;
+  int width = 0, height = 0;
 
-    while (buf[i] == ' ')
-        i++;
-    assert(strncmp(buf + i, "HEIGHT", 6) == 0);
-    i += 6;
-    while (i < buf_size) {
-        if (buf[i] == ':') {
-            i++;
-            break;
-        }
-        assert(buf[i++] == ' ');
-    }
-    while (i < buf_size) {
-        if ('0' <= buf[i] && buf[i] <= '9') {
-            i++;
-            break;
-        }
-        assert(buf[i++] == ' ');
-    }
-    while (i < buf_size) {
-        if ('0' <= buf[i] && buf[i] <= '9')
-            height = height * 10 + buf[i++] - '0';
-        else
-            break;
-    }
+  assert(strncmp(buf + i, "WIDTH", 5) == 0);
+  i += 5;
+  for (; i < buf_size; ++i) {
+      if (buf[i] == ':') { i++; break; }
+      assert(buf[i] == ' ');
+  }
+  for (; i < buf_size; ++i) {
+      if (buf[i] >= '0' && buf[i] <= '9') break;
+      assert(buf[i] == ' ');
+  }
+  for (; i < buf_size; ++i) {
+      if (buf[i] >= '0' && buf[i] <= '9') {
+          width = width * 10 + buf[i] - '0';
+      } else {
+          break;
+      }
+  }
+  assert(buf[i++] == '\n');
 
-    free(buf);
+  assert(strncmp(buf + i, "HEIGHT", 6) == 0);
+  i += 6;
+  for (; i < buf_size; ++i) {
+      if (buf[i] == ':') { i++; break; }
+      assert(buf[i] == ' ');
+  }
+  for (; i < buf_size; ++i) {
+      if (buf[i] >= '0' && buf[i] <= '9') break;
+      assert(buf[i] == ' ');
+  }
+  for (; i < buf_size; ++i) {
+      if (buf[i] >= '0' && buf[i] <= '9') {
+          height = height * 10 + buf[i] - '0';
+      } else {
+          break;
+      }
+  }
+
+  free(buf);
 
     printf("width = %d, height = %d\n", width, height);
-    screen_w = width;
-    screen_h = height;
+  screen_w = width;
+  screen_h = height;
 }
 
 uint32_t NDL_GetTicks() {
