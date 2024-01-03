@@ -24,7 +24,7 @@ ifeq ($(wildcard $(NAVY_HOME)/libs/libos/src/syscall.h),)
   $(error $$NAVY_HOME must be a Navy-apps repo)
 endif
 
-### Check: environment variable `$ISA`(in cli) must be in the supported list
+### Check: environment variable `$ISA` must be in the supported list
 ISAS = $(basename $(notdir $(shell ls $(NAVY_HOME)/scripts/*.mk)))
 ifeq ($(filter $(ISAS), $(ISA)), )
   $(error Expected $$ISA in {$(ISAS)}, Got "$(ISA)")
@@ -68,7 +68,7 @@ endif
 ### Files to be linked: object files (`.o`) and libraries (`.a`)
 OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
 LIBS     := $(sort $(LIBS)) # lazy evaluation ("=") causes infinite recursions
-LINKAGE   = $(OBJS) $(foreach l,$(LIBS), $(NAVY_HOME)/libs/$(l)/build/$(l)-$(ISA).a)
+LINKAGE   = $(OBJS) $(foreach l,$(LIBS),$(NAVY_HOME)/libs/$(l)/build/$(l)-$(ISA).a)
 
 ## 3. General Compilation Flags
 
@@ -82,7 +82,7 @@ CXX       = $(CCACHE) $(CROSS_COMPILE)g++
 LD        = $(CROSS_COMPILE)ld
 
 ### Compilation flags
-INC_PATH += $(WORK_DIR)/include $(foreach l,$(LIBS_INC), $(NAVY_HOME)/libs/$(l)/include/)
+INC_PATH += $(WORK_DIR)/include $(foreach l,$(LIBS_INC),$(NAVY_HOME)/libs/$(l)/include/)
 INCFLAGS += $(addprefix -I, $(INC_PATH))
 
 CFLAGS   += -O2 -MMD $(INCFLAGS) -static -D__NAVY__ \
@@ -118,6 +118,10 @@ $(DST_DIR)/%.o: %.S
 	@mkdir -p $(dir $@) && echo + AS $<
 	@$(AS) $(ASFLAGS) -c -o $@ $(realpath $<)
 
+### Rule (recursive make): build dependent libraries (libc, libos, ...)
+libs:
+	@for t in $(LIBS); do $(MAKE) -s -C $(NAVY_HOME)/libs/$$t archive; done
+
 ### Rule (link): objects (`*.o`) and libraries (`*.a`) -> `$(APP)`, the final ELF binary to be packed into application (ld)
 $(APP): $(OBJS) libs
 	@echo + LD "->" $(shell realpath $@ --relative-to .)
@@ -135,53 +139,26 @@ $(ARCHIVE): $(OBJS) libs
 
 ### Pull newlib from github if it does not exist
 ifeq ($(wildcard $(NAVY_HOME)/libs/libc/Makefile),)
-  $(shell cd $(NAVY_HOME)/libs && git clone git@github.com:NJU-ProjectN/newlib-navy.git libc)
+  $(shell cd $(NAVY_HOME)/libs && git clone https://github.com/NJU-ProjectN/newlib-navy.git libc)
 endif
 
-.PHONY: app archive libs
 ### Build order control
 app: $(APP)
 archive: $(ARCHIVE)
+.PHONY: app archive libs
 
-### Rule (recursive make): build dependent libraries (libc, libos, ...)
-libs:
-	@for t in $(LIBS); do $(MAKE) -s -C $(NAVY_HOME)/libs/$$t archive; done
-
-.PHONY: install
 ### Install an application to fsimg
 install: app
 	@echo + INSTALL "->" $(NAME)
 	@mkdir -p $(NAVY_HOME)/fsimg/bin
 	@cp $(APP) $(NAVY_HOME)/fsimg/bin/$(NAME)
 
-### Build fsimg and ramdisk for Nanos-lite
-APPS =
-TESTS = dummy hello file-test bmp-test
+.PHONY: install
 
-RAMDISK = build/ramdisk.img
-RAMDISK_H = build/ramdisk.h
-
-.PHONY: ramdisk fsimg
-ramdisk: $(RAMDISK)
-
-fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
-	-for t in $^; do \
-	       	$(MAKE) -s -C $(NAVY_HOME)/$$t install; \
-	done
-
-$(RAMDISK): fsimg
-	$(eval FSIMG_FILES := $(shell find -L ./fsimg -type f))
-	# creates the directory structure for the target file $(RAMDISK).
-	@mkdir -p $(@D)
-	@cat $(FSIMG_FILES) > $@
-	@truncate -s \%512 $@
-	@echo "// file path, file size, offset in disk" > $(RAMDISK_H)
-	@wc -c $(FSIMG_FILES) | grep -v 'total$$' | sed -e 's+ ./fsimg+ +' | awk -v sum=0 '{print "\x7b\x22" $$2 "\x22\x2c " $$1 "\x2c " sum "\x7d\x2c";sum += $$1}' >> $(RAMDISK_H)
-
-.PHONY: clean clean-all $(CLEAN_ALL)
 ### Clean a single project (remove `build/`)
 clean:
 	rm -rf Makefile.html $(WORK_DIR)/build/ build/
+.PHONY: clean
 
 ### Clean all sub-projects within depth 2 (and ignore errors)
 CLEAN_ALL = $(dir $(shell find . -mindepth 2 -maxdepth 3 -name Makefile))
@@ -189,4 +166,25 @@ clean-all: $(CLEAN_ALL) clean
 	-@rm -f $(NAVY_HOME)/fsimg/bin/*
 $(CLEAN_ALL):
 	-@$(MAKE) -s -C $@ clean
+.PHONY: clean-all $(CLEAN_ALL)
 
+### Build fsimg and ramdisk for Nanos-lite
+APPS =
+TESTS = dummy hello
+
+fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
+	-for t in $^; do $(MAKE) -s -C $(NAVY_HOME)/$$t install; done
+
+RAMDISK = build/ramdisk.img
+RAMDISK_H = build/ramdisk.h
+$(RAMDISK): fsimg
+	$(eval FSIMG_FILES := $(shell find -L ./fsimg -type f))
+	@mkdir -p $(@D)
+	@cat $(FSIMG_FILES) > $@
+	@truncate -s \%512 $@
+	@echo "// file path, file size, offset in disk" > $(RAMDISK_H)
+	@wc -c $(FSIMG_FILES) | grep -v 'total$$' | sed -e 's+ ./fsimg+ +' | awk -v sum=0 '{print "\x7b\x22" $$2 "\x22\x2c " $$1 "\x2c " sum "\x7d\x2c";sum += $$1}' >> $(RAMDISK_H)
+
+ramdisk: $(RAMDISK)
+
+.PHONY: fsimg ramdisk
