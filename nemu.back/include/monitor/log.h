@@ -1,7 +1,7 @@
 #ifndef __MONITOR_LOG_H__
 #define __MONITOR_LOG_H__
 
-#include<stdio.h>
+#include<common.h>
 
 #ifdef DEBUG
 extern FILE* log_fp;
