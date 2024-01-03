@@ -1,134 +1,139 @@
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdint.h>
-#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+#include <assert.h>
+#include <string.h>
+
 
 // this should be enough
-uint32_t buf_index = 0;
-static char  buf[65536] = {};
-static char  code_buf[65536 + 128] = {};  // a little larger than `buf`
-static char* code_format = "#include <stdio.h>\n"
-                           "int main() { "
-                           "  unsigned result = %s; "
-                           "  printf(\"%%u\", result); "
-                           "  return 0; "
-                           "}";
+static char buf[65536] = {};
+static char code_buf[65536 + 128] = {}; // a little larger than `buf`
+static char *code_format =
+"#include <stdio.h>\n"
+"int main() { "
+"  unsigned result = %s; "
+"  printf(\"%%u\", result); "
+"  return 0; "
+"}";
 
-uint32_t choose(uint32_t n) {
-    return rand() / ((RAND_MAX + 1u) / n);
+
+#define len 20000
+
+int idx;
+
+uint32_t choose(uint32_t x)
+{
+  return rand()%x;
 }
 
-void gen(char c) {
-    buf[buf_index++] = c;
-    return;
+void gen(int x)
+{
+  buf[idx++]=x;
 }
 
-void gen_num() {
-    uint32_t num = rand();
-    if (num == 0)
-        num++;
+void gen_num()
+{
+  char temp[15];
+  sprintf(temp,"%d",rand());
+  int length=strlen(temp);
+  for(int i = 0;i < length;i++)
+  {
+    buf[idx++]=temp[i];
+  }
+  if(length!=0)
+    buf[idx++]='U';
+}
 
-    sprintf(&buf[buf_index], "%u", num);
-    //sprintf(buf + buf_index, "%u", num);
+void gen_rand_op(void)
+{
+  switch(choose(4))
+  {
+    case 0: buf[idx++]='+';break;
+    case 1: buf[idx++]='-';break;
+    case 2: buf[idx++]='*';break;
+    case 3: buf[idx++]='/';break;
+  }
+}
 
-    while (num) {
-        num /= 10;
-        buf_index++;
+void gra(void)
+{
+  int temp = choose(5);
+  for(int i = 0;i < temp;i++)
+  {
+    buf[idx++]=' ';
+  }
+}
+
+static inline void gen_rand_expr() {
+  if(idx > len)
+    {
+      gen_num();
+      return;
     }
-}
-
-void gen_rand_op() {
-    switch (choose(4)) {
-    case 0:
-        buf[buf_index++] = '+';
-        break;
-    case 1:
-        buf[buf_index++] = '-';
-        break;
-    case 2:
-        buf[buf_index++] = '*';
-        break;
-    default:
-        buf[buf_index++] = '/';
-        break;
-    }
-}
-
-static void gen_rand_expr() {
-    uint32_t space = choose(2);
-    for (int i = 0; i < space; ++i)
-        buf[buf_index++] = ' ';
-
-    switch (choose(3)) {
+  gra();
+  switch (choose(3)) {
     case 0: 
-        gen_num();
-        break;
-    case 1:
-        if (buf_index < 50) {
-            gen('(');
-            gen_rand_expr();
-            gen(')');
-        } else {
-            gen('(');
-            gen_num();
-            gen(')');
-        }
-        break;
-    default:
-        if (buf_index < 50) {
-            gen_rand_expr();
-            gen_rand_op();
-            gen_rand_expr();
-        } else {
-            gen_num();
-            gen_rand_op();
-            gen_num();
-        }
-        break;
-    }
+      gen_num();
+      break;
+    case 1: 
+      gen('('); 
+      gen_rand_expr(); 
+      gen(')');
+      break;
+    default: 
+      gen_rand_expr(); 
+      gen_rand_op();  
+      gen_rand_expr(); 
+      break;
+  }
+    
 }
 
-int main(int argc, char* argv[]) {
-    int seed = time(NULL);
-    srand(seed);
 
-    int loop = 1;
-    if (argc > 1) {
-        sscanf(argv[1], "%d", &loop);
+int main(int argc, char *argv[]) {
+  unsigned seed = time(NULL);
+  srand(seed);
+  int loop = 1;
+  if (argc > 1) {
+    sscanf(argv[1], "%d", &loop);
+  }
+  int i;
+  for (i = 0; i < loop; i ++) {
+    buf[0]='\0';
+    code_buf[0]='\0';
+    idx=0;
+    gen_rand_expr();
+    buf[idx]='\0';
+    
+
+    sprintf(code_buf, code_format, buf);
+
+    FILE *fp = fopen("/tmp/.code.c", "w");
+    assert(fp != NULL);
+    fputs(code_buf, fp);
+    fclose(fp);
+
+    int ret = system("gcc -Werror /tmp/.code.c -o /tmp/.expr");
+    if (ret != 0) continue;
+
+    fp = popen("/tmp/.expr", "r");
+    assert(fp != NULL);
+
+    int result=-1;
+    fscanf(fp, "%u", &result);
+    pclose(fp);
+
+    for(int i = 0;i < strlen(buf);i++)
+    {
+      if(buf[i]=='U')
+        buf[i]=' ';
     }
+    if(result!=-1)
+      printf("%u %s\n", result, buf);
+    else i--;
 
-    for (int i = 0; i < loop; i++) {
-        buf_index = 0;
-        gen_rand_expr();
-        buf[buf_index] = '\0';
 
-        sprintf(code_buf, code_format, buf);
-
-        FILE* fp = fopen("/tmp/.code.c", "w");
-        assert(fp != NULL);
-        fputs(code_buf, fp);
-        fclose(fp);
-
-        // system() using execl("/bin/sh", "sh", "-c", command, (char *)NULL); and returns after the command has benn completed.
-        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-        if (ret != 0)
-            continue;
-
-        // Since a pipe is by definition unidirectional, the type argument may specify only reading or writing, not both.
-        fp = popen("/tmp/.expr", "r");
-        assert(fp != NULL);
-
-        int result;
-        // "r" mode to read the output of the command specifeid in popen().
-        int rc = fscanf(fp, "%d", &result);
-        assert(rc == 1);
-
-        // FILE* returned from popen() must be closed with pclose() not fclose(), which are block buffered by default.
-        pclose(fp);
-
-        printf("%u %s\n", result, buf);
-    }
-    return 0;
+  }
+  return 0;
 }
