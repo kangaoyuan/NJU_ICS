@@ -30,7 +30,7 @@ static inline def_rtl(neg, rtlreg_t* dest, const rtlreg_t* src1) {
 
 static inline def_rtl(sext, rtlreg_t* dest, const rtlreg_t* src1, int width) {
   // dest <- signext(src1[(width * 8 - 1) .. 0])
-  *t0 = (*src1 & (1 << (width*8-1))) - 1;  //求出符号位其余为0然后-1的数
+  // *t0 = (*src1 & (1 << (width*8-1))) - 1;  //求出符号位其余为0然后-1的数
   /* rtl_not(s,t0,t0); //取反与src1或
   *t1 = s->isa.is_operand_size_16 ? 0xffff: 0xffffffff ;
   rtl_and(s,t0,t0,t1);
