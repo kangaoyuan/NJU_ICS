@@ -274,21 +274,21 @@ static uint8_t* recv_packet(FILE *in, size_t *ret_size, bool* ret_sum_ok) {
     errx(1, "recv: Unknown connection error");
 }
 
-uint8_t* gdb_recv(struct gdb_conn* conn, size_t* size) {
-    uint8_t* reply;
-    bool     acked = false;
-    do {
-        reply = recv_packet(conn->in, size, &acked);
+uint8_t* gdb_recv(struct gdb_conn *conn, size_t *size) {
+  uint8_t *reply;
+  bool acked = false;
+  do {
+    reply = recv_packet(conn->in, size, &acked);
 
-        if (!conn->ack)
-            break;
+    if (!conn->ack)
+      break;
 
-        // send +/- depending on checksum result, retry if needed
-        fputc(acked ? '+' : '-', conn->out);
-        fflush(conn->out);
-    } while (!acked);
+    // send +/- depending on checksum result, retry if needed
+    fputc(acked ? '+' : '-', conn->out);
+    fflush(conn->out);
+  } while (!acked);
 
-    return reply;
+  return reply;
 }
 
 const char* gdb_start_noack(struct gdb_conn *conn) {

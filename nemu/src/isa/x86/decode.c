@@ -30,33 +30,31 @@ static inline void load_addr(DecodeExecState *s, ModR_M *m, Operand *rm) {
 
   sword_t disp = 0;
   int disp_size = 4;
-  int base_reg = -1, index_reg = -1, scale = 0; // SIB
+  int base_reg = -1, index_reg = -1, scale = 0;
 
   if (m->R_M == R_ESP) {
     SIB sib;
     sib.val = instr_fetch(&s->seq_pc, 1);
-
     base_reg = sib.base;
     scale = sib.ss;
+
     if (sib.index != R_ESP) { index_reg = sib.index; }
   }
   else {
-    base_reg = m->R_M; // no SIB 
+    /* no SIB */
+    base_reg = m->R_M;
   }
 
   if (m->mod == 0) {
     if (base_reg == R_EBP) { base_reg = -1; }
     else { disp_size = 0; }
   }
-  else if (m->mod == 1) { 
-      disp_size = 1; 
-  }
+  else if (m->mod == 1) { disp_size = 1; }
 
   if (disp_size != 0) {
     /* has disp */
     disp = instr_fetch(&s->seq_pc, disp_size);
-    if (disp_size == 1)  
-        disp = (int8_t)disp; 
+    if (disp_size == 1) { disp = (int8_t)disp; }
   }
 
   s->isa.mbase = (base_reg != -1 ? &reg_l(base_reg) : rz);
@@ -99,20 +97,15 @@ static inline void load_addr(DecodeExecState *s, ModR_M *m, Operand *rm) {
   rm->type = OP_TYPE_MEM;
 }
 
-void read_ModR_M(DecodeExecState* s,
-                 Operand* rm, bool load_rm_val,
-                 Operand* reg, bool load_reg_val) {
-    ModR_M m;
-    m.val = instr_fetch(&s->seq_pc, 1);
-    s->isa.ext_opcode = m.opcode;
-    if (reg != NULL)
-        operand_reg(s, reg, load_reg_val, m.reg, reg->width);
-    if (m.mod == 3) {
-        operand_reg(s, rm, load_rm_val, m.R_M, rm->width);
-    } else {
-        load_addr(s, &m, rm);
-        rm->preg = &rm->val;
-        if (load_rm_val)
-            rtl_lm(s, &rm->val, s->isa.mbase, s->isa.moff, rm->width);
-    }
+void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val) {
+  ModR_M m;
+  m.val = instr_fetch(&s->seq_pc, 1);
+  s->isa.ext_opcode = m.opcode;
+  if (reg != NULL) operand_reg(s, reg, load_reg_val, m.reg, reg->width);
+  if (m.mod == 3) operand_reg(s, rm, load_rm_val, m.R_M, rm->width);
+  else {
+    load_addr(s, &m, rm);
+    if (load_rm_val) rtl_lm(s, &rm->val, s->isa.mbase, s->isa.moff, rm->width);
+    rm->preg = &rm->val;
+  }
 }

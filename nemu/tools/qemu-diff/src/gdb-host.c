@@ -90,12 +90,12 @@ bool gdb_setregs(union isa_gdb_regs *r) {
 }
 
 bool gdb_si() {
-    char buf[] = "vCont;s:1";
-    gdb_send(conn, (const uint8_t*)buf, strlen(buf));
-    size_t   size;
-    uint8_t* reply = gdb_recv(conn, &size);
-    free(reply);
-    return true;
+  char buf[] = "vCont;s:1";
+  gdb_send(conn, (const uint8_t *)buf, strlen(buf));
+  size_t size;
+  uint8_t *reply = gdb_recv(conn, &size);
+  free(reply);
+  return true;
 }
 
 void gdb_exit() {
