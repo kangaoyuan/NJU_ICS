@@ -1,7 +1,5 @@
 NAME = nemu
 
-MAKEFLAGS += -j 8
-
 ISA ?= x86
 ISAS = $(shell ls src/isa/)
 ifeq ($(filter $(ISAS), $(ISA)), ) # ISA must be valid
@@ -57,7 +55,7 @@ endif
 OBJ_DIR ?= $(BUILD_DIR)/obj-$(ISA)-$(ENGINE)$(SO)
 BINARY ?= $(BUILD_DIR)/$(ISA)-$(NAME)-$(ENGINE)$(SO)
 
-include Makefile.git
+-include Makefile.git
 
 .DEFAULT_GOAL = app
 
@@ -73,9 +71,11 @@ CFLAGS   += -O2 -MMD -Wall -Werror -ggdb3 $(INCLUDES) \
 SRCS = $(shell find src/ -name "*.c" | grep -v "isa\|engine")
 SRCS += $(shell find src/isa/$(ISA) -name "*.c")
 SRCS += $(shell find src/engine/$(ENGINE) -name "*.c")
+# pattern substitution $(var:pattern=substitution)
 OBJS = $(SRCS:src/%.c=$(OBJ_DIR)/%.o)
 
 # Compilation patterns
+# If the first rule in your Makefile is a pattern rule, it won't be used as the default rule. Instead, the first non-pattern rule will become the default.
 $(OBJ_DIR)/%.o: src/%.c
 	@echo + CC $<
 	@mkdir -p $(dir $@)
@@ -88,13 +88,16 @@ $(OBJ_DIR)/%.o: src/%.c
 # Some convenient rules
 
 .PHONY: app run gdb clean run-env $(DIFF_REF_SO)
-app: $(BINARY)
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += --diff=$(DIFF_REF_SO)
 
 # Command to execute NEMU
+ifdef TEST
+IMG := $(addprefix /home/gaoyuankan/2020/am-kernels/tests/cpu-tests/build/, $(addsuffix -nemu.bin, $(TEST)-$(ISA)))
+else
 IMG :=
+endif
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 
 $(BINARY): $(OBJS)
@@ -102,7 +105,12 @@ $(BINARY): $(OBJS)
 	@echo + LD $@
 	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
 
+app: $(BINARY)
+
 run-env: $(BINARY) $(DIFF_REF_SO)
+
+$(DIFF_REF_SO):
+	$(MAKE) -C $(DIFF_REF_PATH) $(MKFLAGS)
 
 run: run-env
 	$(call git_commit, "run")
@@ -112,16 +120,9 @@ gdb: run-env
 	$(call git_commit, "gdb")
 	gdb -s $(BINARY) --args $(NEMU_EXEC)
 
-$(DIFF_REF_SO):
-	$(MAKE) -C $(DIFF_REF_PATH) $(MKFLAGS)
 
 clean:
 	-rm -rf $(BUILD_DIR)
 	$(MAKE) -C tools/gen-expr clean
 	$(MAKE) -C tools/qemu-diff clean
 	$(MAKE) -C tools/kvm-diff clean
-
-
-
-
-
