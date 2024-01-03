@@ -56,9 +56,9 @@ typedef struct {
 	};
 
 	struct{
-		uint32_t base;
-		uint16_t limit;
-	}gdtr;
+		uint32_t gdtrbase;
+		uint16_t gdtrlimit;
+	};
 
 	uint32_t CR0;
 	uint32_t CR3;
