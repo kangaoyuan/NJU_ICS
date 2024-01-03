@@ -69,9 +69,8 @@ static int cmd_x(char* args) {
         return 0;
     }
 
-    char* token;
     int64_t n = -1;
-    token = strtok(args, " ");
+    char* token = strtok(args, " ");
     int rc = sscanf(token, "%ld", &n);
     if (rc != 1 || n < 0) {
         printf("Invalid arg, (nemu) x command args error: \e[0;31m%s\e[0m\n", args);
@@ -87,11 +86,11 @@ static int cmd_x(char* args) {
     }
 
     bool success;
-    uint32_t val = expr(token, &success);
+    uint32_t addr_val = expr(token, &success);
     assert(success == true);
     for (int i = 0; i < n; i++) {
-        word_t content = vaddr_read(val + i * 4, 4);
-        printf("addr:0x%08x%*sval:0x%08x%*s%d\n", val + i * 4, 4, "",
+        word_t content = vaddr_read(addr_val + i * 4, 4);
+        printf("addr:0x%08x%*sval:0x%08x%*s%d\n", addr_val + i * 4, 4, "",
                content, 4, "", content);
     }
     return 0;

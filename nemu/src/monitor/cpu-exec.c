@@ -88,14 +88,16 @@ void cpu_exec(uint64_t n) {
     uint64_t timer_start = get_time();
 
     for (; n > 0; n--) {
-        vaddr_t this_pc = cpu.pc;
+        __attribute__((unused)) vaddr_t this_pc = cpu.pc;
 
         /* Execute one instruction, including instruction fetch,
          * instruction decode, and the actual execution. */
         __attribute__((unused)) vaddr_t seq_pc = isa_exec_once();
         g_nr_guest_instr++;
 
+#ifdef DIFF_TEST
         difftest_step(this_pc, cpu.pc);
+#endif
 
 #ifdef DEBUG
         asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
