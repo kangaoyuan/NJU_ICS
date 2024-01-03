@@ -24,8 +24,6 @@ void add_mmio_map(char *name, paddr_t addr, uint8_t* space, int len, io_callback
 word_t map_read(paddr_t addr, int len, IOMap *map);
 void map_write(paddr_t addr, word_t data, int len, IOMap *map);
 
-
-
 static inline bool map_inside(IOMap* map, paddr_t addr) {
     return (map->low <= addr && addr <= map->high);
 }

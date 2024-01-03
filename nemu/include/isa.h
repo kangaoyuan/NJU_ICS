@@ -25,18 +25,12 @@ word_t isa_reg_str2val(const char *name, bool *success);
 vaddr_t isa_exec_once();
 
 // memory
-enum
-{
-  MEM_TYPE_IFETCH,
-  MEM_TYPE_READ,
-  MEM_TYPE_WRITE
-};
-enum
-{
-  MEM_RET_OK,
-  MEM_RET_NEED_TRANSLATE,
-  MEM_RET_FAIL,
-  MEM_RET_CROSS_PAGE
+enum { MEM_TYPE_IFETCH, MEM_TYPE_READ, MEM_TYPE_WRITE };
+enum {
+    MEM_RET_OK,
+    MEM_RET_NEED_TRANSLATE,
+    MEM_RET_FAIL,
+    MEM_RET_CROSS_PAGE
 };
 paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len);
 #ifndef isa_vaddr_check
