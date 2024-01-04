@@ -73,12 +73,12 @@ void raise_intr(DecodeExecState *s, uint32_t NO, vaddr_t ret_addr)
 
 void query_intr(DecodeExecState *s)
 {
-  assert(cpu.INTR == 0 || cpu.INTR == 1);
+  /*assert(cpu.INTR == 0 || cpu.INTR == 1);
   if (cpu.INTR == 1 && cpu.eflags.IF == 1)
   {
     assert(cpu.INTR == 1);
     cpu.INTR = false;
     raise_intr(s, 32, cpu.pc);
     update_pc(s);
-  }
+  }*/
 }
