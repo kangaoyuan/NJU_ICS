@@ -58,107 +58,72 @@ static inline def_rtl(pop, rtlreg_t* dest) {
     rtl_addi(s, &reg_l(R_ESP), &reg_l(R_ESP), 4);
 }
 
-static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
-    const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
-  // dest <- is_overflow(src1 - src2)
-  rtl_msb(s,t0,src1,width);
-  rtl_msb(s,t1,src2,width);
-  rtl_msb(s,dest,res,width);
-  if(*t0 != *t1 && *t0 != *dest)
-    *dest = 1;
-  else *dest = 0;
+static inline def_rtl(is_add_overflow, rtlreg_t* dest, const rtlreg_t* res,
+                      const rtlreg_t* src1, const rtlreg_t* src2,
+                      int width) {
+    // dest <- is_overflow(src1 + src2)
+    rtl_msb(s, t0, src1, width);
+    rtl_msb(s, t1, src2, width);
+    rtl_msb(s, dest, res, width);
+    if (*t0 == *t1 && *dest != *t1)
+        *dest = true;
+    else
+        *dest = true;
 }
 
-static inline def_rtl(is_sub_carry, rtlreg_t* dest,
-    const rtlreg_t* src1, const rtlreg_t* src2) {
-  // dest <- is_carry(src1 - src2)
-  if(id_dest->width == 1)
-  {
-    if( (uint8_t)*src1 <  (uint8_t) *src2)
-      *dest = 1;
-    else *dest = 0;
-  }
-  else if(s->isa.is_operand_size_16)
-  {
-    if( (uint16_t)*src1 <  (uint16_t) *src2)
-      *dest = 1;
-    else *dest = 0;
-  }
-  else {
-    if( (uint32_t) *src1  < (uint32_t) *src2)
-      *dest = 1;
-    else *dest = 0;
-  }
-
-}//There maybe a problem in CF
-
-static inline def_rtl(is_add_overflow, rtlreg_t* dest,
-    const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
-  // dest <- is_overflow(src1 + src2)
-  rtl_msb(s,t0,src1,width);
-  rtl_msb(s,t1,src2,width);
-  rtl_msb(s,dest,res,width);
-  if(*t0 == *t1 && *dest != *t1)
-    *dest = 1;
-  else *dest = 0;
+static inline def_rtl(is_sub_overflow, rtlreg_t* dest, const rtlreg_t* res,
+                      const rtlreg_t* src1, const rtlreg_t* src2,
+                      int width) {
+    // dest <- is_overflow(src1 - src2)
+    rtl_msb(s, t0, src1, width);
+    rtl_msb(s, t1, src2, width);
+    rtl_msb(s, dest, res, width);
+    if (*t0 != *t1 && *dest != *t1)
+        *dest = true;
+    else
+        *dest = false;
 }
 
-static inline def_rtl(is_add_carry, rtlreg_t* dest,
-    const rtlreg_t* res, const rtlreg_t* src1) {
-  // dest <- is_carry(src1 + src2)
-  //TODO();
-  if(id_dest->width == 1)
-  {
-    if((uint8_t)*res < (uint8_t)*src1)
-      *dest = 1;
-    else *dest = 0;
-  }else if(s->isa.is_operand_size_16)
-  {
-    if( (uint16_t)*res < (uint16_t)*src1 )
-      *dest = 1;
-    else *dest = 0;
-  }
-  else{
-    if( (uint32_t)*res < (uint32_t)*src1 )
-      *dest = 1;
-    else *dest = 0;
-  }
+static inline def_rtl(is_add_carry, rtlreg_t* dest, const rtlreg_t* res,
+                      const rtlreg_t* src1) {
+    // dest <- is_carry(src1 + src2)
+    rtl_setrelop(s, RELOP_LTU, dest, res, src1);
 }
 
-#define def_rtl_setget_eflags(f) \
-  static inline def_rtl(concat(set_, f), const rtlreg_t* src) { \
-  cpu.eflags.f = *src; \
-  } \
-  static inline def_rtl(concat(get_, f), rtlreg_t* dest) { \
-  *dest = cpu.eflags.f; \
-  }
+static inline def_rtl(is_sub_carry, rtlreg_t* dest, const rtlreg_t* src1,
+                      const rtlreg_t* src2) {
+    // dest <- is_carry(src1 - src2)
+    rtl_setrelop(s, RELOP_LTU, dest, src1, src1);
+}
+
+#define def_rtl_setget_eflags(f)                                        \
+    static inline def_rtl(concat(set_, f), const rtlreg_t* src) {       \
+        cpu.eflags.f = *src;                                            \
+    }                                                                   \
+    static inline def_rtl(concat(get_, f), rtlreg_t* dest) {            \
+        *dest = cpu.eflags.f;                                           \
+    }
 
 def_rtl_setget_eflags(CF)
 def_rtl_setget_eflags(OF)
-def_rtl_setget_eflags(ZF)
+def_rtl_setget_eflags(ZF) 
 def_rtl_setget_eflags(SF)
 
 static inline def_rtl(update_ZF, const rtlreg_t* result, int width) {
-  // eflags.ZF <- is_zero(result[width * 8 - 1 .. 0])
-  switch (width)
-  {
-  case 1:*t1 = 0xff; break;
-  case 2:*t1 = 0xffff; break;
-  case 4:*t1 = 0xffffffff; break;
-  }
-  rtl_and(s,t0,result,t1);
-  cpu.eflags.ZF = *t0 == 0;
+    // eflags.ZF <- is_zero(result[width * 8 - 1 .. 0])
+    rtl_setrelopi(s, RELOP_EQ, t0, result, 0);
+    rtl_set_ZF(s, t0);
 }
 
 static inline def_rtl(update_SF, const rtlreg_t* result, int width) {
-  // eflags.SF <- is_sign(result[width * 8 - 1 .. 0])
-  rtl_msb(s,t0,result,width);
-  cpu.eflags.SF = *t0 == 1;
+    // eflags.SF <- is_sign(result[width * 8 - 1 .. 0])
+    rtl_msb(s, t0, result, width);
+    rtl_set_SF(s, t0);
 }
 
 static inline def_rtl(update_ZFSF, const rtlreg_t* result, int width) {
-  rtl_update_ZF(s, result, width);
-  rtl_update_SF(s, result, width);
+    rtl_update_ZF(s, result, width);
+    rtl_update_SF(s, result, width);
 }
 
 #endif
