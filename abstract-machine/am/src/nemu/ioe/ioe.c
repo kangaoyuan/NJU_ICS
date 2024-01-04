@@ -59,11 +59,9 @@ bool ioe_init() {
         if (!lut[i])
             lut[i] = fail;
     }
-    putstr("locating bug 2\n");
     __am_gpu_init();
     __am_timer_init();
     __am_audio_init();
-    putstr("locating bug 3\n");
     return true;
 }
 
