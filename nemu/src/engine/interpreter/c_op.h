@@ -3,7 +3,11 @@
 
 #include <common.h>
 
+#ifdef ISA64  
+#define c_shift_mask 0x3f
+#else
 #define c_shift_mask 0x1f
+#endif
 
 #define c_add(a, b) ((a) + (b))
 #define c_sub(a, b) ((a) - (b))
