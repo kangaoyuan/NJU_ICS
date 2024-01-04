@@ -7,77 +7,56 @@
 /* RTL pseudo instructions */
 
 static inline def_rtl(lr, rtlreg_t* dest, int r, int width) {
-  switch (width) {
-    case 4: rtl_mv(s, dest, &reg_l(r)); return;
-    case 1: rtl_host_lm(s, dest, &reg_b(r), 1); return;
-    case 2: rtl_host_lm(s, dest, &reg_w(r), 2); return;
-    default: assert(0);
-  }
+    switch (width) {
+    case 4:
+        //rtl_mv(s, dest, &reg_l(r));
+        rtl_host_lm(s, dest, &reg_l(r), 4);
+        return;
+    case 1:
+        rtl_host_lm(s, dest, &reg_b(r), 1);
+        return;
+    case 2:
+        rtl_host_lm(s, dest, &reg_w(r), 2);
+        return;
+    default:
+        assert(0);
+    }
 }
 
 static inline def_rtl(sr, int r, const rtlreg_t* src1, int width) {
-  switch (width) {
-    case 4: rtl_mv(s, &reg_l(r), src1); return;
-    case 1: rtl_host_sm(s, &reg_b(r), src1, 1); return;
-    case 2: rtl_host_sm(s, &reg_w(r), src1, 2); return;
-    default: assert(0);
-  }
+    switch (width) {
+    case 4:
+        //rtl_mv(s, &reg_l(r), src1);
+        rtl_host_sm(s, &reg_l(r), src1, 4);
+        return;
+    case 1:
+        rtl_host_sm(s, &reg_b(r), src1, 1);
+        return;
+    case 2:
+        rtl_host_sm(s, &reg_w(r), src1, 2);
+        return;
+    default:
+        assert(0);
+    }
 }
 
 static inline def_rtl(push, const rtlreg_t* src1) {
-  // esp <- esp - 4
-  // M[esp] <- src1
-  /* if(s->isa.is_operand_size_16 )
-  {
-    cpu.esp-=2;
-    rtl_sm(s,&cpu.esp,0,src1,2);
-  }
-  else {
-    if(src1 == &cpu.esp)
-    {
-      rtl_sm(s,&cpu.esp,-4,src1,4);
-      cpu.esp-=4;
-    }
-    else{
-      cpu.esp-=4;
-      rtl_sm(s,&cpu.esp,0,src1,4);
-    }
-    
-  } */
-  /* if(s->isa.is_operand_size_16) 
-  {
-    printf("push 16 operand\n pc = %x,data = %x\n",cpu.pc,*src1);
-    assert(0);
-  } */
-  if(src1 == &cpu.esp)
-    {
-      rtl_sm(s,&cpu.esp,-4,src1,4);
-      cpu.esp-=4;
-    }
-    else{
-      cpu.esp-=4;
-      rtl_sm(s,&cpu.esp,0,src1,4);
-    }
-  //printf("pc = %x push %x esp %x\n",cpu.pc,*src1,cpu.esp+4);
+    // esp <- esp - 4
+    // M[esp] <- src1
+    // However, if directly implementing above sequence will cause esp bug.
+    /*rtl_subi(s,&reg_l(R_ESP), &reg_l(R_ESP), 4);
+    rtl_sm(s, &reg_l(R_ESP), 0, src1, 4);*/
+    // Here not directly use rtl_sm() function, because offset is unsigned.
+    vaddr_write(reg_l(R_ESP) - 4, *src1, 4);
+    rtl_subi(s, &reg_l(R_ESP), &reg_l(R_ESP), 4);
 }
 
 static inline def_rtl(pop, rtlreg_t* dest) {
-  if(s->isa.is_operand_size_16)
-  {
-    rtl_lm(s,dest,&cpu.esp,0,2);
-    cpu.esp+=2;
-  }
-  else {
-    rtl_lm(s,dest,&cpu.esp,0,4);
-    cpu.esp+=4;
-  }
-  //printf("pc = %x pop %x esp %x\n",cpu.pc,*dest,cpu.esp-4);
-  // dest <- M[esp]
-  // esp <- esp + 4
-  //TODO();
-} 
-
-
+    // dest <- M[esp] 
+    // esp  <- esp + 4
+    rtl_lm(s, dest, &reg_l(R_ESP), 0, 4);
+    rtl_addi(s, &reg_l(R_ESP), &reg_l(R_ESP), 4);
+}
 
 static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
     const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {

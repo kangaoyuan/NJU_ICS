@@ -14,9 +14,7 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
   flag[6]=difftest_check_reg("esi",pc,ref_r->esi,cpu.esi);
   flag[7]=difftest_check_reg("edi",pc,ref_r->edi,cpu.edi);
   flag[8]=difftest_check_reg("pc",pc,ref_r->pc,cpu.pc);
-  //flag[9]=difftest_check_reg("eflags",pc,ref_r->eflags.eflags_value,cpu.eflags.eflags_value);
-  if((cpu.eflags.eflags_value&ref_r->eflags.eflags_value) == cpu.eflags.eflags_value)
-    return true;
+  flag[9]=difftest_check_reg("eflags",pc,ref_r->eflags.eflags_value,cpu.eflags.eflags_value);
   /* if(ref_r->eflags.CF == cpu.eflags.CF&&ref_r->eflags.ZF == cpu.eflags.ZF
     &&ref_r->eflags.SF == cpu.eflags.SF&&ref_r->eflags.OF == cpu.eflags.OF
     &&ref_r->eflags.IF == cpu.eflags.IF)
@@ -29,9 +27,9 @@ bool isa_difftest_checkregs(CPU_state *ref_r, vaddr_t pc) {
     if(ref_r->eflags.SF != cpu.eflags.SF) Log("eflags F wrong = %d\n",cpu.eflags.SF);
     if(ref_r->eflags.IF != cpu.eflags.IF) Log("eflags F wrong = %d\n",cpu.eflags.IF);
   } */
-  for(int i = 0;i < 9;i++)
-  {
-    if(!flag[i]) return false;
+  for (int i = 0; i < 9; i++) {
+      if (!flag[i])
+          return false;
   }
   return true;
 }
