@@ -31,47 +31,46 @@ void difftest_setregs(const void *r) {
 }
 
 void difftest_exec(uint64_t n) {
-  while (n --) gdb_si();
+    while (n--)
+        gdb_si();
 }
 
 void difftest_init(int port) {
-  char buf[32];
-  sprintf(buf, "tcp::%d", port);
+    char buf[32];
+    sprintf(buf, "tcp::%d", port);
 
-  int ppid_before_fork = getpid();
-  int pid = fork();
-  if (pid == -1) {
-    perror("fork");
-    assert(0);
-  }
-  else if (pid == 0) {
-    // child
+    int ppid_before_fork = getpid();
+    int pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        assert(0);
+    } else if (pid == 0) {
+        // child
+        // install a parent death signal in the chlid
+        int r = prctl(PR_SET_PDEATHSIG, SIGTERM);
+        if (r == -1) {
+            perror("prctl error");
+            assert(0);
+        }
 
-    // install a parent death signal in the chlid
-    int r = prctl(PR_SET_PDEATHSIG, SIGTERM);
-    if (r == -1) {
-      perror("prctl error");
-      assert(0);
+        if (getppid() != ppid_before_fork) {
+            printf("parent has died!\n");
+            assert(0);
+        }
+
+        close(STDIN_FILENO);
+        execlp(ISA_QEMU_BIN, ISA_QEMU_BIN, ISA_QEMU_ARGS "-S", "-gdb", buf,
+               "-nographic", NULL);
+        perror("exec");
+        assert(0);
+    } else {
+        // father
+
+        gdb_connect_qemu(port);
+        printf("Connect to QEMU with %s successfully\n", buf);
+
+        atexit(gdb_exit);
+
+        init_isa();
     }
-
-    if (getppid() != ppid_before_fork) {
-      printf("parent has died!\n");
-      assert(0);
-    }
-
-    close(STDIN_FILENO);
-    execlp(ISA_QEMU_BIN, ISA_QEMU_BIN, ISA_QEMU_ARGS "-S", "-gdb", buf, "-nographic", NULL);
-    perror("exec");
-    assert(0);
-  }
-  else {
-    // father
-
-    gdb_connect_qemu(port);
-    printf("Connect to QEMU with %s tcpsuccessfully\n", buf);
-
-    atexit(gdb_exit);
-
-    init_isa();
-  }
 }
