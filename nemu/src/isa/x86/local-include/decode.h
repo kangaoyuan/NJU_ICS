@@ -3,6 +3,33 @@
 
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
+/* I386 manual does not contain this abbreviation.
+ * We decode everything of modR/M byte in one time.
+ */
+/* Eb, Ew, Ev
+ * Gb, Gv
+ * Cd,
+ * M
+ * Rd
+ * Sw
+ */
+static inline void operand_rm(DecodeExecState* s, Operand* rm,
+                              bool load_rm_val, Operand* reg,
+                              bool load_reg_val) {
+    read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
+}
+
+static inline void operand_imm(DecodeExecState* s, Operand* op,
+                               bool load_val, word_t imm, int width) {
+    op->type = OP_TYPE_IMM;
+    op->imm = imm;
+    if (load_val) {
+        op->preg = &op->val;
+        rtl_li(s, &op->val, imm);
+    }
+    print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
+}
+
 static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
   op->type = OP_TYPE_REG;
   op->reg = r;
@@ -16,16 +43,6 @@ static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, i
   }
 
   print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
-}
-
-static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, word_t imm, int width) {
-  op->type = OP_TYPE_IMM;
-  op->imm = imm;
-  if (load_val) {
-    rtl_li(s, &op->val, imm);
-    op->preg = &op->val;
-  }
-  print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
 }
 
 // decode operand helper
@@ -86,20 +103,6 @@ static inline def_DopHelper(a) {
 static inline def_DopHelper(r) {
   operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
-
-/* I386 manual does not contain this abbreviation.
- * We decode everything of modR/M byte in one time.
- */
-/* Eb, Ew, Ev
- * Gb, Gv
- * Cd,
- * M
- * Rd
- * Sw
- */
-static inline void operand_rm(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val) {
-  read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
-}//取出r/m中的数据
 
 /* Ob, Ov */
 static inline def_DopHelper(O) {
