@@ -76,8 +76,8 @@ static inline word_t vaddr_ifetch(vaddr_t addr, int len) {
     }
 }
 
-#define PAGE_SIZE         4096
-#define PAGE_MASK         (PAGE_SIZE - 1)
+#define PAGE_SIZE 4096
+#define PAGE_MASK (PAGE_SIZE - 1)
 #define PG_ALIGN __attribute((aligned(PAGE_SIZE)))
 
 #endif

@@ -1,11 +1,11 @@
 #ifndef __MONITOR_LOG_H__
 #define __MONITOR_LOG_H__
 
-#include <common.h>
+#include<common.h>
 
 #ifdef DEBUG
 extern FILE* log_fp;
-#	define log_write(...) \
+#define log_write(...) \
   do { \
     extern bool log_enable(); \
     if (log_fp != NULL && log_enable()) { \
@@ -14,7 +14,7 @@ extern FILE* log_fp;
     } \
   } while (0)
 #else
-#	define log_write(...)
+#define log_write(...)
 #endif
 
 #define _Log(...) \
