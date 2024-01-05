@@ -238,8 +238,9 @@ static inline def_DHelper(gp2_1_E) {
 static inline def_DHelper(gp2_cl2E) {
   operand_rm(s, id_dest, true, NULL, false);
   // shift instructions will eventually use the lower
-  // 5 bits of %cl, therefore it is OK to load %ecx
-  operand_reg(s, id_src1, true, R_CL, 4);
+  // 5 bits of %cl, therefore it is OK to load %cx, which
+  // must use R_CL and 1 as width to accelerate the process of decode.
+  operand_reg(s, id_src1, true, R_CL, 1);
 }
 
 static inline def_DHelper(gp2_Ib2E) {
@@ -264,7 +265,7 @@ static inline def_DHelper(cl_G2E) {
     operand_rm(s, id_dest, true, id_src2, true);
     // shift instructions will eventually use the lower
     // 5 bits of %cl, therefore it is OK to load %ecx
-    operand_reg(s, id_src1, true, R_CL, 4);
+    operand_reg(s, id_src1, true, R_CL, 1);
 }
 
 static inline def_DHelper(O2a) {
