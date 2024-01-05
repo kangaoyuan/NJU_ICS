@@ -1,11 +1,14 @@
-#include<rtl/rtl.h>
-
 #ifndef __RTL_PSEUDO_H__
 #define __RTL_PSEUDO_H__
 
 #ifndef __RTL_RTL_H__
 #error "Should be only included by <rtl/rtl.h>"
 #endif
+
+#include<rtl/rtl_.h>
+#include<rtl-basic.h>
+#include<cpu/decode.h>
+
 
 /* RTL pseudo instructions */
 

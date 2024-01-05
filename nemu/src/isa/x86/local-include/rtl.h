@@ -62,10 +62,10 @@ static inline def_rtl(is_add_overflow, rtlreg_t* dest, const rtlreg_t* res,
                       const rtlreg_t* src1, const rtlreg_t* src2,
                       int width) {
     // dest <- is_overflow(src1 + src2)
-    rtl_msb(s, t0, src1, width);
-    rtl_msb(s, t1, src2, width);
-    rtl_msb(s, dest, res, width);
-    if (*t0 == *t1 && *dest != *t0)
+    rtlreg_t tmp0 = *src1 >> (width * 8 - 1) & 1;
+    rtlreg_t tmp1 = *src2 >> (width * 8 - 1) & 1;
+    rtlreg_t result = *res >> (width * 8 - 1) & 1;
+    if (tmp0 == tmp1 && result != tmp0)
         *dest = true;
     else
         *dest = false;
@@ -75,10 +75,10 @@ static inline def_rtl(is_sub_overflow, rtlreg_t* dest, const rtlreg_t* res,
                       const rtlreg_t* src1, const rtlreg_t* src2,
                       int width) {
     // dest <- is_overflow(src1 - src2)
-    rtl_msb(s, t0, src1, width);
-    rtl_msb(s, t1, src2, width);
-    rtl_msb(s, dest, res, width);
-    if (*t0 != *t1 && *dest != *t0)
+    rtlreg_t tmp0 = *src1 >> (width * 8 - 1) & 1;
+    rtlreg_t tmp1 = *src2 >> (width * 8 - 1) & 1;
+    rtlreg_t result = *res >> (width * 8 - 1) & 1;
+    if (tmp0 == tmp1 && result != tmp0)
         *dest = true;
     else
         *dest = false;

@@ -1,3 +1,6 @@
+#ifndef __X86_DECODE_H__
+#define __X86_DECODE_H__
+
 #include <cpu/exec.h>
 #include "rtl.h"
 
@@ -327,3 +330,5 @@ static inline void operand_write(DecodeExecState* s, Operand* op,
         assert(0);
     }
 }
+
+#endif

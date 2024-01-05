@@ -2,6 +2,7 @@
 #define __C_OP_H__
 
 #include <common.h>
+#include <rtl/rtl_.h>
 
 #ifdef ISA64  
 #define c_shift_mask 0x3f
