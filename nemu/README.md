@@ -2,7 +2,7 @@
 
 NEMU(NJU Emulator) is a simple but complete full-system emulator designed for teaching purpose.
 Currently it supports x86, mips32, and riscv32.
-To build programs run above NEMU, refer to the [AM project](https://github.com/NJU-ProjectN/abstract-machine).
+To build programs run above NEMU, refer to the [AM project](git@github.com:NJU-ProjectN/abstract-machine).
 
 The main features of NEMU include
 * a small monitor with a simple debugger
