@@ -1,8 +1,8 @@
 #include <am.h>
 #include <klib-macros.h>
 
-void __am_timer_init();
 void __am_gpu_init();
+void __am_timer_init();
 void __am_audio_init();
 void __am_input_keybrd(AM_INPUT_KEYBRD_T *);
 void __am_timer_rtc(AM_TIMER_RTC_T *);
@@ -59,11 +59,9 @@ bool ioe_init() {
         if (!lut[i])
             lut[i] = fail;
     }
-    putstr("before\n");
     __am_gpu_init();
     __am_timer_init();
     __am_audio_init();
-    putstr("after\n");
     return true;
 }
 
