@@ -18,7 +18,6 @@
 #define EX(idx, ex)           EXW(idx, ex, 0)
 #define EMPTY(idx)            EX(idx, inv)
 
-
 static inline uint32_t instr_fetch(vaddr_t *pc, int len) {
     uint32_t instr = vaddr_ifetch(*pc, len);
 #ifdef DEBUG

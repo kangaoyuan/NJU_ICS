@@ -20,12 +20,12 @@ typedef struct {
 } Operand;
 
 typedef struct {
+    int           width;
     uint32_t      opcode;
-    vaddr_t       seq_pc;  // sequential pc
     uint32_t      is_jmp;
     vaddr_t       jmp_pc;
+    vaddr_t       seq_pc;  // sequential pc
     Operand       src1, dest, src2;
-    int           width;
     rtlreg_t      tmp_reg[5];
     ISADecodeInfo isa;
 } DecodeExecState;
