@@ -1,6 +1,6 @@
 #include <common.h>
-#include <sys/time.h>
 #include <signal.h>
+#include <sys/time.h>
 
 #define TIMER_HZ 60
 #define MAX_HANDLER 8
@@ -27,14 +27,11 @@ static void alarm_sig_handler(int signum) {
 void init_alarm() {
     /* The sigaction() system call is used to change the action taken by a
      * process on receipt of a specific signal. */
-    // Two can't be signalaction processing signal are SIGKILL and SIGSTOP
-    // struct sigaction's sa_handler field specifies the action to associated signum with SIG_DFL, SIG_IGN or A pointer to a signal handling function.
-    // sa_mask field in struct sigaction specifies a mask of signals which should be blocked during execution of the sa_hangdler. Additionaly, the signal which triggered the handler self will be blocked.
     struct sigaction s;
     memset(&s, 0, sizeof(s));
     s.sa_handler = alarm_sig_handler;
     int ret = sigaction(SIGVTALRM, &s, NULL);
-    Assert(ret == 0, "Can not set signal handler");
+    Assert(ret == 0, "Can not set alarm signal handler");
 
     struct itimerval it = {};
     it.it_value.tv_sec = 0;
