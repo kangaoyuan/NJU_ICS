@@ -4,8 +4,8 @@
 #pragma GCC diagnostic ignored "-Wunused-function"
 #include <isa.h>
 #include <rtl/rtl.h>
-#include <memory/vaddr.h>
 #include <cpu/decode.h>
+#include <memory/vaddr.h>
 
 #define def_EHelper(name) void concat(exec_, name) (DecodeExecState *s)
 // empty decode helper

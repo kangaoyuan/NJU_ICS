@@ -20,7 +20,6 @@ def_EHelper(inv) {
     uint32_t temp[2];
 
     s->seq_pc = cpu.pc;
-    vaddr_t addr = cpu.pc;
     temp[0] = instr_fetch(&s->seq_pc, 4);
     temp[1] = instr_fetch(&s->seq_pc, 4);
 
@@ -28,7 +27,7 @@ def_EHelper(inv) {
     printf(
         "invalid opcode(PC = 0x%08x): %02x %02x %02x %02x %02x %02x %02x "
         "%02x ...\n\n",
-        addr, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+        cpu.pc, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
 
     display_inv_msg(cpu.pc);
 

@@ -141,8 +141,8 @@ typedef struct {
 } x86_ISADecodeInfo;
 
 #define x86_has_mem_exception() (false)
-//#define isa_vaddr_check(vaddr, type, len) ((cpu.CR0&0x80000000) == (1<<31)?MEM_RET_NEED_TRANSLATE:MEM_RET_OK)
-#define isa_vaddr_check(vaddr, type, len) (MEM_RET_OK)
+#define isa_vaddr_check(vaddr, type, len) ((cpu.CR0&0x80000000) == (1<<31)?MEM_RET_NEED_TRANSLATE:MEM_RET_OK)
+//#define isa_vaddr_check(vaddr, type, len) (MEM_RET_OK)
 #define suffix_char(width)                                              \
     ((width) == 4 ? 'l' : ((width) == 1 ? 'b' : ((width) == 2 ? 'w' : '?')))
 
