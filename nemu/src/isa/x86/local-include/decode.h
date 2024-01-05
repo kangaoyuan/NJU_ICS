@@ -208,23 +208,23 @@ static inline def_DHelper(test_I) {
 }
 
 static inline def_DHelper(SI2E) {
-  assert(id_dest->width == 2 || id_dest->width == 4);
-  operand_rm(s, id_dest, true, NULL, false);
-  id_src1->width = 1;
-  decode_op_SI(s, id_src1, true);
-  if (id_dest->width == 2) {
-    *dsrc1 &= 0xffff;
-  }
+    assert(id_dest->width == 2 || id_dest->width == 4);
+    operand_rm(s, id_dest, true, NULL, false);
+    id_src1->width = 1;
+    decode_op_SI(s, id_src1, true);
+    /*if (id_dest->width == 2) {
+        *dsrc1 &= 0xffff;
+    }*/
 }
 
 static inline def_DHelper(SI_E2G) {
-  assert(id_dest->width == 2 || id_dest->width == 4);
-  operand_rm(s, id_src2, true, id_dest, false);
-  id_src1->width = 1;
-  decode_op_SI(s, id_src1, true);
-  if (id_dest->width == 2) {
-    *dsrc1 &= 0xffff;
-  }
+    assert(id_dest->width == 2 || id_dest->width == 4);
+    operand_rm(s, id_src2, true, id_dest, false);
+    id_src1->width = 1;
+    decode_op_SI(s, id_src1, true);
+    if (id_dest->width == 2) {
+        *dsrc1 &= 0xffff;
+    }
 }
 
 static inline def_DHelper(gp2_1_E) {
