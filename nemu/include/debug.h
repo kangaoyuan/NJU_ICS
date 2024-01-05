@@ -1,7 +1,6 @@
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
-
 #include <stdio.h>
 #include <assert.h>
 #include <monitor/log.h>
@@ -21,6 +20,7 @@
       extern void monitor_statistic(); \
       isa_reg_display(); \
       monitor_statistic(); \
+      /* above statements executed before actual assert() be called. */ \
       assert(cond); \
     } \
   } while (0)

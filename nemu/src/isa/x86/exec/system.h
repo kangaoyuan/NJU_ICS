@@ -3,8 +3,8 @@
 
 static inline def_EHelper(lidt) {
     vaddr_t addr = *s->isa.mbase + s->isa.moff;
-    cpu.idtr.limit = vaddr_read(addr, 2);
-    cpu.idtr.base = vaddr_read(addr + 2, 4);
+    cpu.idtr_limit = vaddr_read(addr, 2);
+    cpu.idtr_base = vaddr_read(addr + 2, 4);
     print_asm_template1(lidt);
 }
 
@@ -41,7 +41,7 @@ static inline def_EHelper(int) {
 static inline def_EHelper(iret) {
     rtl_pop(s, s0);
     rtl_pop(s, &cpu.cs);
-    rtl_pop(s, &cpu.eflags.eflags_value);
+    rtl_pop(s, &cpu.eflags.val);
     rtl_j(s, *s0);
     print_asm("iret");
 
