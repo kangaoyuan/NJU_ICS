@@ -75,6 +75,8 @@ static inline def_DopHelper(SI) {
     rtl_sext(s, &imm, &imm, op->width);
     operand_imm(s, op, load_val, imm, op->width);
 }
+/* t0, t1, ... - applied in rtl functions
+ * s0, s1, ... - applied in decode and execute functions*/
 
 /* I386 manual does not contain this abbreviation.
  * It is convenient to merge them into a single helper function. */
@@ -199,7 +201,7 @@ static inline def_DHelper(gp7_E) {
 
 /* used by test in group3 */
 static inline def_DHelper(test_I) {
-  decode_op_I(s, id_src1, true);
+    decode_op_I(s, id_src1, true);
 }
 
 static inline def_DHelper(SIb2E) { // Ib2E is ok?

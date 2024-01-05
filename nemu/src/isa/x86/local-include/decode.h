@@ -11,8 +11,7 @@ void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg
  * Cd,
  * M
  * Rd
- * Sw
- */
+ * Sw */
 static inline void operand_rm(DecodeExecState* s, Operand* rm,
                               bool load_rm_val, Operand* reg,
                               bool load_reg_val) {
@@ -69,14 +68,14 @@ static inline def_DopHelper(SI) {
     /* TODO: Use instr_fetch() to read `op->width' bytes of memory
      * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
      * and call `operand_imm()` as following.
-     *
+     
      * operand_imm(s, op, load_val, ???, op->width); */
     word_t imm = instr_fetch(&s->seq_pc, op->width);
     rtl_sext(s, &imm, &imm, op->width);
     operand_imm(s, op, load_val, imm, op->width);
 }
-/* t0, t1, ... - 只能在RTL伪指令的实现过程中存放中间结果
- * s0, s1, ... - 只能在译码辅助函数和执行辅助函数的实现过程中存放中间结果*/
+/* t0, t1, ... - applied in rtl functions 
+ * s0, s1, ... - applied in decode and execute functions*/
 
 
 /* I386 manual does not contain this abbreviation.
@@ -84,7 +83,7 @@ static inline def_DopHelper(SI) {
  */
 /* AL/eAX */
 static inline def_DopHelper(a) {
-  operand_reg(s, op, load_val, R_EAX, op->width);
+    operand_reg(s, op, load_val, R_EAX, op->width);
 }
 
 /* This helper function is use to decode register encoded in the opcode. */
@@ -92,24 +91,23 @@ static inline def_DopHelper(a) {
  * eXX: eAX, eCX, eDX, eBX, eSP, eBP, eSI, eDI
  */
 static inline def_DopHelper(r) {
-  operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
+    operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
 
 /* Ob, Ov */
 static inline def_DopHelper(O) {
-  op->type = OP_TYPE_MEM;
-  s->isa.moff = instr_fetch(&s->seq_pc, 4);
-  s->isa.mbase = rz;
-  if (load_val) {
-    rtl_lm(s, &op->val, s->isa.mbase, s->isa.moff, op->width);
-    op->preg = &op->val;
-  }
-  print_Dop(op->str, OP_STR_SIZE, "0x%x", s->isa.moff);
+    op->type = OP_TYPE_MEM;
+    s->isa.moff = instr_fetch(&s->seq_pc, 4);
+    s->isa.mbase = rz;
+    if (load_val) {
+        rtl_lm(s, &op->val, s->isa.mbase, s->isa.moff, op->width);
+        op->preg = &op->val;
+    }
+    print_Dop(op->str, OP_STR_SIZE, "0x%x", s->isa.moff);
 }
 
 /* Eb <- Gb
- * Ev <- Gv
- */
+ * Ev <- Gv */
 static inline def_DHelper(G2E) {
   operand_rm(s, id_dest, true, id_src1, true);
 }
@@ -119,8 +117,7 @@ static inline def_DHelper(mov_G2E) {
 }
 
 /* Gb <- Eb
- * Gv <- Ev
- */
+ * Gv <- Ev */
 static inline def_DHelper(E2G) {
   operand_rm(s, id_src1, true, id_dest, true);
 }
@@ -129,77 +126,85 @@ static inline def_DHelper(mov_E2G) {
   operand_rm(s, id_src1, true, id_dest, false);
 }
 
+static inline def_DHelper(movb_E2G) {
+    id_src1->width = 1;
+    operand_rm(s, id_src1, true, id_dest, false);
+}
+
+static inline def_DHelper(movw_E2G) {
+    id_src1->width = 2;
+    operand_rm(s, id_src1, true, id_dest, false);
+}
+
 static inline def_DHelper(lea_M2G) {
-  operand_rm(s, id_src1, false, id_dest, false);
+    operand_rm(s, id_src1, false, id_dest, false);
 }
 
 /* AL <- Ib
- * eAX <- Iv
- */
+ * eAX <- Iv */
 static inline def_DHelper(I2a) {
-  decode_op_a(s, id_dest, true);
-  decode_op_I(s, id_src1, true);
+    decode_op_a(s, id_dest, true);
+    decode_op_I(s, id_src1, true);
 }
 
 /* Gv <- EvIb
  * Gv <- EvIv
  * use for imul */
 static inline def_DHelper(I_E2G) {
-  operand_rm(s, id_src2, true, id_dest, false);
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_src2, true, id_dest, false);
+    decode_op_I(s, id_src1, true);
 }
 
 /* Eb <- Ib
  * Ev <- Iv
  */
 static inline def_DHelper(I2E) {
-  operand_rm(s, id_dest, true, NULL, false);
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, true, NULL, false);
+    decode_op_I(s, id_src1, true);
 }
 
 static inline def_DHelper(mov_I2E) {
-  operand_rm(s, id_dest, false, NULL, false);
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, false, NULL, false);
+    decode_op_I(s, id_src1, true);
 }
 
 /* XX <- Ib
- * eXX <- Iv
- */
+ * eXX <- Iv */
 static inline def_DHelper(I2r) {
-  decode_op_r(s, id_dest, true);
-  decode_op_I(s, id_src1, true);
+    decode_op_r(s, id_dest, true);
+    decode_op_I(s, id_src1, true);
 }
 
 static inline def_DHelper(mov_I2r) {
-  decode_op_r(s, id_dest, false);
-  decode_op_I(s, id_src1, true);
+    decode_op_r(s, id_dest, false);
+    decode_op_I(s, id_src1, true);
 }
 
 /* used by unary operations */
 static inline def_DHelper(I) {
-  decode_op_I(s, id_dest, true);
+    decode_op_I(s, id_dest, true);
 }
 
 
 static inline def_DHelper(r) {
-  decode_op_r(s, id_dest, true);
+    decode_op_r(s, id_dest, true);
 }
 
 static inline def_DHelper(E) {
-  operand_rm(s, id_dest, true, NULL, false);
+    operand_rm(s, id_dest, true, NULL, false);
 }
 
 static inline def_DHelper(setcc_E) {
-  operand_rm(s, id_dest, false, NULL, false);
+    operand_rm(s, id_dest, false, NULL, false);
 }
 
 static inline def_DHelper(gp7_E) {
-  operand_rm(s, id_dest, false, NULL, false);
+    operand_rm(s, id_dest, false, NULL, false);
 }
 
 /* used by test in group3 */
 static inline def_DHelper(test_I) {
-  decode_op_I(s, id_src1, true);
+    decode_op_I(s, id_src1, true);
 }
 
 static inline def_DHelper(SI2E) {
