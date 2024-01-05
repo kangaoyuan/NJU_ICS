@@ -217,9 +217,9 @@ static inline def_DHelper(SI_E2G) {
     operand_rm(s, id_src2, true, id_dest, false);
     id_src1->width = 1;
     decode_op_SI(s, id_src1, true);
-    if (id_dest->width == 2) {
+    /*if (id_dest->width == 2) {
         *dsrc1 &= 0xffff;
-    }
+    } */
 }
 
 static inline def_DHelper(gp2_1_E) {
@@ -231,7 +231,7 @@ static inline def_DHelper(gp2_cl2E) {
   operand_rm(s, id_dest, true, NULL, false);
   // shift instructions will eventually use the lower
   // 5 bits of %cl, therefore it is OK to load %ecx
-  operand_reg(s, id_src1, true, R_ECX, 4);
+  operand_reg(s, id_src1, true, R_CL, 1);
 }
 
 static inline def_DHelper(gp2_Ib2E) {
@@ -256,17 +256,17 @@ static inline def_DHelper(cl_G2E) {
     operand_rm(s, id_dest, true, id_src2, true);
     // shift instructions will eventually use the lower
     // 5 bits of %cl, therefore it is OK to load %ecx
-    operand_reg(s, id_src1, true, R_ECX, 4);
+    operand_reg(s, id_src1, true, R_CL, 1);
 }
 
 static inline def_DHelper(O2a) {
-  decode_op_O(s, id_src1, true);
-  decode_op_a(s, id_dest, false);
+    decode_op_O(s, id_src1, true);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(a2O) {
-  decode_op_a(s, id_src1, true);
-  decode_op_O(s, id_dest, false);
+    decode_op_a(s, id_src1, true);
+    decode_op_O(s, id_dest, false);
 }
 
 static inline def_DHelper(J) {
@@ -280,25 +280,25 @@ static inline def_DHelper(push_SI) {
 }
 
 static inline def_DHelper(in_I2a) {
-  id_src1->width = 1;
-  decode_op_I(s, id_src1, true);
-  decode_op_a(s, id_dest, false);
+    id_src1->width = 1;
+    decode_op_I(s, id_src1, true);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(in_dx2a) {
-  operand_reg(s, id_src1, true, R_DX, 2);
-  decode_op_a(s, id_dest, false);
+    operand_reg(s, id_src1, true, R_DX, 2);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(out_a2I) {
-  decode_op_a(s, id_src1, true);
-  id_dest->width = 1;
-  decode_op_I(s, id_dest, true);
+    decode_op_a(s, id_src1, true);
+    id_dest->width = 1;
+    decode_op_I(s, id_dest, true);
 }
 
 static inline def_DHelper(out_a2dx) {
-  decode_op_a(s, id_src1, true);
-  operand_reg(s, id_dest, true, R_DX, 2);
+    decode_op_a(s, id_src1, true);
+    operand_reg(s, id_dest, true, R_DX, 2);
 }
 
 static inline def_DHelper(Y2X) {

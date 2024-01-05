@@ -222,81 +222,81 @@ static inline def_DHelper(SI_E2G) {
     operand_rm(s, id_src2, true, id_dest, false);
     id_src1->width = 1;
     decode_op_SI(s, id_src1, true);
-    if (id_dest->width == 2) {
+    /*if (id_dest->width == 2) {
         *dsrc1 &= 0xffff;
-    }
+    } */
 }
 
 static inline def_DHelper(gp2_1_E) {
-  operand_rm(s, id_dest, true, NULL, false);
-  operand_imm(s, id_src1, true, 1, 1);
+    operand_rm(s, id_dest, true, NULL, false);
+    operand_imm(s, id_src1, true, 1, 1);
 }
 
 static inline def_DHelper(gp2_cl2E) {
-  operand_rm(s, id_dest, true, NULL, false);
-  // shift instructions will eventually use the lower
-  // 5 bits of %cl, therefore it is OK to load %ecx
-  operand_reg(s, id_src1, true, R_CL, 1);
+    operand_rm(s, id_dest, true, NULL, false);
+    // shift instructions will eventually use the lower
+    // 5 bits of %cl, therefore it is OK to load %ecx
+    operand_reg(s, id_src1, true, R_CL, 1);
 }
 
 static inline def_DHelper(gp2_Ib2E) {
-  operand_rm(s, id_dest, true, NULL, false);
-  id_src1->width = 1;
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, true, NULL, false);
+    id_src1->width = 1;
+    decode_op_I(s, id_src1, true);
 }
 
 /* Ev <- GvIb
  * use for shld/shrd */
 static inline def_DHelper(Ib_G2E) {
-  operand_rm(s, id_dest, true, id_src2, true);
-  id_src1->width = 1;
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, true, id_src2, true);
+    id_src1->width = 1;
+    decode_op_I(s, id_src1, true);
 }
 
 /* Ev <- GvCL
  * use for shld/shrd */
 static inline def_DHelper(cl_G2E) {
-  operand_rm(s, id_dest, true, id_src2, true);
-  // shift instructions will eventually use the lower
-  // 5 bits of %cl, therefore it is OK to load %ecx
-  operand_reg(s, id_src1, true, R_ECX, 1);
+    operand_rm(s, id_dest, true, id_src2, true);
+    // shift instructions will eventually use the lower
+    // 5 bits of %cl, therefore it is OK to load %ecx
+    operand_reg(s, id_src1, true, R_CL, 1);
 }
 
 static inline def_DHelper(O2a) {
-  decode_op_O(s, id_src1, true);
-  decode_op_a(s, id_dest, false);
+    decode_op_O(s, id_src1, true);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(a2O) {
-  decode_op_a(s, id_src1, true);
-  decode_op_O(s, id_dest, false);
+    decode_op_a(s, id_src1, true);
+    decode_op_O(s, id_dest, false);
 }
 
 static inline def_DHelper(J) {
-  decode_op_SI(s, id_dest, false);
-  // the target address can be computed in the decode stage
-  s->jmp_pc = id_dest->simm + s->seq_pc;
+    decode_op_SI(s, id_dest, false);
+    // the target address can be computed in the decode stage
+    s->jmp_pc = s->seq_pc + id_dest->simm ;
 }
 
 static inline def_DHelper(push_SI) {
-  decode_op_SI(s, id_dest, true);
+    decode_op_SI(s, id_dest, true);
 }
 
 static inline def_DHelper(in_I2a) {
-  id_src1->width = 1;
-  decode_op_I(s, id_src1, true);
-  decode_op_a(s, id_dest, false);
+    id_src1->width = 1;
+    decode_op_I(s, id_src1, true);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(in_dx2a) {
-  operand_reg(s, id_src1, true, R_DX, 2);
-  decode_op_a(s, id_dest, false);
+    operand_reg(s, id_src1, true, R_DX, 2);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(out_a2I) {
-  decode_op_a(s, id_src1, true);
-  id_dest->width = 1;
-  decode_op_I(s, id_dest, true);
+    decode_op_a(s, id_src1, true);
+    id_dest->width = 1;
+    decode_op_I(s, id_dest, true);
 }
 
 static inline def_DHelper(out_a2dx) {
@@ -304,10 +304,18 @@ static inline def_DHelper(out_a2dx) {
   operand_reg(s, id_dest, true, R_DX, 2);
 }
 
-static inline void operand_write(DecodeExecState *s, Operand *op, rtlreg_t* src) {
-  if (op->type == OP_TYPE_REG) { rtl_sr(s, op->reg, src, op->width); }
-  else if (op->type == OP_TYPE_MEM) { rtl_sm(s, s->isa.mbase, s->isa.moff, src, op->width); }
-  else { assert(0); }
-}//根据第二个参数的类型来将数据写入内存或者寄存器
+static inline def_DHelper(Y2X) {
+    operand_reg(s, id_src1, true, R_ESI, id_src1->width);
+    operand_reg(s, id_dest, true, R_EDI, id_dest->width);
+}
 
-
+static inline void operand_write(DecodeExecState* s, Operand* op,
+                                 rtlreg_t* src) {
+    if (op->type == OP_TYPE_REG) {
+        rtl_sr(s, op->reg, src, op->width);
+    } else if (op->type == OP_TYPE_MEM) {
+        rtl_sm(s, s->isa.mbase, s->isa.moff, src, op->width);
+    } else {
+        assert(0);
+    }
+}
