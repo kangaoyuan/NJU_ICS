@@ -18,11 +18,11 @@ f(LCTRL) f(APPLICATION) f(LALT) f(SPACE) f(RALT) f(RCTRL) \
 f(UP) f(DOWN) f(LEFT) f(RIGHT) f(INSERT) f(DELETE) f(HOME) f(END) f(PAGEUP) f(PAGEDOWN)
 
 #define _KEY_NAME(k) _KEY_##k,
+
 enum { _KEY_NONE = 0, MAP(_KEYS, _KEY_NAME) };
 
 #define SDL_KEYMAP(k) [concat(SDL_SCANCODE_, k)] = concat(_KEY_, k),
 static uint32_t keymap[256] = {MAP(_KEYS, SDL_KEYMAP)};
-
 
 #define KEY_QUEUE_LEN 1024
 static int key_f = 0, key_r = 0;
@@ -57,6 +57,6 @@ void init_i8042() {
     i8042_data_port_base[0] = _KEY_NONE;
     add_pio_map("keyboard", I8042_DATA_PORT, (void*)i8042_data_port_base, 4,
                 i8042_data_io_handler);
-    add_mmio_map("keyboard", I8042_DATA_MMIO, (void*)i8042_data_port_base, 4,
-                i8042_data_io_handler);
+    add_mmio_map("keyboard", I8042_DATA_MMIO, (void*)i8042_data_port_base,
+                 4, i8042_data_io_handler);
 }
