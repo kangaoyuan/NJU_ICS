@@ -23,26 +23,30 @@ static inline void operand_imm(DecodeExecState* s, Operand* op,
                                bool load_val, word_t imm, int width) {
     op->type = OP_TYPE_IMM;
     op->imm = imm;
+
     if (load_val) {
         op->preg = &op->val;
         rtl_li(s, &op->val, imm);
     }
+    
     print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
 }
 
-static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
-  op->type = OP_TYPE_REG;
-  op->reg = r;
+static inline void operand_reg(DecodeExecState* s, Operand* op,
+                               bool load_val, int r, int width) {
+    op->type = OP_TYPE_REG;
+    op->reg = r;
 
-  if (width == 4) {
-    op->preg = &reg_l(r);
-  } else {
-    assert(width == 1 || width == 2);
-    op->preg = &op->val;
-    if (load_val) rtl_lr(s, &op->val, r, width);
-  }
+    if (width == 4) {
+        op->preg = &reg_l(r);
+    } else {
+        assert(width == 1 || width == 2);
+        op->preg = &op->val;
+        if (load_val)
+            rtl_lr(s, &op->val, r, width);
+    }
 
-  print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
+    print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
 }
 
 // decode operand helper
@@ -52,40 +56,27 @@ static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, i
 
 /* Ib, Iv */
 static inline def_DopHelper(I) {
-  /* pc here is pointing to the immediate */
-  word_t imm = instr_fetch(&s->seq_pc, op->width);
-  operand_imm(s, op, load_val, imm, op->width);
-}//取出立即数,这里op= s->dest
+    /* pc here is pointing to the immediate */
+    word_t imm = instr_fetch(&s->seq_pc, op->width);
+    operand_imm(s, op, load_val, imm, op->width);
+}
 
 /* I386 manual does not contain this abbreviation, but it is different from
  * the one above from the view of implementation. So we use another helper
- * function to decode it.
- */
-/* sign immediate */
+ * function to decode it.  sign immediate */
 static inline def_DopHelper(SI) {
-  assert(op->width == 1 || op->width == 4);
-  word_t imm = instr_fetch(&s->seq_pc, op->width);
-  rtl_sext(s,&imm,&imm,op->width);
-  operand_imm(s, op, load_val, imm, op->width);
-  
-  /* TODO: Use instr_fetch() to read `op->width' bytes of memory
-   * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
-   * and call `operand_imm()` as following.
-   *
-  operand_imm(s, op, load_val, ???, op->width);
-  
-   */
-}//可能有问题的地方 !!!!
-
-
-
-
-//!!!!
-
-/*
-t0, t1, ... - 只能在RTL伪指令的实现过程中存放中间结果
-s0, s1, ... - 只能在译码辅助函数和执行辅助函数的实现过程中存放中间结果
-*/
+    assert(op->width == 1 || op->width == 4);
+    /* TODO: Use instr_fetch() to read `op->width' bytes of memory
+     * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
+     * and call `operand_imm()` as following.
+     *
+     * operand_imm(s, op, load_val, ???, op->width); */
+    word_t imm = instr_fetch(&s->seq_pc, op->width);
+    rtl_sext(s, &imm, &imm, op->width);
+    operand_imm(s, op, load_val, imm, op->width);
+}
+/* t0, t1, ... - 只能在RTL伪指令的实现过程中存放中间结果
+ * s0, s1, ... - 只能在译码辅助函数和执行辅助函数的实现过程中存放中间结果*/
 
 
 /* I386 manual does not contain this abbreviation.
