@@ -5,21 +5,21 @@
 #define ISA64
 #endif
 
-#define DEBUG
+//#define DEBUG
 //#define EXPR_TEST
 //#define DIFF_TEST
 
 #if _SHARE
 // do not enable these features while building a reference design
-#undef DIFF_TEST
 #undef DEBUG
+#undef DIFF_TEST
 #endif
 
 /* You will define this macro in PA2 */
 #define HAS_IOE
 
-#include <assert.h>
 #include <string.h>
+#include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -33,8 +33,8 @@ typedef int32_t sword_t;
 #define FMT_WORD "0x%08x"
 #endif
 
-typedef word_t vaddr_t;
 typedef word_t rtlreg_t;
+typedef word_t vaddr_t;
 typedef uint32_t paddr_t;
 typedef uint16_t ioaddr_t;
 
