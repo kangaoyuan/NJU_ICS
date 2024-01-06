@@ -1,8 +1,8 @@
 #ifndef __X86_DECODE_H__
 #define __X86_DECODE_H__
 
-#include <cpu/exec.h>
 #include "rtl.h"
+#include <cpu/exec.h>
 
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
@@ -36,8 +36,8 @@ static inline void operand_imm(DecodeExecState* s, Operand* op,
 
 static inline void operand_reg(DecodeExecState* s, Operand* op,
                                bool load_val, int r, int width) {
-    op->type = OP_TYPE_REG;
     op->reg = r;
+    op->type = OP_TYPE_REG;
 
     if (width == 4) {
         op->preg = &reg_l(r);
@@ -159,8 +159,7 @@ static inline def_DHelper(I_E2G) {
 }
 
 /* Eb <- Ib
- * Ev <- Iv
- */
+ * Ev <- Iv */
 static inline def_DHelper(I2E) {
     operand_rm(s, id_dest, true, NULL, false);
     decode_op_I(s, id_src1, true);
@@ -211,9 +210,9 @@ static inline def_DHelper(test_I) {
 }
 
 static inline def_DHelper(SIb2E) {  // Ib2E is ok?
-    // 2 for the prefixed operand-size, 4 for the default value for
-    // set_width209     assert(id_dest->width == 2 || id_dest->width == 4);
-    // 1     operand_rm(s, id_dest, true, NULL, false);
+    // 2 for the prefixed operand-size, 4 for the default value for set_width
+    assert(id_dest->width == 2 || id_dest->width == 4);
+    operand_rm(s, id_dest, true, NULL, false);
     id_src1->width = 1;  // RTFM
     decode_op_SI(s, id_src1, true);
 }

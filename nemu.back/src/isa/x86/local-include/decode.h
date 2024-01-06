@@ -35,8 +35,8 @@ static inline void operand_imm(DecodeExecState* s, Operand* op,
 
 static inline void operand_reg(DecodeExecState* s, Operand* op,
                                bool load_val, int r, int width) {
-    op->type = OP_TYPE_REG;
     op->reg = r;
+    op->type = OP_TYPE_REG;
 
     if (width == 4) {
         op->preg = &reg_l(r);
