@@ -1,4 +1,5 @@
 #include "../local-include/rtl.h"
+#include "../local-include/decode.h"
 
 #include "arith.h"
 #include "control.h"
