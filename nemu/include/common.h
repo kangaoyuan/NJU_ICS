@@ -5,7 +5,7 @@
 #define ISA64
 #endif
 
-//#define DEBUG
+#define DEBUG
 //#define EXPR_TEST
 //#define DIFF_TEST
 
