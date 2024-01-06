@@ -3,7 +3,7 @@
 void raise_intr(DecodeExecState *s, uint32_t NO, vaddr_t ret_addr);
 
 static inline def_EHelper(lidt) {
-  cpu.idtr.limit = (*ddest)>>16;
+  cpu.idtr.limit = vaddr_read(*s->isa.mbase+s->isa.moff,2);
   if(s->isa.is_operand_size_16) 
     cpu.idtr.base = vaddr_read(*s->isa.mbase+s->isa.moff+2,4)&0x00ffffff;
   else cpu.idtr.base= vaddr_read(*s->isa.mbase+s->isa.moff+2,4);
