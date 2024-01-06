@@ -52,8 +52,8 @@ static inline def_rtl(zext, rtlreg_t* dest, const rtlreg_t* src1,
                       int width) {
     // dest <- zeroext(src1[(width * 8 - 1) .. 0])
     assert(width > 0 && width <= 4);
-    //uint32_t val = *src1;
-    *dest = *src1;
+    uint32_t val = *src1;
+    *dest = val;
 }  
 
 static inline def_rtl(msb, rtlreg_t* dest, const rtlreg_t* src1, int width) {
