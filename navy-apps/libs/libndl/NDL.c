@@ -105,6 +105,7 @@ static void init_dispinfo() {
     int   buf_size = 1024;  // TODO: may be insufficient
     char* buf = (char*)malloc(buf_size * sizeof(char));
     int   fd = open("/proc/dispinfo", 0, 0);
+    printf("fd == %d\n in NLD.c", fd);
     int   ret = read(fd, buf, buf_size);
     assert(ret < buf_size);  // to be cautious...
     assert(close(fd) == 0);
