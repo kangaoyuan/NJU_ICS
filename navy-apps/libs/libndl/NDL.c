@@ -18,6 +18,25 @@ static int            canvas_w = 0, canvas_h = 0;
 static int            canvas_relative_screen_w = 0, canvas_relative_screen_h = 0;
 static FILE           *fb = NULL, *fb_event = NULL, *fb_sync = NULL, *fb_dispinfo = NULL;
 
+static void get_display_info() {
+    FILE* dispinfo = fopen("/proc/dispinfo", "r");
+    assert(dispinfo);
+    screen_w = screen_h = 0;
+    char buf[128], key[128], value[128], *delim;
+    while (fgets(buf, 128, dispinfo)) {
+        *(delim = strchr(buf, ':')) = '\0';
+        sscanf(buf, "%s", key);
+        sscanf(delim + 1, "%s", value);
+        if (strcmp(key, "WIDTH") == 0)
+            sscanf(value, "%d", &screen_w);
+        if (strcmp(key, "HEIGHT") == 0)
+            sscanf(value, "%d", &screen_h);
+    }
+    fclose(dispinfo);
+    assert(screen_w > 0 && screen_h > 0);
+}
+
+
 // unit: ms
 uint32_t NDL_GetTicks() {
     gettimeofday(&now, NULL);
@@ -67,13 +86,13 @@ void NDL_OpenCanvas(int *w, int *h) {
 }
 
 void NDL_DrawRect(uint32_t* pixels, int x, int y, int w, int h) {
-    int fd = open("/dev/fb", 0, 0);
+    FILE* fd = fopen("/dev/fb", 0);
     for (int i = 0; i < h && y + i < canvas_h; ++i) {
-        lseek(fd, (y + canvas_relative_screen_h + i) * screen_w +
+        fseek(fd, (y + canvas_relative_screen_h + i) * screen_w +
               (x + canvas_relative_screen_w), SEEK_SET);
-        write(fd, pixels + i * w, w < canvas_w - x ? w : canvas_w - x);
+        fwrite(pixels + i * w, 1, w < canvas_w - x ? w : canvas_w - x, fd);
     }
-    assert(close(fd) == 0);
+    assert(fclose(fd) == 0);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
@@ -91,74 +110,22 @@ int NDL_QueryAudio() {
 }
 
 int NDL_Init(uint32_t flags) {
-  if (getenv("NWM_APP")) {
-    evtdev = 3;
-  }
-  init_dispinfo();
-  return 0;
+    if (getenv("NWM_APP")) {
+        evtdev = 3;
+    }
+    now.tv_sec = now.tv_usec = 0;
+    get_display_info();
+    fb = fopen("/dev/fb", "w");
+    fb_sync = fopen("/dev/sync", "w");
+    fb_event = fopen("/dev/events", "r");
+    return 0;
 }
 
 void NDL_Quit() {
-}
-
-static void init_dispinfo() {
-    int   buf_size = 1024;  // TODO: may be insufficient
-    char* buf = (char*)malloc(buf_size * sizeof(char));
-    int   fd = open("/proc/dispinfo", 0, 0);
-    int   ret = read(fd, buf, buf_size);
-    assert(ret < buf_size);  // to be cautious...
-    assert(close(fd) == 0);
-
-    int i = 0;
-    int width = 0, height = 0;
-
-    assert(strncmp(buf + i, "WIDTH", 5) == 0);
-    i += 5;
-    for (; i < buf_size; ++i) {
-        if (buf[i] == ':') {
-            i++;
-            break;
-        }
-        assert(buf[i] == ' ');
-    }
-    for (; i < buf_size; ++i) {
-        if (buf[i] >= '0' && buf[i] <= '9')
-            break;
-        assert(buf[i] == ' ');
-    }
-    for (; i < buf_size; ++i) {
-        if (buf[i] >= '0' && buf[i] <= '9') {
-            width = width * 10 + buf[i] - '0';
-        } else {
-            break;
-        }
-    }
-    assert(buf[i++] == '\n');
-
-    assert(strncmp(buf + i, "HEIGHT", 6) == 0);
-    i += 6;
-    for (; i < buf_size; ++i) {
-        if (buf[i] == ':') {
-            i++;
-            break;
-        }
-        assert(buf[i] == ' ');
-    }
-    for (; i < buf_size; ++i) {
-        if (buf[i] >= '0' && buf[i] <= '9')
-            break;
-        assert(buf[i] == ' ');
-    }
-    for (; i < buf_size; ++i) {
-        if (buf[i] >= '0' && buf[i] <= '9') {
-            height = height * 10 + buf[i] - '0';
-        } else {
-            break;
-        }
-    }
-
-    free(buf);
-
-    screen_w = width;
-    screen_h = height;
+    now.tv_sec = now.tv_usec = 0;
+    free(canvas);
+    fclose(fb_event);
+    fclose(fb);
+    fclose(fb_sync);
+    fclose(fb_dispinfo);
 }
