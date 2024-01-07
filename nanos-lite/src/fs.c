@@ -7,6 +7,7 @@ typedef struct {
     char*  name;
     size_t size;
     size_t disk_offset;
+    //size_t open_offset;
     ReadFn  read;
     WriteFn write;
 } Finfo;
@@ -36,7 +37,7 @@ static Finfo file_table[] __attribute__((used)) = {
     [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
     [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
     [DEV_EVENTS] = {"/dev/events", 0, 0, events_read, invalid_write},
-    [PROC_DISPINFO] = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
+    [PROC_DISPINFO] = {"/proc/dispinfo", 64, 0, dispinfo_read, invalid_write},
     [FD_FB] = {"/dev/fb", 0, 0, invalid_read, fb_write},
 #include "files.h"
 };
