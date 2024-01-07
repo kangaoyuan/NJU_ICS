@@ -21,14 +21,14 @@ size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 /* This is the information about all files in disk. */
 enum {FD_STDIN = 0, FD_STDOUT, FD_STDERR, DEV_EVENTS, PROC_DISPINFO, FD_FB};
 
-size_t invalid_read(void *buf, size_t offset, size_t len) {
-  panic("should not reach here");
-  return 0;
+size_t invalid_read(void* buf, size_t offset, size_t len) {
+    panic("should not reach here");
+    return 0;
 }
 
-size_t invalid_write(const void *buf, size_t offset, size_t len) {
-  panic("should not reach here");
-  return 0;
+size_t invalid_write(const void* buf, size_t offset, size_t len) {
+    panic("should not reach here");
+    return 0;
 }
 
 static Finfo file_table[] __attribute__((used)) = {
@@ -43,7 +43,7 @@ static Finfo file_table[] __attribute__((used)) = {
 
 typedef struct {
     size_t fd;
-    size_t  open_offset;  // relative to disk_offset
+    size_t open_offset;  // relative to disk_offset
 } OFinfo;
 
 static size_t open_file_table_index = 0;
@@ -73,7 +73,7 @@ int fs_open(const char* path_name, int flags, int mode) {
 }
 
 int fs_read(int fd, void* buf, size_t len){
-    if(file_table[fd].read != NULL)
+    if(file_table[fd].read != NULL && fd < FD_FB)
         return file_table[fd].read(buf, 0, len);
 
     int target_index = get_open_file_index(fd);
@@ -91,7 +91,10 @@ int fs_read(int fd, void* buf, size_t len){
     if(open_offset + len > file_size)
         len = file_size - open_offset;
 
-    len = ramdisk_read(buf, disk_offset + open_offset, len);
+    if(file_table[fd].read)
+        len = file_table[fd].read(buf, disk_offset + open_offset, len);
+    else
+        len = ramdisk_read(buf, disk_offset + open_offset, len);
 
     open_file_table[target_index].open_offset += len;
     return len;
@@ -103,7 +106,7 @@ int fs_write(int fd, void* buf, size_t len){
 
     int target_index = get_open_file_index(fd);
     if (target_index == -1) {
-        Log("file %s not fs_open before fs_read", file_table[fd].name);
+        Log("fs_write file %s not opened", file_table[fd].name);
         return -1;
     }
 
@@ -127,7 +130,7 @@ int fs_write(int fd, void* buf, size_t len){
 
 size_t fs_lseek(int fd, size_t offset, int whence){
     if(fd < FD_FB) {
-        Log("fs_lseek() seel char file %s", file_table[fd].name); 
+        Log("fs_lseek() seek char file %s", file_table[fd].name); 
         return 0;
     }
 
