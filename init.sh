@@ -1,5 +1,4 @@
 #!/bin/bash
-
 version=ics2020
 
 function init() {
@@ -9,8 +8,9 @@ function init() {
   fi
 
   while [ ! -d $1 ]; do
-    git clone -b $version https://github.com/NJU-ProjectN/$1.git
+    git clone -b $version git@github.com:NJU-ProjectN/$1.git
   done
+
   log="$1 `cd $1 && git log --oneline --no-abbrev-commit -n1`"$'\n'
   rm -rf $1/.git
 
@@ -34,8 +34,9 @@ function init_no_git() {
   fi
 
   while [ ! -d $1 ]; do
-    git clone -b $version https://github.com/NJU-ProjectN/$1.git
+    git clone -b $version git@github.com:NJU-ProjectN/$1.git
   done
+
   log="$1 `cd $1 && git log --oneline --no-abbrev-commit -n1`"$'\n'
 
   sed -i -e "/^\/$1/d" .gitignore
@@ -51,6 +52,9 @@ case $1 in
     ;;
   abstract-machine)
     init abstract-machine AM_HOME
+    init_no_git fceux-am
+    ;; 
+  fceux-am)
     init_no_git fceux-am
     ;;
   am-kernels)
