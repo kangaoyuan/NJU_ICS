@@ -1,3 +1,4 @@
+# Makefile for Nemu
 NAME = nemu
 
 ISA ?= x86
@@ -17,7 +18,7 @@ $(info Building $(ISA)-$(NAME)-$(ENGINE))
 INC_DIR += ./include ./src/engine/$(ENGINE)
 BUILD_DIR ?= ./build
 
-ifdef SHARE
+ifdef SHARE # distingush ifeq + cmd and ifdef + var in Makefile
 SO = -so
 SO_CFLAGS = -fPIC -D_SHARE=1
 SO_LDLAGS = -shared -fPIC
@@ -100,6 +101,9 @@ IMG :=
 endif
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
 
+$(DIFF_REF_SO):
+	$(MAKE) -C $(DIFF_REF_PATH) $(MKFLAGS)
+
 $(BINARY): $(OBJS)
 	$(call git_commit, "compile")
 	@echo + LD $@
@@ -108,9 +112,6 @@ $(BINARY): $(OBJS)
 app: $(BINARY)
 
 run-env: $(BINARY) $(DIFF_REF_SO)
-
-$(DIFF_REF_SO):
-	$(MAKE) -C $(DIFF_REF_PATH) $(MKFLAGS)
 
 run: run-env
 	$(call git_commit, "run")

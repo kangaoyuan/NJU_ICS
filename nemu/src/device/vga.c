@@ -50,7 +50,7 @@ void init_vga() {
     sprintf(title, "%s-NEMU", str(__ISA__));
     SDL_Init(SDL_INIT_VIDEO);
 #ifdef MODE_800x600
-    SDL_CreateWindowAndRenderer(SCREEN_W * 2, SCREEN_H * 2, 0, &window,
+    SDL_CreateWindowAndRenderer(SCREEN_W, SCREEN_H, 0, &window,
                                 &renderer);
 #else
     SDL_CreateWindowAndRenderer(SCREEN_W * 2, SCREEN_H * 2, 0, &window,

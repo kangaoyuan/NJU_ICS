@@ -4,7 +4,7 @@
 void init_monitor(int, char *[]);
 void test_expr(); 
 void engine_start();
-int is_exit_status_bad();
+int  is_exit_status_bad();
 
 
 int main(int argc, char* argv[]) {

@@ -1,4 +1,5 @@
 # Makefile for AbstractMachine Kernels and Libraries
+### Every project above abstraction machine need provide NAME and SRCS to use Abstract machine.
 
 ### *Get a more readable version of this Makefile* by `make html` (requires python-markdown)
 html:
@@ -55,8 +56,7 @@ OBJS      = $(addprefix $(DST_DIR)/, $(addsuffix .o, $(basename $(SRCS))))
 LIBS     := $(sort $(LIBS) am klib) # lazy evaluation ("=") causes infinite recursions
 LINKAGE   = $(OBJS) \
   $(addsuffix -$(ARCH).a, $(join \
-    $(addsuffix /build/, $(addprefix $(AM_HOME)/, $(LIBS))), \
-    $(LIBS)))
+  $(addsuffix /build/, $(addprefix $(AM_HOME)/, $(LIBS))), $(LIBS)))
 
 ## 3. General Compilation Flags
 
@@ -131,10 +131,10 @@ $(ARCHIVE): $(OBJS)
 ## 6. Miscellaneous
 
 ### Build order control
-image: image-dep
-archive: $(ARCHIVE)
 image-dep: $(OBJS) am $(LIBS)
 	@echo \# Creating image [$(ARCH)]
+image: image-dep
+archive: $(ARCHIVE)
 .PHONY: image image-dep archive run $(LIBS)
 
 ### Clean a single project (remove `build/`)
@@ -144,7 +144,7 @@ clean:
 
 ### Clean all sub-projects within depth 2 (and ignore errors)
 CLEAN_ALL = $(dir $(shell find . -mindepth 2 -name Makefile))
-clean-all: $(CLEAN_ALL) clean
 $(CLEAN_ALL):
 	-@$(MAKE) -s -C $@ clean
+clean-all: $(CLEAN_ALL) clean
 .PHONY: clean-all $(CLEAN_ALL)
