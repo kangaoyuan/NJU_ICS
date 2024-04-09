@@ -155,7 +155,7 @@ static uint32_t get_val(int index){
 }
 
 static bool check_parentheses(int left, int right){
-    if(tokens[left].type != '(' || tokens[left].type != ')')
+    if(tokens[left].type != '(' || tokens[right].type != ')')
         return false;
 
     int top = 0;
