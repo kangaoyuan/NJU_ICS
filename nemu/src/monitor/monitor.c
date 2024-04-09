@@ -87,33 +87,33 @@ static inline void parse_args(int argc, char *argv[]) {
   }
 }
 
-void init_monitor(int argc, char *argv[]) {
-  /* Perform some global initialization. */
+void init_monitor(int argc, char* argv[]) {
+    /* Perform some global initialization. */
 
-  /* Parse arguments. */
-  parse_args(argc, argv);
+    /* Parse arguments. */
+    parse_args(argc, argv);
 
-  /* Open the log file. */
-  init_log(log_file);
+    /* Open the log file. */
+    init_log(log_file);
 
-  /* Fill the memory with garbage content. */
-  init_mem();
+    /* Fill the memory with garbage content. */
+    init_mem();
 
-  /* Perform ISA dependent initialization. */
-  init_isa();
+    /* Perform ISA dependent initialization. */
+    init_isa();
 
-  /* Load the image to memory. This will overwrite the built-in image. */
-  long img_size = load_img();
+    /* Load the image to memory. This will overwrite the built-in image. */
+    long img_size = load_img();
 
-  /* Compile the regular expressions. */
-  init_regex();
+    /* Compile the regular expressions. */
+    init_regex();
 
-  /* Initialize the watchpoint pool. */
-  init_wp_pool();
+    /* Initialize the watchpoint pool. */
+    init_wp_pool();
 
-  /* Initialize differential testing. */
-  init_difftest(diff_so_file, img_size, difftest_port);
+    /* Initialize differential testing. */
+    init_difftest(diff_so_file, img_size, difftest_port);
 
-  /* Display welcome message. */
-  welcome();
+    /* Display welcome message. */
+    welcome();
 }
