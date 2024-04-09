@@ -204,7 +204,7 @@ static int get_main_operator(int left, int right){
     for(int i = left; i <= right; ++i){
         if(is_operator(tokens[i].type)) {
             int level = get_priority(tokens[i].type);
-            if(level < priority){
+            if(level <= priority){
                 pos = i;
                 priority = level;
             }
