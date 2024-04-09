@@ -228,6 +228,7 @@ static int get_main_operator(int left, int right){
 
 static uint32_t eval(int left, int right) {
     if (left > right) {
+        printf("left == %d, right == %d\n", left, right);
         panic("eval failed");
     } else if (left == right) {
         /* Single token.
