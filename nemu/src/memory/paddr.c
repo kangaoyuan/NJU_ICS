@@ -7,24 +7,29 @@
 
 static uint8_t pmem[PMEM_SIZE] PG_ALIGN = {};
 
-void* guest_to_host(paddr_t addr) { return &pmem[addr]; }
-paddr_t host_to_guest(void *addr) { return (void *)pmem - addr; }
+void* guest_to_host(paddr_t addr) {
+    return &pmem[addr];
+}
+paddr_t host_to_guest(void* addr) {
+    return (void*)pmem - addr;
+}
 
 IOMap* fetch_mmio_map(paddr_t addr);
 
 void init_mem() {
 #ifndef DIFF_TEST
-  srand(time(0));
-  uint32_t *p = (uint32_t *)pmem;
-  int i;
-  for (i = 0; i < PMEM_SIZE / sizeof(p[0]); i ++) {
-    p[i] = rand();
-  }
+    srand(time(NULL));
+    // pmem is the name of array, so essentially it's the constant value.
+    // the forced cast indicates the essence of pointer (address + type).
+    uint32_t* p = (uint32_t*)pmem;
+    for (int i = 0; i < PMEM_SIZE / sizeof(p[0]); i++) {
+        p[i] = rand();
+    }
 #endif
 }
 
 static inline bool in_pmem(paddr_t addr) {
-  return (PMEM_BASE <= addr) && (addr <= PMEM_BASE + PMEM_SIZE - 1);
+    return (PMEM_BASE <= addr) && (addr <= PMEM_BASE + PMEM_SIZE - 1);
 }
 
 static inline word_t pmem_read(paddr_t addr, int len) {

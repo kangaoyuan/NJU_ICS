@@ -3,8 +3,10 @@
 #include "watchpoint.h"
 
 #include <stdlib.h>
-#include <readline/readline.h>
+#include <memory/paddr.h>
+#include <monitor/monitor.h>
 #include <readline/history.h>
+#include <readline/readline.h>
 
 void cpu_exec(uint64_t);
 int is_batch_mode();
@@ -34,8 +36,90 @@ static int cmd_c(char* args) {
 }
 
 static int cmd_q(char* args) {
+    nemu_state.state = NEMU_QUIT;
     return -1;
 }
+
+static int cmd_si(char* args) {
+    /* if (!args) {
+        cpu_exec(1);
+    } else {
+        cpu_exec(strtol(args, NULL, 10));
+    }
+
+    return 0; */
+    if (args == NULL){
+        cpu_exec(1);
+        return 0;
+    }
+    int n = -1;
+    if (sscanf(args, "%d", &n) == 1 && n > 0) {
+        cpu_exec(n);
+    } else {
+        printf("Invalid arg, (nemu) si command args error: \e[0;31m%s\e[0m\n", args);
+    }
+    return 0;
+}
+
+static int cmd_p(char* args){
+    if (args == NULL) {
+        printf("missing p <expr> args\n");
+        return 0;
+    }
+    bool flag;
+    int val = expr(args, &flag);
+    if(!flag){
+        printf("sdb cmd: p %s, Wrong expression\n", args);
+        return -1;
+    }
+    printf("%s:\t%d\t0x%08x\n", args, val, val);
+    return 0;
+}
+
+static int cmd_x(char* args){
+    if(!args){
+        printf("missing x <num> <expr> args\n");
+        return 0;
+    }
+
+    char* args_num = strtok(args, " ");
+    char* args_expr = strtok(NULL, "");
+
+    int num = strtol(args_num, NULL, 10);
+    bool flag = true;
+    int val = expr(args_expr, &flag);
+
+    if (!flag) {
+        printf("sdb cmd: x %s %s, Wrong expression\n", args_num, args_expr);
+        return -1;
+    }
+
+    for (int i = 0; i < num; i++) {
+        printf("addr:0x%08x %08x\n", val + 4*i, paddr_read(val + 4*i, 4));
+    }
+    return 0;
+}
+
+static int cmd_info(char* args){
+    if(!strcmp(args, "r")){
+        isa_reg_display();
+        return 0;
+    }else if(!strcmp(args, "r")){
+        wp_pool_display();
+        return 0;
+    }
+    return -1;
+}
+
+static int cmd_w(char* args){
+    //WP* p = new_wp();
+    return 0;
+}
+
+static int cmd_d(char* args){
+    return 0;
+}
+
 
 static int cmd_help(char *args);
 
@@ -47,6 +131,12 @@ static struct {
     {"help", "Display informations about all supported commands", cmd_help},
     {"c", "Continue the execution of the program", cmd_c},
     {"q", "Exit NEMU", cmd_q},
+    {"si", "Step [N] instruction, default N is 1", cmd_si},
+    {"info", "Info <r|w>", cmd_info},
+    {"p", "Print <expr>", cmd_p},
+    {"x", "Examine <Num> <address> for hex format with int length", cmd_x},
+    {"w", "Watchpoint <expr>", cmd_w},
+    {"d", "Delete <Num> watchpoint", cmd_d},
 
     /* TODO: Add more commands */
 
@@ -54,27 +144,28 @@ static struct {
 
 #define NR_CMD (sizeof(cmd_table) / sizeof(cmd_table[0]))
 
-static int cmd_help(char *args) {
-  /* extract the first argument */
-  char *arg = strtok(NULL, " ");
-  int i;
+static int cmd_help(char* args) {
+    /* extract the first argument */
+    char* arg = strtok(NULL, " ");
+    int   i;
 
-  if (arg == NULL) {
-    /* no argument given */
-    for (i = 0; i < NR_CMD; i ++) {
-      printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
+    if (arg == NULL) {
+        /* no argument given */
+        for (i = 0; i < NR_CMD; i++) {
+            printf("%s - %s\n", cmd_table[i].name,
+                   cmd_table[i].description);
+        }
+    } else {
+        for (i = 0; i < NR_CMD; i++) {
+            if (strcmp(arg, cmd_table[i].name) == 0) {
+                printf("%s - %s\n", cmd_table[i].name,
+                       cmd_table[i].description);
+                return 0;
+            }
+        }
+        printf("Unknown command '%s'\n", arg);
     }
-  }
-  else {
-    for (i = 0; i < NR_CMD; i ++) {
-      if (strcmp(arg, cmd_table[i].name) == 0) {
-        printf("%s - %s\n", cmd_table[i].name, cmd_table[i].description);
-        return 0;
-      }
-    }
-    printf("Unknown command '%s'\n", arg);
-  }
-  return 0;
+    return 0;
 }
 
 void ui_mainloop() {
