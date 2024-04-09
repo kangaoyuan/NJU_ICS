@@ -200,9 +200,21 @@ static int get_priority(int opt_type)
 static int get_main_operator(int left, int right){
     int pos = left;
     int priority = 7;
+    int parenthesis = 0;
 
     for(int i = left; i <= right; ++i){
-        if(is_operator(tokens[i].type)) {
+        if(tokens[i].type == '('){
+            parenthesis++;
+            continue;
+        } else if(tokens[i].type == ')'){
+            parenthesis--;
+            if (parenthesis < 0)
+                panic("get_main_operator error");
+            continue;
+        }
+
+
+        if(is_operator(tokens[i].type) && !parenthesis) {
             int level = get_priority(tokens[i].type);
             if(level <= priority){
                 pos = i;
