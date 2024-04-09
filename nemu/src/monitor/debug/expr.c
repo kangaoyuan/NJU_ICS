@@ -135,7 +135,7 @@ static bool make_token(char* e) {
 }
 
 static bool is_operator(int opt_type){
-    if(opt_type == '(' || opt_type == ')' || opt_type == TK_NOTYPE || opt_type == TK_DEC || opt_type == TK_HEX || opt_type == TK_REG)
+    if(opt_type == ')' || opt_type == TK_NOTYPE || opt_type == TK_DEC || opt_type == TK_HEX || opt_type == TK_REG)
         return false;
     return true;
 }
@@ -216,7 +216,10 @@ static int get_main_operator(int left, int right){
 
         if(is_operator(tokens[i].type) && !parenthesis) {
             int level = get_priority(tokens[i].type);
-            if(level <= priority){
+            if(level < 6 && level <= priority){
+                pos = i;
+                priority = level;
+            } else if (level == 6 && level < priority){
                 pos = i;
                 priority = level;
             }
@@ -253,10 +256,11 @@ static uint32_t eval(int left, int right) {
         return eval(left + 1, right - 1);
     } else {
         int op = get_main_operator(left, right);
-        printf("op == %d %c\n", tokens[op].type, tokens[op].type);
+        printf("op == %d %d %c\n", op, tokens[op].type, tokens[op].type);
 
-        if(tokens[op].type == TK_NEG)
+        if(tokens[op].type == TK_NEG){
             return -eval(op+1, right);
+        }
         if(tokens[op].type == TK_DEREF)
             return vaddr_read(eval(op+1, right), 4);
 
