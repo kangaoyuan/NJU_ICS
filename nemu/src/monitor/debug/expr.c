@@ -1,13 +1,17 @@
-#include <isa.h>
 #include <debug.h>
+#include <isa.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
+
 #include <regex.h>
 #include "memory/vaddr.h"
 
 enum {
+
+    /* TODO: Add more token types */
+
     TK_NOTYPE = 256,
     TK_NEG,
     TK_DEREF,
@@ -18,9 +22,6 @@ enum {
     TK_NEQ,
     TK_AND,
     TK_OR,
-
-    /* TODO: Add more token types */
-
 };
 
 static struct rule {
@@ -32,29 +33,30 @@ static struct rule {
      * Pay attention to the precedence level of different rules.
      */
 
-    {" +", TK_NOTYPE},           // spaces
-    {"\\(", '('},                // left_parenthesis
-    {"\\)", ')'},                // right_parenthesis
-    {"[0-9]+", TK_DEC},          // decimal
+    {" +", TK_NOTYPE},              // spaces
+    {"\\(", '('},                   // left_parenthesis
+    {"\\)", ')'},                   // right_parenthesis
+    {"[0-9]+", TK_DEC},             // decimal
     {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex
-    {"\\$[a-zA-Z]+", TK_REG},    // registers
-    {"\\*", '*'},                // multiple
-    {"/", '/'},                  // division
-    {"\\+", '+'},                // plus
-    {"-", '-'},                  // subtract
-    {"==", TK_EQ},               // equal
-    {"!=", TK_NEQ},              // not_equal
-    {"&&", TK_AND},              // and
-    {"||", TK_OR},               // or
+    {"\\$[a-zA-Z]+", TK_REG},       // registers
+    {"\\*", '*'},                   // multiple
+    {"/", '/'},                     // division
+    {"\\+", '+'},                   // plus
+    {"-", '-'},                     // subtract
+    {"==", TK_EQ},                  // equal
+    {"!=", TK_NEQ},                 // not_equal
+    {"&&", TK_AND},                 // and
+    {"||", TK_OR},                  // or
 };
 
-#define NR_REGEX (sizeof(rules) / sizeof(rules[0]) )
+#define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
 
 static regex_t re[NR_REGEX] = {};
 
 /* Rules are used for many times.
  * Therefore we compile them only once before any usage.
  */
+// This is function is be called at firstly in the init_monitor().
 void init_regex() {
     char error_msg[128];
 
@@ -68,11 +70,13 @@ void init_regex() {
     }
 }
 
+// Here we hard code the max limit of num length, 32.
 typedef struct token {
     int  type;
     char str[32];
 } Token;
 
+// Here we hard code the max limit of tokens, 32.
 static Token tokens[32] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
@@ -80,13 +84,22 @@ static bool make_token(char* e) {
     regmatch_t pmatch;
     int i, position = 0;
 
+    // everytime we evluate the expression, we need rematch the tokens.
     nr_token = 0;
 
     while (e[position] != '\0') {
         /* Try all rules one by one. */
         for (i = 0; i < NR_REGEX; i++) {
+            // int regexec(const regex_t *preg, const char *string, size_t nmatch, regmatch_t pmatch[], int eflags);
+            // Here, we need the RTFM.
             if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 &&
                 pmatch.rm_so == 0) {
+                /*
+                 *typedef struct {
+                 *    regoff_t rm_so;
+                 *    regoff_t rm_eo;
+                 *} regmatch_t;
+                 */
                 char* substr_start = e + position;
                 int   substr_len = pmatch.rm_eo;
 
@@ -143,6 +156,7 @@ static bool is_operator(int opt_type){
 static uint32_t get_val(int index){
     uint32_t val = 0;
     switch(tokens[index].type){
+    // strtol and sscanf two functions are all suitable.
     case TK_DEC:
         if(sscanf(tokens[index].str, "%d", &val) == 1)
             return val;
@@ -160,10 +174,12 @@ static bool check_parentheses(int left, int right){
 
     int top = 0;
     for(int i = left+1; i < right; ++i){
+        // Here is some stack tricks to judge the parethesis with pair.
         if (tokens[i].type == '('){
             top++;
         } else if (tokens[i].type == ')') {
             top--;
+            // With the left+1 as start point, the ')' reject the separation parethesis pairs, which we need eval.
             if(top < 0){
                 return false;
             }
@@ -216,6 +232,7 @@ static int get_main_operator(int left, int right){
 
         if(is_operator(tokens[i].type) && !parenthesis) {
             int level = get_priority(tokens[i].type);
+            // Here is for uni-op and bi-op the associativity
             if(level < 6 && level <= priority){
                 pos = i;
                 priority = level;
@@ -230,16 +247,16 @@ static int get_main_operator(int left, int right){
 }
 
 static uint32_t eval(int left, int right) {
-    printf("left == %d, right == %d\n", left, right);
+    //printf("left == %d, right == %d\n", left, right);
     if (left > right) {
-        printf("error: left == %d, right == %d\n", left, right);
+        /* Bad expression */
+        //printf("error: left == %d, right == %d\n", left, right);
         panic("eval failed");
     } else if (left == right) {
         /* Single token.
          * For now this token should be a number.
          * Return the value of the number.
          */
-
         uint32_t val = 0;
         if (tokens[left].type == TK_DEC || tokens[left].type == TK_HEX) {
             val = get_val(left);
@@ -256,7 +273,7 @@ static uint32_t eval(int left, int right) {
         return eval(left + 1, right - 1);
     } else {
         int op = get_main_operator(left, right);
-        printf("op == %d %d %c\n", op, tokens[op].type, tokens[op].type);
+        //printf("op == %d %d %c\n", op, tokens[op].type, tokens[op].type);
 
         if(tokens[op].type == TK_NEG){
             return -eval(op+1, right);
@@ -275,6 +292,8 @@ static uint32_t eval(int left, int right) {
         case '*':
             return val1 * val2;
         case '/':
+            if(val2 == 0)
+                panic("eval fail for division by 0");
             return val1 / val2;
         case TK_EQ:
             return (uint32_t)(val1 == val2);

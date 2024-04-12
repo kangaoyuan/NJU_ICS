@@ -48,6 +48,18 @@ void reg_test() {
 void isa_reg_display() {
 }
 
-word_t isa_reg_str2val(const char *s, bool *success) {
-  return 0;
+word_t isa_reg_str2val(const char* s, bool* success) {
+    if (!strcmp("$pc", s)) {
+        *success = true;
+        return cpu.pc;
+    }
+    for (int i = R_EAX; i <= R_EDI; i++) {
+        if (!strcmp(regsl[i], s + 1)) {
+            *success = true;
+            return reg_l(i);
+        }
+    }
+    *success = false;
+    panic("isa_reg_str2val failed");
+    return -1;
 }
