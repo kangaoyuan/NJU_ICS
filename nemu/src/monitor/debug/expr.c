@@ -186,6 +186,7 @@ static bool check_parentheses(int left, int right){
         }
     }
 
+    Assert(top == 0, "check_parentheses failed");
     return true;
 }
 
@@ -250,7 +251,7 @@ static uint32_t eval(int left, int right) {
     if (left > right) {
         /* Bad expression */
         //printf("error: left == %d, right == %d\n", left, right);
-        panic("eval failed");
+        panic("left > right, eval failed");
     } else if (left == right) {
         /* Single token.
          * For now this token should be a number.
@@ -263,6 +264,9 @@ static uint32_t eval(int left, int right) {
             bool flag = false;
             val = isa_reg_str2val(tokens[left].str+1, &flag);
             Assert(flag == true, "eval failed");
+        } else {
+            printf("left == %d", tokens[left].type);
+            panic("left == right, eval failed");
         }
         return val;
     } else if (check_parentheses(left, right) == true) {
@@ -291,8 +295,8 @@ static uint32_t eval(int left, int right) {
         case '*':
             return val1 * val2;
         case '/':
-            //if(val2 == 0)
-            //    panic("eval fail for division by 0");
+            if(val2 == 0)
+                panic("eval fail for division by 0");
             return val1 / val2;
         case TK_EQ:
             return (uint32_t)(val1 == val2);

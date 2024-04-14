@@ -52,9 +52,6 @@ static inline void gen_rand_op() {
     case 3:
         op = "-";
         break;
-    case 4:
-        op = "==";
-        break;
     }
     strcat(buf + strlen(buf), op);
     buf[strlen(buf)] = '\0';
