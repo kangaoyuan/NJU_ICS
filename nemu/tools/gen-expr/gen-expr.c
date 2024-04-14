@@ -14,7 +14,7 @@ static char *code_format =
 "#include <signal.h>\n"
 "void div_handler(int singal) {"
 "  printf(\"error\");"
-"  exit(0);"
+"  exit(-1);"
 "}"
 "int main() { "
 "  signal(SIGFPE, div_handler);"
