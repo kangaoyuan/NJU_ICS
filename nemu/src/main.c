@@ -10,7 +10,8 @@ void test_expr(){
     FILE* fp = fopen("tools/gen-expr/input", "r");
     assert(fp!=NULL);
 
-    for (int i = 0; i < 10; i++) {
+    // Here loop is hard code, corresponding to the arg of gen-expr tool.
+    for (int i = 0; i < 70; i++) {
         bool     flag = true;
         unsigned ans = 0, eval = 0;
         char     expression[70000];
@@ -33,12 +34,12 @@ int main(int argc, char* argv[]) {
     init_monitor(argc, argv);
 
 #ifdef TEST_EXPR
+    /* Start test. */
     test_expr();
-    printf("hhh\n");
-#endif
-
+    return 0;
+#else
     /* Start engine. */
     engine_start();
-
     return is_exit_status_bad();
+#endif
 }
