@@ -59,7 +59,7 @@ static int cmd_info(char* args){
     if(!strcmp(args, "r")){
         isa_reg_display();
         return 0;
-    }else if(!strcmp(args, "r")){
+    }else if(!strcmp(args, "w")){
         wp_pool_display();
         return 0;
     } else {

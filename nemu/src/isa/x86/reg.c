@@ -58,24 +58,24 @@ void isa_reg_display() {
 }
 
 word_t isa_reg_str2val(const char* s, bool* success) {
-    if (!strcmp("$pc", s) || !strcmp("$eip", s)) {
+    if (!strcmp("pc", s) || !strcmp("eip", s)) {
         *success = true;
         return cpu.pc;
     }
     for (int i = R_EAX; i <= R_EDI; i++) {
-        if (!strcmp(regsl[i], s + 1)) {
+        if (!strcmp(regsl[i], s)) {
             *success = true;
             return reg_l(i);
         }
     }
     for (int i = R_AX; i <= R_DI; i++) {
-        if (!strcmp(regsw[i], s + 1)) {
+        if (!strcmp(regsw[i], s)) {
             *success = true;
             return reg_w(i);
         }
     }
     for (int i = R_AL; i <= R_BH; i++) {
-        if (!strcmp(regsb[i], s + 1)) {
+        if (!strcmp(regsb[i], s)) {
             *success = true;
             return reg_b(i);
         }
