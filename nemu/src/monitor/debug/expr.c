@@ -36,7 +36,7 @@ static struct rule {
     {" +", TK_NOTYPE},              // spaces
     {"\\(", '('},                   // left_parenthesis
     {"\\)", ')'},                   // right_parenthesis
-    {"\b[0-9]+\b", TK_DEC},             // decimal
+    {"(?!0[xX])[0-9]+", TK_DEC},    // decimal
     {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex
     {"\\$[a-zA-Z]+", TK_REG},       // registers
     {"\\*", '*'},                   // multiple
@@ -46,7 +46,7 @@ static struct rule {
     {"==", TK_EQ},                  // equal
     {"!=", TK_NEQ},                 // not_equal
     {"&&", TK_AND},                 // and
-    {"\\|\\|", TK_OR},                  // or
+    {"\\|\\|", TK_OR},              // or
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
