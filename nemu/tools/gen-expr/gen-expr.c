@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
         assert(ret == 1 && loop > 0);
     }
 
-    for (int i = 0; i < loop; i++) {
+    for (int i = 0; i < loop;) {
         memset(buf, 0, strlen(buf));
         gen_rand_expr();
 
@@ -128,6 +128,7 @@ int main(int argc, char *argv[]) {
         if(rv != 1)
             continue;
 
+        i++;
         printf("result == %u, expr ==  %s\n", result, buf);
     }
     return 0;
