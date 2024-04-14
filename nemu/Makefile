@@ -1,7 +1,6 @@
 NAME = nemu
 
 ifdef TEST_EXPR
-$(echo hhh)
 CFLAGS += -DTEST_EXPR
 endif
 
