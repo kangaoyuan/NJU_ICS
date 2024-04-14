@@ -1,9 +1,9 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <stdint.h>
 #include <assert.h>
 #include <string.h>
-#include <debug.h>
 
 // this should be enough
 static char buf[65536] = {};
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
     int loop = 1;
     if (argc > 1) {
         int ret = sscanf(argv[1], "%d", &loop);
-        Assert(ret == 1 && loop > 0, "gen-expr failed");
+        assert(ret == 1 && loop > 0);
     }
 
     for (int i = 0; i < loop; i++) {
@@ -116,7 +116,8 @@ int main(int argc, char *argv[]) {
         assert(fp != NULL);
 
         int result;
-        fscanf(fp, "%d", &result);
+        int rv = fscanf(fp, "%d", &result);
+        assert(rv == 1);
         pclose(fp);
 
         printf("result == %u, expr ==  %s\n", result, buf);

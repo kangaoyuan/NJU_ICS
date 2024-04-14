@@ -10,27 +10,30 @@ void init_regex();
 void init_wp_pool();
 void init_difftest(char *ref_so_file, long img_size, int port);
 
-static char *log_file = NULL;
-static char *diff_so_file = NULL;
-static char *img_file = NULL;
-static int batch_mode = false;
-static int difftest_port = 1234;
+static char* log_file = NULL;
+static char* img_file = NULL;
+static int   batch_mode = false;
+static char* diff_so_file = NULL;
+static int   difftest_port = 1234;
 
-int is_batch_mode() { return batch_mode; }
+int is_batch_mode() {
+    return batch_mode;
+}
 
 static inline void welcome() {
 #ifdef DEBUG
-  Log("Debug: \33[1;32m%s\33[0m", "ON");
-  Log("If debug mode is on, A log file will be generated to record every instruction NEMU executes. "
-      "This may lead to a large log file. "
-      "If it is not necessary, you can turn it off in include/common.h.");
+    Log("Debug: \33[1;32m%s\33[0m", "ON");
+    Log("If debug mode is on, A log file will be generated to record every "
+        "instruction NEMU executes. "
+        "This may lead to a large log file. "
+        "If it is not necessary, you can turn it off in include/common.h.");
 #else
-  Log("Debug: \33[1;32m%s\33[0m", "OFF");
+    Log("Debug: \33[1;32m%s\33[0m", "OFF");
 #endif
 
-  Log("Build time: %s, %s", __TIME__, __DATE__);
-  printf("Welcome to \33[1;41m\33[1;33m%s\33[0m-NEMU!\n", str(__ISA__));
-  printf("For help, type \"help\"\n");
+    Log("Build time: %s, %s", __TIME__, __DATE__);
+    printf("Welcome to \33[1;41m\33[1;33m%s\33[0m-NEMU!\n", str(__ISA__));
+    printf("For help, type \"help\"\n");
 }
 
 static inline long load_img() {
@@ -42,10 +45,10 @@ static inline long load_img() {
     FILE* fp = fopen(img_file, "rb");
     Assert(fp, "Can not open '%s'", img_file);
 
-    Log("The image is %s", img_file);
-
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
+
+    Log("The image is %s, size = %ld", img_file, size);
 
     fseek(fp, 0, SEEK_SET);
     int ret = fread(guest_to_host(IMAGE_START), size, 1, fp);

@@ -1,22 +1,22 @@
 #include <isa.h>
 #include "expr.h"
 #include "watchpoint.h"
+#include <memory/vaddr.h>
+#include <monitor/monitor.h>
 
 #include <stdlib.h>
-#include <memory/paddr.h>
-#include <monitor/monitor.h>
 #include <readline/history.h>
 #include <readline/readline.h>
 
-void cpu_exec(uint64_t);
 int is_batch_mode();
+void cpu_exec(uint64_t);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
     static char* line_read = NULL;
 
     if (line_read) {
-        //malloc() is called in readline() and returns the text of the line read, which has the final newline removed.
+        // malloc() is called in readline() and returns the text of the line read, which has the final newline removed.
         free(line_read);
         line_read = NULL;
     }
@@ -41,17 +41,11 @@ static int cmd_q(char* args) {
 }
 
 static int cmd_si(char* args) {
-    /* if (!args) {
-        cpu_exec(1);
-    } else {
-        cpu_exec(strtol(args, NULL, 10));
-    }
-
-    return 0; */
     if (args == NULL){
         cpu_exec(1);
         return 0;
     }
+
     int n = -1;
     if (sscanf(args, "%d", &n) == 1 && n > 0) {
         cpu_exec(n);
@@ -61,19 +55,20 @@ static int cmd_si(char* args) {
     return 0;
 }
 
-static int cmd_p(char* args){
-    if (args == NULL) {
-        printf("missing p <expr> args\n");
+static int cmd_info(char* args){
+    if(!strcmp(args, "r")){
+        isa_reg_display();
         return 0;
+    }else if(!strcmp(args, "r")){
+        wp_pool_display();
+        return 0;
+    } else {
+        printf("Invalid arg, (nemu) info command args error: "
+               "\e[0;31m%s\e[0m\n",
+               args);
     }
-    bool flag;
-    int val = expr(args, &flag);
-    if(!flag){
-        printf("sdb cmd: p %s, Wrong expression\n", args);
-        return -1;
-    }
-    printf("%s:\t%d\t0x%08x\n", args, val, val);
-    return 0;
+
+    return -1;
 }
 
 static int cmd_x(char* args){
@@ -95,28 +90,50 @@ static int cmd_x(char* args){
     }
 
     for (int i = 0; i < num; i++) {
-        printf("addr:0x%08x %08x\n", val + 4*i, paddr_read(val + 4*i, 4));
+        printf("addr:0x%08x %08x\n", val + 4*i, vaddr_read(val + 4*i, 4));
     }
     return 0;
 }
 
-static int cmd_info(char* args){
-    if(!strcmp(args, "r")){
-        isa_reg_display();
-        return 0;
-    }else if(!strcmp(args, "r")){
-        wp_pool_display();
+static int cmd_p(char* args){
+    if (args == NULL) {
+        printf("missing p <expr> args\n");
         return 0;
     }
-    return -1;
+    bool flag;
+    uint32_t val = expr(args, &flag);
+    if (!flag) {
+        printf("sdb cmd: p %s, Wrong expression\n", args);
+        return -1;
+    }
+    printf("%s:\t%08d\t0x%08x\n", args, val, val);
+    return 0;
 }
 
 static int cmd_w(char* args){
-    //WP* p = new_wp();
+    bool flag;
+    uint32_t val = expr(args, &flag);
+    if(!flag){
+        printf("Invalid arg, (nemu) w <expr> command args error: \e[0;31m%s\e[0m\n", args);
+    }
+
+    WP* cur = new_wp();
+    strcpy(cur->expr, args);
+    cur->pre_val = 0;
+    cur->cur_val = val;
+    printf("Watchpoint %d:%s\n", cur->NO, cur->expr);
     return 0;
 }
 
 static int cmd_d(char* args){
+    uint32_t n;
+    int rc = sscanf(args, "%d", &n);
+    if (rc != 1 || n < 0) {
+        printf("Invalid arg, (nemu) d <Num> command args error: \e[0;31m%s\e[0m\n", args);
+        return 0;
+    }
+
+    free_wp(n);
     return 0;
 }
 
@@ -133,8 +150,8 @@ static struct {
     {"q", "Exit NEMU", cmd_q},
     {"si", "Step [N] instruction, default N is 1", cmd_si},
     {"info", "Info <r|w>", cmd_info},
-    {"p", "Print <expr>", cmd_p},
     {"x", "Examine <Num> <address> for hex format with int length", cmd_x},
+    {"p", "Print <expr>", cmd_p},
     {"w", "Watchpoint <expr>", cmd_w},
     {"d", "Delete <Num> watchpoint", cmd_d},
 

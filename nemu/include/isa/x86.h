@@ -35,19 +35,60 @@ typedef struct {
     };
 
     vaddr_t pc;
+
+    union {
+        struct {
+            uint32_t CF : 1;
+            uint32_t resv1 : 1;
+            uint32_t PF : 1;
+            uint32_t resv2 : 1;
+            uint32_t AF : 1;
+            uint32_t resv3 : 1;
+            uint32_t ZF : 1;
+            uint32_t SF : 1;
+            uint32_t TF : 1;
+            uint32_t IF : 1;
+            uint32_t DF : 1;
+            uint32_t OF : 1;
+            uint32_t IOPL : 2;
+            uint32_t NT : 1;
+            uint32_t resv4 : 1;
+            uint32_t RF : 1;
+            uint32_t VM : 1;
+            uint32_t resv5 : 14;
+        };
+        uint32_t val;
+    } eflags;
+
+    uint32_t cs;
+    uint32_t ss;
+
+    bool INTR;
+    uint32_t CR0;
+    uint32_t CR3;
+
+    struct {
+        uint32_t idtr_base;
+        uint16_t idtr_limit;
+    };
+
+    struct {
+        uint32_t gdtr_base;
+        uint16_t gdtr_limit;
+    };
 } x86_CPU_state;
 
 // decode
 typedef struct {
-  bool is_operand_size_16;
-  uint8_t ext_opcode;
-  const rtlreg_t *mbase;
-  rtlreg_t mbr;
-  word_t moff;
+    bool            is_operand_size_16;
+    uint8_t         ext_opcode;
+    const rtlreg_t* mbase;
+    rtlreg_t        mbr;
+    word_t          moff;
 } x86_ISADecodeInfo;
 
-#define suffix_char(width) ((width) == 4 ? 'l' : ((width) == 1 ? 'b' : ((width) == 2 ? 'w' : '?')))
-#define isa_vaddr_check(vaddr, type, len) (MEM_RET_OK)
 #define x86_has_mem_exception() (false)
+#define isa_vaddr_check(vaddr, type, len) (MEM_RET_OK)
+#define suffix_char(width) ((width) == 4 ? 'l' : ((width) == 1 ? 'b' : ((width) == 2 ? 'w' : '?')))
 
 #endif

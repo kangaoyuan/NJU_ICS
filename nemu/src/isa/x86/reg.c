@@ -1,6 +1,6 @@
 #include <isa.h>
-#include <stdlib.h>
 #include <time.h>
+#include <stdlib.h>
 #include "local-include/reg.h"
 
 const char *regsl[] = {"eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi"};
@@ -45,11 +45,20 @@ void reg_test() {
     assert(pc_sample == cpu.pc);
 }
 
+// This function is called by "(nemu) info r" cmd.
 void isa_reg_display() {
+    printf("$eip\t0x%08x\n", cpu.pc);
+    for (int i = R_EAX; i <= R_EDI; i++) {
+        printf("$%s\t0x%08x\n", regsl[i], reg_l(i));
+    }
+    printf("SF=%d\n", cpu.eflags.SF&1);
+	printf("ZF=%d\n", cpu.eflags.ZF&1);
+	printf("OF=%d\n", cpu.eflags.OF&1);
+    printf("CF=%d\n", cpu.eflags.CF&1);
 }
 
 word_t isa_reg_str2val(const char* s, bool* success) {
-    if (!strcmp("$pc", s)) {
+    if (!strcmp("$pc", s) || !strcmp("$eip", s)) {
         *success = true;
         return cpu.pc;
     }
@@ -57,6 +66,18 @@ word_t isa_reg_str2val(const char* s, bool* success) {
         if (!strcmp(regsl[i], s + 1)) {
             *success = true;
             return reg_l(i);
+        }
+    }
+    for (int i = R_AX; i <= R_DI; i++) {
+        if (!strcmp(regsw[i], s + 1)) {
+            *success = true;
+            return reg_w(i);
+        }
+    }
+    for (int i = R_AL; i <= R_BH; i++) {
+        if (!strcmp(regsb[i], s + 1)) {
+            *success = true;
+            return reg_b(i);
         }
     }
     *success = false;

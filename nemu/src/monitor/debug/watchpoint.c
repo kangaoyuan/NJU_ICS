@@ -3,6 +3,7 @@
 
 #define NR_WP 32
 
+static uint32_t WP_ID;
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
@@ -13,6 +14,7 @@ void init_wp_pool() {
     }
     wp_pool[NR_WP - 1].next = NULL;
 
+    WP_ID = 0;
     head = NULL;
     free_ = wp_pool;
 }
@@ -20,33 +22,79 @@ void init_wp_pool() {
 /* TODO: Implement the functionality of watchpoint */
 
 WP* new_wp(){
+    if(!free_)
+        panic("no allocation space to new_wp");
+
     WP* alloc = free_;
     free_ = free_->next;
 
     if (!head) {
         head = alloc;
         head->next = NULL;
+        head->hit_num = 0;
+        head->NO = ++WP_ID;
     } else {
-        while (head->next) {
-            head = head->next;
+        WP* cur = head;
+        while (cur->next) {
+            cur = cur->next;
         }
-        head->next = alloc;
+        cur->next = alloc;
         alloc->next = NULL;
+        alloc->hit_num = 0;
+        alloc->NO = ++WP_ID;
     }
     return alloc;
 }
-void free_wp(WP *wp){
-    wp->next = free_;
-    free_ = wp;
+void free_wp(uint32_t num){
+    WP* cur = head;
+
+    if(cur && cur->NO == num){
+        head = head->next;
+        cur->next = free_;
+        free_ = cur;
+        return;
+    }
+
+    if(!cur)
+        return;
+
+    while(cur->next){
+        if(cur->next->NO == num){
+            break;
+        }
+        cur = cur->next;
+    }
+
+    if(!cur->next)
+        return;
+
+    cur->next = cur->next->next;
+    cur->next->next = free_;
+    free_ = cur->next;
 };
 
+bool check_wp(){
+    bool flag;
+    for(WP* cur = head; cur; cur = cur->next){
+        cur->pre_val = cur->cur_val;
+        cur->cur_val = expr(cur->expr, &flag);
+        if(flag && cur->cur_val != cur->pre_val){
+            ++cur->hit_num;
+            return true;
+        }
+    }
+    return false;
+}
+
 void wp_pool_display(){
-    while(head){
+    WP* cur = head;
+
+    while(cur){
         bool flag;
-        uint32_t res = expr(head->expr, &flag);
+        uint32_t res = expr(cur->expr, &flag);
         if(!flag)
             panic("watchpoint expr() failed");
-        printf("%d:\t%s:\t%u\n", head->NO, head->expr, res);
-        head = head->next;
+        printf("%d:\t%s:\t%u\n", cur->NO, cur->expr, res);
+        cur = cur->next;
     }
 }

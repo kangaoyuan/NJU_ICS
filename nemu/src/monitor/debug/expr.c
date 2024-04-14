@@ -148,7 +148,7 @@ static bool make_token(char* e) {
 }
 
 static bool is_operator(int opt_type){
-    if(opt_type == ')' || opt_type == TK_NOTYPE || opt_type == TK_DEC || opt_type == TK_HEX || opt_type == TK_REG)
+    if(opt_type == ')' || opt_type == TK_DEC || opt_type == TK_HEX || opt_type == TK_REG)
         return false;
     return true;
 }
@@ -189,8 +189,7 @@ static bool check_parentheses(int left, int right){
     return true;
 }
 
-static int get_priority(int opt_type)
-{
+static int get_priority(int opt_type) {
     switch (opt_type) {
     case TK_NEG:
     case TK_DEREF:

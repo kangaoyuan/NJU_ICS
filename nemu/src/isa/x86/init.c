@@ -11,13 +11,16 @@ static const uint8_t img[] = {
     0xbb, 0x02, 0x00, 0x00, 0x00,        // 100012:  movl  $0x2,%ebx
     0x66, 0xc7, 0x84, 0x99, 0x00, 0xe0,  // 100017:  movw
                                          // $0x1,-0x2000(%ecx,%ebx,4)
-    0xff, 0xff, 0x01, 0x00, 0xb8, 0x00, 0x00,
-    0x00, 0x00,  // 100021:  movl  $0x0,%eax
-    0xd6,        // 100026:  nemu_trap
+    0xff, 0xff, 0x01, 0x00, 0xb8, 0x00, 0x00, 0x00,
+    0x00,  // 100021:  movl  $0x0,%eax
+    0xd6,  // 100026:  nemu_trap
 };
 
 static void restart() {
-    /* Set the initial instruction pointer. */
+    /* Set the cpu initial status. */
+    cpu.cs = 0x8;
+    cpu.eflags.val = 0x2;
+    /* Set the cpu initial instruction pointer. */
     cpu.pc = PMEM_BASE + IMAGE_START;
 }
 
