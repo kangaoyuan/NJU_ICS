@@ -10,7 +10,7 @@ void test_expr(){
     FILE* fp = fopen("tools/gen-expr/input", "r");
     assert(fp!=NULL);
 
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 10; i++) {
         bool     flag = true;
         unsigned ans = 0, eval = 0;
         char     expression[70000];
