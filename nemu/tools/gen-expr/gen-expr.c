@@ -7,10 +7,17 @@
 
 // this should be enough
 static char buf[65536] = {};
-static char code_buf[65536 + 128] = {}; // a little larger than `buf`
+static char code_buf[65536 + 1024] = {}; // a little larger than `buf`
 static char *code_format =
 "#include <stdio.h>\n"
+"#include <stdlib.h>\n"
+"#include <signal.h>\n"
+"void div_handler(int singal){"
+"  printf(\"error\");"
+"  exit(0);"
+"}"
 "int main() { "
+"  signal(SIGFPE, div_handler)"
 "  unsigned result = %s; "
 "  printf(\"%%u\", result); "
 "  return 0; "
@@ -117,8 +124,9 @@ int main(int argc, char *argv[]) {
 
         int result;
         int rv = fscanf(fp, "%d", &result);
-        assert(rv == 1);
         pclose(fp);
+        if(rv != 1)
+            continue;
 
         printf("result == %u, expr ==  %s\n", result, buf);
     }
