@@ -36,8 +36,8 @@ static struct rule {
     {" +", TK_NOTYPE},              // spaces
     {"\\(", '('},                   // left_parenthesis
     {"\\)", ')'},                   // right_parenthesis
-    {"[0-9]+", TK_DEC},             // decimal
-    {"0\\x[0-9a-fA-F]+", TK_HEX},     // hex
+    {"\b[0-9]+\b", TK_DEC},             // decimal
+    {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex
     {"\\$[a-zA-Z]+", TK_REG},       // registers
     {"\\*", '*'},                   // multiple
     {"/", '/'},                     // division
