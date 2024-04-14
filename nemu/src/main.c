@@ -14,7 +14,7 @@ void test_expr(){
     for (int i = 0; i < 10000; i++) {
         bool flag = true;
         unsigned ans = 0, eval = 0;
-        int rv = fscanf(fp, "result == %u, %[^\n]", &ans, expression);
+        int rv = fscanf(fp, "result == %u, expr == %[^\n]", &ans, expression);
         Assert(rv == 2, "test_expr failed");
         eval = expr(expression, &flag);
         Assert(flag == true, "test_expr failed");
