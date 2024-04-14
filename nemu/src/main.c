@@ -10,11 +10,10 @@ void test_expr(){
     FILE* fp = fopen("tools/gen-expr/input", "r");
     assert(fp!=NULL);
 
-    char  expression[70000];
     for (int i = 0; i < 10000; i++) {
-        expression[0] = 0;
-        bool flag = true;
+        bool     flag = true;
         unsigned ans = 0, eval = 0;
+        char     expression[70000];
         int rv = fscanf(fp, "result == %u, expr == %[^\n]", &ans, expression);
         Assert(rv == 2, "test_expr failed");
         eval = expr(expression, &flag);
