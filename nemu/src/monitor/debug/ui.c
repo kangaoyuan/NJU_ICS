@@ -79,9 +79,12 @@ static int cmd_x(char* args){
 
     char* args_num = strtok(args, " ");
     char* args_expr = strtok(NULL, "");
+    
+    printf("In cmd_x args_num == %s\n", args_num);
+    printf("In cmd_x args_num == %s\n", args_expr);
 
     int num = strtol(args_num, NULL, 10);
-    bool flag = true;
+    bool flag;
     int val = expr(args_expr, &flag);
 
     if (!flag) {
