@@ -1,7 +1,10 @@
 NAME = nemu
 
+ifdef TEST_EXPR
+CFLAGS += -DTEST_EXPR
+endif
+
 ISA ?= x86
-TEST_EXPR = 1
 ISAS = $(shell ls src/isa/)
 ifeq ($(filter $(ISAS), $(ISA)), ) # ISA must be valid
 $(error Invalid ISA. Supported: $(ISAS))
