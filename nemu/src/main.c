@@ -34,6 +34,7 @@ int main(int argc, char* argv[]) {
 
 #ifdef TEST_EXPR
     test_expr();
+    printf("hhh\n");
 #endif
 
     /* Start engine. */
