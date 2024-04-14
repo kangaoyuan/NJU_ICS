@@ -291,8 +291,8 @@ static uint32_t eval(int left, int right) {
         case '*':
             return val1 * val2;
         case '/':
-            if(val2 == 0)
-                panic("eval fail for division by 0");
+            //if(val2 == 0)
+            //    panic("eval fail for division by 0");
             return val1 / val2;
         case TK_EQ:
             return (uint32_t)(val1 == val2);
