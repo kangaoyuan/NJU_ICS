@@ -32,7 +32,9 @@ int main(int argc, char* argv[]) {
     /* Initialize the monitor. */
     init_monitor(argc, argv);
 
+#ifdef TEST_EXPR
     test_expr();
+#endif
 
     /* Start engine. */
     engine_start();
