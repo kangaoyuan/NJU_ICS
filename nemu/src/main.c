@@ -12,6 +12,7 @@ void test_expr(){
 
     char  expression[70000];
     for (int i = 0; i < 10000; i++) {
+        expression[0] = 0;
         bool flag = true;
         unsigned ans = 0, eval = 0;
         int rv = fscanf(fp, "result == %u, expr == %[^\n]", &ans, expression);
