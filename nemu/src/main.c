@@ -15,7 +15,7 @@ void test_expr(){
         bool     flag = true;
         unsigned ans = 0, eval = 0;
         char     expression[70000];
-        int rv = fscanf(fp, "result == %u, expr == %[^\n] ", &ans, expression);
+        int rv = fscanf(fp, "result == %u, expr == %[^\n]", &ans, expression);
         Assert(rv == 2, "test_expr failed");
         eval = expr(expression, &flag);
         Assert(flag == true, "test_expr failed");
