@@ -76,8 +76,8 @@ typedef struct token {
     char str[32];
 } Token;
 
-// Here we hard code the max limit of tokens, 32.
-static Token tokens[32] __attribute__((used)) = {};
+// Here we hard code the max limit of tokens, 6700.
+static Token tokens[6700] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char* e) {
