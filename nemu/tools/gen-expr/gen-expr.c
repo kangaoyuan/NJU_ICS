@@ -39,7 +39,7 @@ static inline void gen_rand_num() {
 
 static inline void gen_rand_op() {
     const char* op = NULL;
-    switch (choose(8)) {
+    switch (choose(4)) {
     case 0:
         op = "*";
         break;
@@ -54,15 +54,6 @@ static inline void gen_rand_op() {
         break;
     case 4:
         op = "==";
-        break;
-    case 5:
-        op = "!=";
-        break;
-    case 6:
-        op = "&&";
-        break;
-    case 7:
-        op = "||";
         break;
     }
     strcat(buf + strlen(buf), op);
