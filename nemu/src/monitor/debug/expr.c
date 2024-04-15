@@ -282,8 +282,8 @@ static uint32_t eval(int left, int right) {
         return eval(left + 1, right - 1);
     } else {
         int op = get_main_operator(left, right);
-        printf("left == %-3d, right == %-3d\n", left, right);
-        printf("op == %d %c\n", op, tokens[op].type);
+        //printf("left == %-3d, right == %-3d\n", left, right);
+        //printf("op == %d %c\n", op, tokens[op].type);
 
         if(tokens[op].type == TK_NEG){
             return -eval(op+1, right);
