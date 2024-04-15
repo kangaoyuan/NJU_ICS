@@ -58,7 +58,6 @@ static inline void gen_rand_op() {
  }
 
  static inline void gen_rand_expr() {
-     // Below commenting content is used to generate " " tokens.
      uint32_t space = choose(2);
      for (int i = 0; i < space; ++i)
          gen_char(' ');
@@ -111,13 +110,13 @@ int main(int argc, char *argv[]) {
         assert(fp != NULL);
 
         int result;
-        int rv = fscanf(fp, "%d", &result);
+        int rv = fscanf(fp, "%u", &result);
         pclose(fp);
         if(rv != 1)
             continue;
 
         i++;
-        printf("result == %u, expr ==  %s\n", result, buf);
+        printf("result == %u, expr == %s\n", result, buf);
     }
     return 0;
 }
