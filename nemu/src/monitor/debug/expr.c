@@ -284,8 +284,8 @@ static uint32_t eval(int left, int right) {
         if(tokens[op].type == TK_DEREF)
             return vaddr_read(eval(op+1, right), 4);
 
-        uint32_t val1 = eval(left, op - 1);
-        uint32_t val2 = eval(op + 1, right);
+        int32_t val1 = eval(left, op - 1);
+        int32_t val2 = eval(op + 1, right);
         //printf("left == %d, right == %d\n", left, right);
         //printf("op == %d %c\n", op, tokens[op].type);
         //printf("vla1 == %d, val2 == %d\n", val1, val2);
