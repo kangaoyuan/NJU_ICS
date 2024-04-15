@@ -104,16 +104,11 @@ int main(int argc, char *argv[]) {
         fputs(code_buf, fp);
         fclose(fp);
 
-        // One way to get rid of /0 error.
-        //int ret = system("gcc /tmp/.code.c -Wall -Werror -o /tmp/.expr");
-        //if (ret != 0)
-        //    continue;
+        // One way to get rid of /0 error, which signal doesn't work in this case
+        int ret = system("gcc /tmp/.code.c -Wall -Werror -o /tmp/.expr");
+        if (ret != 0)
+            continue;
 
-        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-        if (ret != 0){
-            fprintf(stderr, "system() function failed");
-            return -1;
-        }
 
         fp = popen("/tmp/.expr", "r");
         if(!fp) {
@@ -128,9 +123,6 @@ int main(int argc, char *argv[]) {
         if (status == -1) {
             perror("Error while closing the process\n");
             return -1;
-        } else {
-            if(0 != WEXITSTATUS(status))
-               continue;
         }
 
         for (int i = 0; i < strlen(buf); i++) {
