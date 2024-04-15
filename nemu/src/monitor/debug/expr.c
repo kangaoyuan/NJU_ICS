@@ -40,9 +40,9 @@ static struct rule {
     {"[0-9]+", TK_DEC},             // decimal
     {"\\$[a-zA-Z]+", TK_REG},       // registers
     {"\\*", '*'},                   // multiple
-    {"/", '/'},                     // division
+    {"\\/", '/'},                     // division
     {"\\+", '+'},                   // plus
-    {"-", '-'},                     // subtract
+    {"\\-", '-'},                     // subtract
     {"==", TK_EQ},                  // equal
     {"!=", TK_NEQ},                 // not_equal
     {"&&", TK_AND},                 // and

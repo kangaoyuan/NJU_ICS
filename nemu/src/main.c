@@ -12,9 +12,9 @@ void test_expr(){
 
     // Here loop is hard code, corresponding to the arg of gen-expr tool.
     for (int i = 0; i < 700; i++) {
-        bool     flag = true;
-        unsigned ans = 0, eval = 0;
-        char     expression[70000];
+        bool     flag;
+        unsigned ans, eval;
+        char     expression[70000] = {0};
         int rv = fscanf(fp, "result == %u, expr == %[^\n] ", &ans, expression);
         Assert(rv == 2, "test_expr failed");
         eval = expr(expression, &flag);
