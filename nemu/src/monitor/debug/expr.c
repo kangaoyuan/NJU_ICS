@@ -300,13 +300,13 @@ static uint32_t eval(int left, int right) {
             //    panic("eval fail for division by 0");
             return val1 / val2;
         case TK_EQ:
-            return val1 == val2;
+            return (uint32_t)(val1 == val2);
         case TK_NEQ:
-            return val1 != val2;
+            return (uint32_t)(val1 != val2);
         case TK_AND:
-            return val1 && val2;
+            return (uint32_t)(val1 && val2);
         case TK_OR:
-            return val1 || val2;
+            return (uint32_t)(val1 || val2);
         default:
             assert(0);
         }
