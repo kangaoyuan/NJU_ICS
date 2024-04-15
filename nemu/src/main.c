@@ -24,7 +24,7 @@ void test_expr(){
             printf("result == %u, eval == %u\n", ans, eval);
         }
         else
-            printf("correct %d\n", i);
+            printf("\33[1;31m""correct %d""\33[0m\n", i);
     }
     fclose(fp);
 }
