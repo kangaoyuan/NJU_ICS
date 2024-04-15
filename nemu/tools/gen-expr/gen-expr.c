@@ -13,7 +13,6 @@ static char *code_format =
 "#include <stdlib.h>\n"
 "#include <signal.h>\n"
 "void div_handler(int singal) {"
-"  printf(\"error\");"
 "  exit(-1);"
 "}"
 "int main() { "
@@ -105,6 +104,7 @@ int main(int argc, char *argv[]) {
         fputs(code_buf, fp);
         fclose(fp);
 
+        // One way to get rid of /0 error.
         int ret = system("gcc /tmp/.code.c -Wall -Werror -o /tmp/.expr");
         if (ret != 0)
             continue;
@@ -114,9 +114,16 @@ int main(int argc, char *argv[]) {
 
         int result;
         int rv = fscanf(fp, "%u", &result);
-        pclose(fp);
+        int status = pclose(fp);
         if(rv != 1)
             continue;
+        if (status == -1) {
+            fprintf(stderr, "Error while closing the process\n");
+            return 1;
+        } else {
+            if(-1 == WEXITSTATUS(status))
+               continue;
+        }
 
         for (int i = 0; i < strlen(buf); i++) {
             if (buf[i] == 'U')
