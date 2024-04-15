@@ -110,26 +110,26 @@ int main(int argc, char *argv[]) {
         //    continue;
 
         int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-        if (ret != 0)
-            continue;
+        if (ret != 0){
+            fprintf(stderr, "system() function failed");
+            return -1;
+        }
 
-        int result;
         fp = popen("/tmp/.expr", "r");
         if(!fp) {
             perror("Error while opening the process\n");
             return -1;
         }
-        int rv = fscanf(fp, "%u", &result);
-        if(rv != -1){
-            fprintf(stderr, "ignore division\n");
-        }
+
+        int result;
+        ret = fscanf(fp, "%u", &result);
 
         int status = pclose(fp);
         if (status == -1) {
             perror("Error while closing the process\n");
             return -1;
         } else {
-            if(-1 == WEXITSTATUS(status))
+            if(255 == WEXITSTATUS(status))
                continue;
         }
 
