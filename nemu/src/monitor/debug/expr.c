@@ -77,7 +77,7 @@ typedef struct token {
 } Token;
 
 // Here we hard code the max limit of tokens, 6700.
-static Token tokens[6700] __attribute__((used)) = {};
+static Token tokens[60000] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char* e) {
@@ -284,8 +284,8 @@ static uint32_t eval(int left, int right) {
         if(tokens[op].type == TK_DEREF)
             return vaddr_read(eval(op+1, right), 4);
 
-        int32_t val1 = eval(left, op - 1);
-        int32_t val2 = eval(op + 1, right);
+        uint32_t val1 = eval(left, op - 1);
+        uint32_t val2 = eval(op + 1, right);
         //printf("left == %d, right == %d\n", left, right);
         //printf("op == %d %c\n", op, tokens[op].type);
         //printf("vla1 == %d, val2 == %d\n", val1, val2);
