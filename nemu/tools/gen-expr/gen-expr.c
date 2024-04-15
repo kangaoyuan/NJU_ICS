@@ -118,6 +118,11 @@ int main(int argc, char *argv[]) {
         if(rv != 1)
             continue;
 
+        for (int i = 0; i < strlen(buf); i++) {
+            if (buf[i] == 'U')
+                buf[i] = ' ';
+        }
+
         i++;
         printf("result == %u, expr == %s\n", result, buf);
     }
