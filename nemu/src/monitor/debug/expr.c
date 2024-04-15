@@ -173,7 +173,7 @@ static bool check_parentheses(int left, int right){
         return false;
 
     int top = 0;
-    for(int i = left+1; i < right; ++i){
+    for(int i = left; i <= right; ++i){
         // Here is some stack tricks to judge the parethesis with pair.
         if (tokens[i].type == '('){
             top++;
@@ -183,10 +183,14 @@ static bool check_parentheses(int left, int right){
             if(top < 0){
                 return false;
             }
+        } else if(!top && i != right) {
+            return false;
         }
     }
 
-    Assert(top == 0, "check_parentheses failed");
+    if(top)
+        return false;
+
     return true;
 }
 
