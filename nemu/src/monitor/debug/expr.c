@@ -158,7 +158,7 @@ static uint32_t get_val(int index){
     switch(tokens[index].type){
     // strtol and sscanf two functions are all suitable.
     case TK_DEC:
-        if(sscanf(tokens[index].str, "%d", &val) == 1)
+        if(sscanf(tokens[index].str, "%u", &val) == 1)
             return val;
     case TK_HEX:
         if(sscanf(tokens[index].str, "%x", &val) == 1)
@@ -266,7 +266,6 @@ static uint32_t eval(int left, int right) {
             val = isa_reg_str2val(tokens[left].str+1, &flag);
             Assert(flag == true, "eval failed");
         } else {
-            printf("left == %d", tokens[left].type);
             panic("left == right, eval failed");
         }
         return val;
@@ -277,7 +276,8 @@ static uint32_t eval(int left, int right) {
         return eval(left + 1, right - 1);
     } else {
         int op = get_main_operator(left, right);
-        //printf("op == %d %d %c\n", op, tokens[op].type, tokens[op].type);
+        printf("left == %d, right == %d\n", left, right);
+        printf("op == %d %d %c\n", op, tokens[op].type, tokens[op].type);
 
         if(tokens[op].type == TK_NEG){
             return -eval(op+1, right);
@@ -285,8 +285,8 @@ static uint32_t eval(int left, int right) {
         if(tokens[op].type == TK_DEREF)
             return vaddr_read(eval(op+1, right), 4);
 
-        int val1 = eval(left, op - 1);
-        int val2 = eval(op + 1, right);
+        uint32_t val1 = eval(left, op - 1);
+        uint32_t val2 = eval(op + 1, right);
 
         switch (tokens[op].type) {
         case '+':
@@ -300,20 +300,20 @@ static uint32_t eval(int left, int right) {
             //    panic("eval fail for division by 0");
             return val1 / val2;
         case TK_EQ:
-            return (uint32_t)(val1 == val2);
+            return val1 == val2;
         case TK_NEQ:
-            return (uint32_t)(val1 != val2);
+            return val1 != val2;
         case TK_AND:
-            return (uint32_t)(val1 && val2);
+            return val1 && val2;
         case TK_OR:
-            return (uint32_t)(val1 || val2);
+            return val1 || val2;
         default:
             assert(0);
         }
     }
 }
 
-word_t expr(char* e, bool* success) {
+uint32_t expr(char* e, bool* success) {
     if (!make_token(e)) {
         *success = false;
         return 0;
