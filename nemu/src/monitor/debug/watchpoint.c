@@ -77,7 +77,7 @@ void free_wp(uint32_t num){
 };
 
 bool check_wp(){
-    bool flag;
+    bool flag, result;
     for(WP* cur = head; cur; cur = cur->next){
         cur->pre_val = cur->cur_val;
         cur->cur_val = expr(cur->expr, &flag);
@@ -87,10 +87,10 @@ bool check_wp(){
                    cur->expr);
             printf("Old value = %u\n", cur->pre_val);
             printf("New value = %u\n", cur->cur_val);
-            return true;
+            result = true;
         }
     }
-    return false;
+    return result;
 }
 
 void wp_pool_display(){
