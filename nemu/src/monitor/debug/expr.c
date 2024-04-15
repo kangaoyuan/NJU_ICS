@@ -288,7 +288,7 @@ static uint32_t eval(int left, int right) {
         uint32_t val2 = eval(op + 1, right);
         printf("left == %d, right == %d\n", left, right);
         printf("op == %d %c\n", op, tokens[op].type);
-        printf("vla1 == %d, val2 == %d\n", val1, val2);
+        printf("vla1 == %u, val2 == %u\n", val1, val2);
 
         switch (tokens[op].type) {
         case '+':
