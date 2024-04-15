@@ -61,7 +61,7 @@ static inline void gen_rand_op() {
      uint32_t space = choose(2);
      for (int i = 0; i < space; ++i)
          gen_char(' ');
-     if (strlen(buf) < 7000) {
+     if (strlen(buf) < 1000) {
          switch (choose(3)) {
          case 0:
              gen_rand_num();
