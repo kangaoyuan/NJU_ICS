@@ -11,7 +11,7 @@ void test_expr(){
     assert(fp!=NULL);
 
     // Here loop is hard code, corresponding to the arg of gen-expr tool.
-    for (int i = 0; i < 70; i++) {
+    for (int i = 0; i < 700; i++) {
         bool     flag = true;
         unsigned ans = 0, eval = 0;
         char     expression[70000];
