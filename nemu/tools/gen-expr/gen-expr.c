@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
 
         fp = popen("/tmp/.expr", "r");
         if(!fp) {
-            perror("Error while opening the process\n");
+            perror("Error while opening the process");
             return -1;
         }
 
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
             perror("Error while closing the process\n");
             return -1;
         } else {
-            if(255 == WEXITSTATUS(status))
+            if(0 != WEXITSTATUS(status))
                continue;
         }
 
