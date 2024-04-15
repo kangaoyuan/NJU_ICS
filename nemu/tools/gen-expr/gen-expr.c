@@ -33,7 +33,10 @@ static void gen_char(char a) {
 }
 
 static inline void gen_rand_num() {
-    sprintf(buf+strlen(buf), "%u", (unsigned)rand());
+    unsigned val = rand();
+    sprintf(buf+strlen(buf), "%u", val);
+    if(val)
+        buf[strlen(buf)] = 'U';
     buf[strlen(buf)] = '\0';
 }
 
