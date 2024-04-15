@@ -30,15 +30,18 @@ WP* new_wp(){
 
     if (!head) {
         head = alloc;
-        head->next = NULL;
-        head->hit_num = 0;
-        head->NO = ++WP_ID;
+        alloc->next = NULL;
+        alloc->hit_num = 0;
+        alloc->NO = ++WP_ID;
     } else {
+        /* tail insertion */
         WP* cur = head;
         while (cur->next) {
             cur = cur->next;
         }
         cur->next = alloc;
+        /* head insertion */
+        //head->next = alloc;
         alloc->next = NULL;
         alloc->hit_num = 0;
         alloc->NO = ++WP_ID;
@@ -94,7 +97,7 @@ void wp_pool_display(){
         uint32_t res = expr(cur->expr, &flag);
         if(!flag)
             panic("watchpoint expr() failed");
-        printf("%d:\t%s:\t%u\n", cur->NO, cur->expr, res);
+        printf("WatchPoint %d:\t%s = %u\n", cur->NO, cur->expr, res);
         cur = cur->next;
     }
 }
