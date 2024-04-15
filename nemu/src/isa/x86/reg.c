@@ -49,7 +49,7 @@ void reg_test() {
 void isa_reg_display() {
     printf("$eip\t0x%08x\n", cpu.pc);
     for (int i = R_EAX; i <= R_EDI; i++) {
-        printf("$%s\t0x%08x\n", regsl[i], reg_l(i));
+        printf("$%s\t%0#8x\n", regsl[i], reg_l(i));
     }
     printf("SF=%d\n", cpu.eflags.SF&1);
 	printf("ZF=%d\n", cpu.eflags.ZF&1);

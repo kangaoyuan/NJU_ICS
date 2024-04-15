@@ -47,10 +47,11 @@ static int cmd_si(char* args) {
     }
 
     int n = -1;
+    // strtol() is also ok.
     if (sscanf(args, "%d", &n) == 1 && n > 0) {
         cpu_exec(n);
     } else {
-        printf("Invalid arg, (nemu) si command args error: \e[0;31m%s\e[0m\n", args);
+        printf("Invalid arg, (nemu) si <Num> command args error: \e[0;31m%s\e[0m\n", args);
     }
     return 0;
 }
@@ -58,17 +59,15 @@ static int cmd_si(char* args) {
 static int cmd_info(char* args){
     if(!strcmp(args, "r")){
         isa_reg_display();
-        return 0;
     }else if(!strcmp(args, "w")){
         wp_pool_display();
-        return 0;
     } else {
-        printf("Invalid arg, (nemu) info command args error: "
+        printf("Invalid arg, (nemu) info <r|w> command args error: "
                "\e[0;31m%s\e[0m\n",
                args);
     }
 
-    return -1;
+    return 0;
 }
 
 static int cmd_x(char* args){
@@ -79,9 +78,9 @@ static int cmd_x(char* args){
 
     char* args_num = strtok(args, " ");
     char* args_expr = strtok(NULL, "");
-    
-    printf("In cmd_x args_num == %s\n", args_num);
-    printf("In cmd_x args_num == %s\n", args_expr);
+
+    //printf("In cmd_x args_num == %s\n", args_num);
+    //printf("In cmd_x args_num == %s\n", args_expr);
 
     int num = strtol(args_num, NULL, 10);
     bool flag;
@@ -89,7 +88,7 @@ static int cmd_x(char* args){
 
     if (!flag) {
         printf("sdb cmd: x %s %s, Wrong expression\n", args_num, args_expr);
-        return -1;
+        return 0;
     }
 
     for (int i = 0; i < num; i++) {
@@ -107,9 +106,9 @@ static int cmd_p(char* args){
     uint32_t val = expr(args, &flag);
     if (!flag) {
         printf("sdb cmd: p %s, Wrong expression\n", args);
-        return -1;
+    } else{
+        printf("%s:\t%08d\t0x%08x\n", args, val, val);
     }
-    printf("%s:\t%08d\t0x%08x\n", args, val, val);
     return 0;
 }
 
@@ -222,6 +221,7 @@ void ui_mainloop() {
                 if (cmd_table[i].handler(args) < 0) {
                     return;
                 }
+                // end of the process.
                 break;
             }
         }

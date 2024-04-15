@@ -28,25 +28,28 @@ static struct rule {
     char* regex;
     int   token_type;
 } rules[] = {
-
     /* TODO: Add more rules.
      * Pay attention to the precedence level of different rules.
      */
 
-    {" +", TK_NOTYPE},              // spaces
-    {"\\(", '('},                   // left_parenthesis
-    {"\\)", ')'},                   // right_parenthesis
+    {" +", TK_NOTYPE},  // spaces
+
+    {"\\(", '('},  // left_parenthesis
+    {"\\)", ')'},  // right_parenthesis
+    // Here, we need pay attention to the sequence and te syntax of regular
+    // expression
     {"0[xX][0-9a-fA-F]+", TK_HEX},  // hex
     {"[0-9]+", TK_DEC},             // decimal
     {"\\$[a-zA-Z]+", TK_REG},       // registers
-    {"\\*", '*'},                   // multiple
-    {"\\/", '/'},                     // division
-    {"\\+", '+'},                   // plus
-    {"\\-", '-'},                     // subtract
-    {"==", TK_EQ},                  // equal
-    {"!=", TK_NEQ},                 // not_equal
-    {"&&", TK_AND},                 // and
-    {"\\|\\|", TK_OR},              // or
+
+    {"\\*", '*'},       // multiple
+    {"\\/", '/'},       // division
+    {"\\+", '+'},       // plus
+    {"\\-", '-'},       // subtract
+    {"==", TK_EQ},      // equal
+    {"!=", TK_NEQ},     // not_equal
+    {"&&", TK_AND},     // and
+    {"\\|\\|", TK_OR},  // or
 };
 
 #define NR_REGEX (sizeof(rules) / sizeof(rules[0]))
@@ -173,7 +176,8 @@ static bool check_parentheses(int left, int right){
         return false;
 
     int top = 0;
-    for(int i = left; i <= right; ++i){
+    // Pay attention to the index for the most outside parenthesis.
+    for(int i = left + 1; i < right; ++i){
         // Here is some stack tricks to judge the parethesis with pair.
         if (tokens[i].type == '('){
             top++;
@@ -183,8 +187,6 @@ static bool check_parentheses(int left, int right){
             if(top < 0){
                 return false;
             }
-        } else if(!top && i != right) {
-            return false;
         }
     }
 
