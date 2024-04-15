@@ -188,8 +188,7 @@ static bool check_parentheses(int left, int right){
         }
     }
 
-    if(top)
-        return false;
+    Assert(!top, "check_parentheses failed");
 
     return true;
 }
@@ -218,7 +217,7 @@ static int get_priority(int opt_type) {
 }
 
 static int get_main_operator(int left, int right){
-    int pos = left;
+    int pos = -1;
     int priority = 7;
     int parenthesis = 0;
 
@@ -247,7 +246,7 @@ static int get_main_operator(int left, int right){
         }
     }
 
-    Assert(pos != left, "get_main_operator failed");
+    Assert(pos != -1, "get_main_operator failed");
     return pos;
 }
 
@@ -290,9 +289,9 @@ static uint32_t eval(int left, int right) {
 
         uint32_t val1 = eval(left, op - 1);
         uint32_t val2 = eval(op + 1, right);
-        printf("left == %d, right == %d\n", left, right);
+        printf("left == %03d, right == %03d\n", left, right);
         printf("op == %d %c\n", op, tokens[op].type);
-        printf("vla1 == %u, val2 == %u\n", val1, val2);
+        printf("vla1 == %08u, val2 == %08u\n", val1, val2);
 
         switch (tokens[op].type) {
         case '+':
