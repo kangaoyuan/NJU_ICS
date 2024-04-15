@@ -105,21 +105,29 @@ int main(int argc, char *argv[]) {
         fclose(fp);
 
         // One way to get rid of /0 error.
-        int ret = system("gcc /tmp/.code.c -Wall -Werror -o /tmp/.expr");
+        //int ret = system("gcc /tmp/.code.c -Wall -Werror -o /tmp/.expr");
+        //if (ret != 0)
+        //    continue;
+
+        int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
         if (ret != 0)
             continue;
 
-        fp = popen("/tmp/.expr", "r");
-        assert(fp != NULL);
-
         int result;
+        fp = popen("/tmp/.expr", "r");
+        if(!fp) {
+            perror("Error while opening the process\n");
+            return -1;
+        }
         int rv = fscanf(fp, "%u", &result);
+        if(rv != -1){
+            fprintf(stderr, "ignore division\n");
+        }
+
         int status = pclose(fp);
-        if(rv != 1)
-            continue;
         if (status == -1) {
-            fprintf(stderr, "Error while closing the process\n");
-            return 1;
+            perror("Error while closing the process\n");
+            return -1;
         } else {
             if(-1 == WEXITSTATUS(status))
                continue;
