@@ -83,6 +83,10 @@ bool check_wp(){
         cur->cur_val = expr(cur->expr, &flag);
         if(flag && cur->cur_val != cur->pre_val){
             ++cur->hit_num;
+            printf("Hardware watchpoint %d: %s\n\n", cur->NO,
+                   cur->expr);
+            printf("Old value = %u\n", cur->pre_val);
+            printf("New value = %u\n", cur->cur_val);
             return true;
         }
     }

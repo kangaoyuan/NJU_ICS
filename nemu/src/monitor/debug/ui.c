@@ -113,10 +113,15 @@ static int cmd_p(char* args){
 }
 
 static int cmd_w(char* args){
+    if(args == NULL){
+        printf("missing w <expr> args\n");
+        return 0;
+    }
     bool flag;
     uint32_t val = expr(args, &flag);
     if(!flag){
         printf("Invalid arg, (nemu) w <expr> command args error: \e[0;31m%s\e[0m\n", args);
+        return 0;
     }
 
     WP* cur = new_wp();
@@ -128,6 +133,10 @@ static int cmd_w(char* args){
 }
 
 static int cmd_d(char* args){
+    if(args == NULL){
+        printf("missing d <expr> args\n");
+        return 0;
+    }
     uint32_t n;
     int rc = sscanf(args, "%d", &n);
     if (rc != 1 || n < 0) {

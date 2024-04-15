@@ -1,6 +1,7 @@
 #include <isa.h>
 #include <monitor/monitor.h>
 #include <monitor/difftest.h>
+#include "debug/watchpoint.h"
 #include <stdlib.h>
 #include <sys/time.h>
 
@@ -22,7 +23,6 @@ static uint64_t g_nr_guest_instr = 0;
 static uint64_t g_timer = 0; // unit: ms
 const rtlreg_t rzero = 0;
 
-void debug_hook(vaddr_t pc, const char* asmbuf);
 void asm_print(vaddr_t this_pc, int instr_len, bool print_flag);
 
 int is_exit_status_bad() {
@@ -104,6 +104,9 @@ void cpu_exec(uint64_t n) {
         asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
         /* TODO: check watchpoints here. */
+        if(check_wp()){
+            nemu_state.state=NEMU_STOP;
+        }
 #endif
 
 #ifdef HAS_IOE
