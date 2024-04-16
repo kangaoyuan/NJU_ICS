@@ -18,28 +18,31 @@
 //#define HAS_IOE
 
 #include <stdint.h>
-#include <assert.h>
-#include <string.h>
+#include <assert.h> // IWYU pragma: keep
+#include <string.h>// IWYU pragma: keep
 
-typedef uint8_t bool;
+//below doesn't help, so using Include What You Use // IWYU pragma: keep
+//#pragma clang diagnostic ignored "-Wno-unused-include"
 
 #ifdef ISA64
 typedef uint64_t word_t;
-typedef int64_t sword_t;
+typedef int64_t  sword_t;
 #define FMT_WORD "0x%016lx"
 #else
 typedef uint32_t word_t;
-typedef int32_t sword_t;
+typedef int32_t  sword_t;
 #define FMT_WORD "0x%08x"
 #endif
 
-typedef word_t rtlreg_t;
-typedef word_t vaddr_t;
+typedef word_t   rtlreg_t;
+typedef word_t   vaddr_t;
 typedef uint32_t paddr_t;
 typedef uint16_t ioaddr_t;
 
-#define false 0
 #define true 1
+#define false 0
+typedef uint8_t bool;
+
 
 #include <debug.h>
 #include <macro.h>

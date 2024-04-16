@@ -273,7 +273,6 @@ static uint32_t eval(int left, int right) {
             val = isa_reg_str2val(tokens[left].str+1, &flag);
             Assert(flag == true, "eval failed");
         } else {
-            printf("left == %d", tokens[left].type);
             panic("left == right, eval failed");
         }
         return val;
@@ -287,9 +286,8 @@ static uint32_t eval(int left, int right) {
         //printf("left == %-3d, right == %-3d\n", left, right);
         //printf("op == %d %c\n", op, tokens[op].type);
 
-        if(tokens[op].type == TK_NEG){
+        if(tokens[op].type == TK_NEG)
             return -eval(op+1, right);
-        }
         if(tokens[op].type == TK_DEREF)
             return vaddr_read(eval(op+1, right), 4);
 
@@ -316,7 +314,7 @@ static uint32_t eval(int left, int right) {
         case TK_OR:
             return val1 || val2;
         default:
-            assert(0);
+            panic("unrecognized operator in eval(), failed");
         }
     }
 }
@@ -328,6 +326,7 @@ word_t expr(char* e, bool* success) {
     }
 
     /* TODO: Insert codes to evaluate the expression. */
+    // Analyze and handle the deref and neg operators at first
     for (int i = 0; i < nr_token; ++i) {
         if (tokens[i].type == '-' &&
             (i == 0 || is_operator(tokens[i - 1].type))) {

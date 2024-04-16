@@ -1,7 +1,7 @@
 #ifndef __MONITOR_LOG_H__
 #define __MONITOR_LOG_H__
 
-#include <common.h>
+#include <stdio.h> // IWYU pragma: keep
 
 #ifdef DEBUG
 extern FILE* log_fp;

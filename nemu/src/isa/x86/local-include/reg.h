@@ -17,17 +17,21 @@ static inline int check_reg_index(int index) {
 #define reg_b(index) (cpu.gpr[check_reg_index(index) & 0x3]._8[index >> 2])
 
 static inline const char* reg_name(int index, int width) {
-  extern const char* regsl[];
-  extern const char* regsw[];
-  extern const char* regsb[];
-  assert(index >= 0 && index < 8);
+    extern const char* regsl[];
+    extern const char* regsw[];
+    extern const char* regsb[];
+    assert(index >= 0 && index < 8);
 
-  switch (width) {
-    case 4: return regsl[index];
-    case 1: return regsb[index];
-    case 2: return regsw[index];
-    default: assert(0);
-  }
+    switch (width) {
+    case 4:
+        return regsl[index];
+    case 1:
+        return regsb[index];
+    case 2:
+        return regsw[index];
+    default:
+        assert(0);
+    }
 }
 
 #endif
