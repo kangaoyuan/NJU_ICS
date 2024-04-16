@@ -104,7 +104,8 @@ void cpu_exec(uint64_t n) {
         asm_print(this_pc, seq_pc - this_pc, n < MAX_INSTR_TO_PRINT);
 
         /* TODO: check watchpoints here. */
-        if(check_wp()){
+        if(check_wp() && nemu_state.state == NEMU_RUNNING){
+        //if(check_wp() && nemu_state.state != NEMU_END && nemu_state.state != NEMU_ABORT){
             nemu_state.state=NEMU_STOP;
         }
 #endif
