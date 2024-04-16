@@ -99,8 +99,8 @@ static bool make_token(char* e) {
                 pmatch.rm_so == 0) {
                 /*
                  *typedef struct {
-                 *    regoff_t rm_so;
-                 *    regoff_t rm_eo;
+                 *    regoff_t rm_so; // offset to start
+                 *    regoff_t rm_eo; // offset to end
                  *} regmatch_t;
                  */
                 char* substr_start = e + position;

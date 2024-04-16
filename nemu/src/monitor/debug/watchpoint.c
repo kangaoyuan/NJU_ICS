@@ -96,12 +96,10 @@ bool check_wp(){
 void wp_pool_display(){
     WP* cur = head;
 
+    if(!cur)
+        printf("No WatchPoints now\n");
     while(cur){
-        bool flag;
-        uint32_t res = expr(cur->expr, &flag);
-        if(!flag)
-            panic("watchpoint expr() failed");
-        printf("WatchPoint %d:\t%s = %u\n", cur->NO, cur->expr, res);
+        printf("WatchPoint %d:\t%s == %u\t0x%08x\n", cur->NO, cur->expr, cur->cur_val, cur->cur_val);
         cur = cur->next;
     }
 }

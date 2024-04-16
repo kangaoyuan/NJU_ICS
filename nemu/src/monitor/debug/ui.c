@@ -41,7 +41,7 @@ static int cmd_q(char* args) {
 }
 
 static int cmd_si(char* args) {
-    if (args == NULL){
+    if (args == NULL) {
         cpu_exec(1);
         return 0;
     }
@@ -51,22 +51,28 @@ static int cmd_si(char* args) {
     if (sscanf(args, "%d", &n) == 1 && n > 0) {
         cpu_exec(n);
     } else {
-        printf("Invalid arg, (nemu) si <Num> command args error: \e[0;31m%s\e[0m\n", args);
+        printf("Invalid arg, (nemu) si <Num> command args error: "
+               "\e[0;31m%s\e[0m\n",
+               args);
     }
     return 0;
 }
 
-static int cmd_info(char* args){
-    if(!strcmp(args, "r")){
+static int cmd_info(char* args) {
+    if (!args) {
+        printf("missing info <r|w> args\n");
+        return 0;
+    }
+
+    if (!strcmp(args, "r")) {
         isa_reg_display();
-    }else if(!strcmp(args, "w")){
+    } else if (!strcmp(args, "w")) {
         wp_pool_display();
     } else {
         printf("Invalid arg, (nemu) info <r|w> command args error: "
                "\e[0;31m%s\e[0m\n",
                args);
     }
-
     return 0;
 }
 
@@ -85,7 +91,6 @@ static int cmd_x(char* args){
     int num = strtol(args_num, NULL, 10);
     bool flag;
     int val = expr(args_expr, &flag);
-
     if (!flag) {
         printf("sdb cmd: x %s %s, Wrong expression\n", args_num, args_expr);
         return 0;
@@ -128,7 +133,8 @@ static int cmd_w(char* args){
     strcpy(cur->expr, args);
     cur->pre_val = 0;
     cur->cur_val = val;
-    printf("Watchpoint %d:%s\n", cur->NO, cur->expr);
+    printf("WatchPoint %d:\t%s == %u\t0x%08x\n", cur->NO, cur->expr,
+           cur->cur_val, cur->cur_val);
     return 0;
 }
 
