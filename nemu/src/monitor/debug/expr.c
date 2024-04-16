@@ -80,7 +80,7 @@ typedef struct token {
 } Token;
 
 // Here we hard code the max limit of tokens.
-static Token tokens[60000] __attribute__((used)) = {};
+static Token tokens[65536] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 static bool make_token(char* e) {
@@ -120,6 +120,7 @@ static bool make_token(char* e) {
                  */
 
                 Assert(substr_len < 32, "expression length too long");
+                Assert(nr_token < 65536, "The tokens array has insufficient sotrage space.");
 
                 switch (rules[i].token_type) {
                 /* TODO: Insert codes to construct the tokens array. */
@@ -161,7 +162,7 @@ static uint32_t get_val(int index){
     switch(tokens[index].type){
     // strtol and sscanf two functions are all suitable.
     case TK_DEC:
-        if(sscanf(tokens[index].str, "%d", &val) == 1)
+        if(sscanf(tokens[index].str, "%u", &val) == 1)
             return val;
     case TK_HEX:
         if(sscanf(tokens[index].str, "%x", &val) == 1)
@@ -223,6 +224,7 @@ static int get_main_operator(int left, int right){
     int priority = 7;
     int parenthesis = 0;
 
+    // Pay attention to this stack index and the stack index in check_parentheses() for different cases.
     for(int i = left; i <= right; ++i){
         if(tokens[i].type == '('){
             parenthesis++;

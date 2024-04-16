@@ -4,6 +4,9 @@ ifdef TEST_EXPR
 CFLAGS += -DTEST_EXPR
 endif
 
+count:
+	find ./ -name "*.c" -o -name "*.h" | xargs grep -v "^$$" | wc -l
+
 ISA ?= x86
 ISAS = $(shell ls src/isa/)
 ifeq ($(filter $(ISAS), $(ISA)), ) # ISA must be valid

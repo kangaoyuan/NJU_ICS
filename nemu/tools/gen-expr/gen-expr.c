@@ -118,19 +118,32 @@ int main(int argc, char *argv[]) {
 
         int result;
         ret = fscanf(fp, "%u", &result);
+        if (ret != 1) {
+            perror("Error while fscanf the process\n");
+            return -1;
+        }
 
-        int status = pclose(fp);
-        if (status == -1) {
+        ret = pclose(fp);
+        if (ret == -1) {
             perror("Error while closing the process\n");
             return -1;
         }
+
+        /* Using signal mechanism doesn't work. */
+        //int status = pclose(fp);
+        //if (WIFEXITED(status)) {
+        //    /*indicates a divide-by-zero operation*/
+        //    if (WEXITSTATUS(status) == 136) {
+        //        continue;
+        //    }
+        //}
 
         for (int i = 0; i < strlen(buf); i++) {
             if (buf[i] == 'U')
                 buf[i] = ' ';
         }
 
-        i++;
+        i++; // A little trick
         printf("result == %u, expr == %s\n", result, buf);
     }
     return 0;
