@@ -97,7 +97,7 @@ static int cmd_x(char* args){
     }
 
     for (int i = 0; i < num; i++) {
-        printf("addr:0x%08x %08x\n", val + 4*i, vaddr_read(val + 4*i, 4));
+        printf("addr:0x%08x\t%08x\n", val + 4*i, vaddr_read(val + 4*i, 4));
     }
     return 0;
 }

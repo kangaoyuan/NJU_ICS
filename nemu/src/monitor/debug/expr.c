@@ -1,5 +1,5 @@
-#include <debug.h>
 #include <isa.h>
+#include <debug.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -152,6 +152,7 @@ static bool make_token(char* e) {
 }
 
 static bool is_operator(int opt_type){
+    // Pay attention for ')' is as a val, not a operator.
     if(opt_type == ')' || opt_type == TK_DEC || opt_type == TK_HEX || opt_type == TK_REG)
         return false;
     return true;
@@ -271,7 +272,7 @@ static uint32_t eval(int left, int right) {
         } else if(tokens[left].type == TK_REG){
             bool flag = false;
             val = isa_reg_str2val(tokens[left].str+1, &flag);
-            Assert(flag == true, "eval failed");
+            Assert(flag == true, "eval isa_reg_str2val failed");
         } else {
             panic("left == right, eval failed");
         }
@@ -340,4 +341,28 @@ word_t expr(char* e, bool* success) {
 
     *success = true;
     return eval(0, nr_token-1);
+}
+
+
+void test_expr(){
+    FILE* fp = fopen("tools/gen-expr/input", "r");
+    assert(fp!=NULL);
+
+    // Here loop is hard code, corresponding to the arg of gen-expr tool.
+    for (int i = 0; i < 10000; i++) {
+        bool     flag;
+        unsigned ans, eval;
+        char     expression[70000] = {0};
+        int rv = fscanf(fp, "result == %u, expr == %[^\n] ", &ans, expression);
+        Assert(rv == 2, "test_expr failed");
+        eval = expr(expression, &flag);
+        Assert(flag == true, "test_expr failed");
+        if (ans != eval){
+            printf("Wrong %d:\n", i);
+            printf("result == %u, eval == %u\n", ans, eval);
+        }
+        else
+            printf("\33[1;31m""correct %d""\33[0m\n", i);
+    }
+    fclose(fp);
 }

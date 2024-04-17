@@ -28,24 +28,28 @@ WP* new_wp(){
     WP* alloc = free_;
     free_ = free_->next;
 
+    /* head insertion */
+    alloc->next = head;
+    alloc->hit_num = 0;
+    alloc->NO = ++WP_ID;
+
+    /* tail insertion
     if (!head) {
         head = alloc;
-        alloc->next = NULL;
+        alloc->next = head;
         alloc->hit_num = 0;
         alloc->NO = ++WP_ID;
     } else {
-        /* tail insertion */
         WP* cur = head;
         while (cur->next) {
             cur = cur->next;
         }
         cur->next = alloc;
-        /* head insertion */
-        //head->next = alloc;
         alloc->next = NULL;
         alloc->hit_num = 0;
         alloc->NO = ++WP_ID;
     }
+    */
     return alloc;
 }
 void free_wp(uint32_t num){
@@ -58,7 +62,7 @@ void free_wp(uint32_t num){
         return;
     }
 
-    if(!cur)
+    if(!head)
         return;
 
     while(cur->next){
@@ -81,7 +85,8 @@ bool check_wp(){
     for(WP* cur = head; cur; cur = cur->next){
         cur->pre_val = cur->cur_val;
         cur->cur_val = expr(cur->expr, &flag);
-        if(flag && cur->cur_val != cur->pre_val){
+        Assert(flag == true, "check_wp expr failed");
+        if(cur->cur_val != cur->pre_val){
             ++cur->hit_num;
             printf("Hardware watchpoint %d: %s\n\n", cur->NO,
                    cur->expr);
@@ -97,9 +102,11 @@ void wp_pool_display(){
     WP* cur = head;
 
     if(!cur)
-        printf("No WatchPoints now\n");
+        printf("None WatchPoints now\n");
     while(cur){
-        printf("WatchPoint %d:\t%s == %u\t0x%08x\n", cur->NO, cur->expr, cur->cur_val, cur->cur_val);
+        printf(
+            "WatchPoint %d already hit %d times\n%s == %08u\t0x%08x\n",
+            cur->NO, cur->hit_num, cur->expr, cur->cur_val, cur->cur_val);
         cur = cur->next;
     }
 }
