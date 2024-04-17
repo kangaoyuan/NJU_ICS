@@ -32,6 +32,7 @@ WP* new_wp(){
     alloc->next = head;
     alloc->hit_num = 0;
     alloc->NO = ++WP_ID;
+    head = alloc;
 
     /* tail insertion
     if (!head) {
@@ -86,7 +87,7 @@ bool check_wp(){
         cur->pre_val = cur->cur_val;
         cur->cur_val = expr(cur->expr, &flag);
         Assert(flag == true, "check_wp expr failed");
-        if(cur->cur_val != cur->pre_val){
+        if(cur->pre_val != cur->cur_val){
             ++cur->hit_num;
             printf("Hardware watchpoint %d: %s\n\n", cur->NO,
                    cur->expr);

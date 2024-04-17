@@ -122,6 +122,7 @@ static int cmd_w(char* args){
         printf("missing w <expr> args\n");
         return 0;
     }
+
     bool flag;
     uint32_t val = expr(args, &flag);
     if(!flag){
