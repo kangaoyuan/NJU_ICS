@@ -49,6 +49,7 @@ static int cmd_si(char* args) {
     int n = -1;
     // strtol() is also ok.
     if (sscanf(args, "%d", &n) == 1 && n > 0) {
+        printf("in cmd_si, args == %d\n", n);
         cpu_exec(n);
     } else {
         printf("Invalid arg, (nemu) si <Num> command args error: "
