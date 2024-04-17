@@ -88,6 +88,8 @@ void cpu_exec(uint64_t n) {
     }
 
     uint64_t timer_start = get_time();
+    printf("before one instruction\n");
+    printf("and nemu_state == %d\n", (int)nemu_state.state);
 
     for (; n > 0; n--) {
         printf("one instruction 1==\n");
@@ -107,6 +109,7 @@ void cpu_exec(uint64_t n) {
         /* TODO: check watchpoints here. */
         if(check_wp() && nemu_state.state == NEMU_RUNNING){
         //if(check_wp() && nemu_state.state != NEMU_END && nemu_state.state != NEMU_ABORT){
+            printf("In here ????\n");
             nemu_state.state=NEMU_STOP;
         }
 #endif
