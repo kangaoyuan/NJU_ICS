@@ -24,13 +24,13 @@ void strcatf(char *buf, const char *fmt, ...) {
 }
 
 void asm_print(vaddr_t this_pc, int instr_len, bool print_flag) {
-  snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc, log_bytebuf,
-      50 - (12 + 3 * instr_len), "", log_asmbuf);
-  log_write("%s\n", tempbuf);
-  if (print_flag) {
-    puts(tempbuf);
-  }
+    snprintf(tempbuf, sizeof(tempbuf), FMT_WORD ":   %s%*.s%s", this_pc,
+             log_bytebuf, 50 - (12 + 3 * instr_len), "", log_asmbuf);
+    log_write("%s\n", tempbuf);
+    if (print_flag) {
+        puts(tempbuf);
+    }
 
-  log_bytebuf[0] = '\0';
-  log_asmbuf[0] = '\0';
+    log_bytebuf[0] = '\0';
+    log_asmbuf[0] = '\0';
 }
