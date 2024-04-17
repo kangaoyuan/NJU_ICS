@@ -83,7 +83,7 @@ void free_wp(uint32_t num){
 };
 
 bool check_wp(){
-    bool flag, result = false;
+    bool flag = false, result = false;
     for(WP* cur = head; cur; cur = cur->next){
         cur->pre_val = cur->cur_val;
         cur->cur_val = expr(cur->expr, &flag);

@@ -49,7 +49,6 @@ static int cmd_si(char* args) {
     int n = -1;
     // strtol() is also ok.
     if (sscanf(args, "%d", &n) == 1 && n > 0) {
-        printf("in cmd_si, args == %d\n", n);
         cpu_exec(n);
     } else {
         printf("Invalid arg, (nemu) si <Num> command args error: "
@@ -94,7 +93,7 @@ static int cmd_x(char* args){
     //printf("In cmd_x args_num == %s\n", args_expr);
 
     int num = strtol(args_num, NULL, 10);
-    bool flag;
+    bool flag = false;
     int val = expr(args_expr, &flag);
     if (!flag) {
         printf("sdb cmd: x %s %s, Wrong expression\n", args_num, args_expr);
