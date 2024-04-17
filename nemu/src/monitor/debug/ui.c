@@ -84,6 +84,10 @@ static int cmd_x(char* args){
 
     char* args_num = strtok(args, " ");
     char* args_expr = strtok(NULL, "");
+    if(!args_expr){
+        printf("missing x <num> <expr> args\n");
+        return 0;
+    }
 
     //printf("In cmd_x args_num == %s\n", args_num);
     //printf("In cmd_x args_num == %s\n", args_expr);
