@@ -28,16 +28,17 @@ WP* new_wp(){
     WP* alloc = free_;
     free_ = free_->next;
 
-    /* head insertion */
+    /* head insertion
     alloc->next = head;
     alloc->hit_num = 0;
     alloc->NO = ++WP_ID;
     head = alloc;
+    */
 
-    /* tail insertion
+    /* tail insertion */
     if (!head) {
         head = alloc;
-        alloc->next = head;
+        alloc->next = NULL;
         alloc->hit_num = 0;
         alloc->NO = ++WP_ID;
     } else {
@@ -50,7 +51,7 @@ WP* new_wp(){
         alloc->hit_num = 0;
         alloc->NO = ++WP_ID;
     }
-    */
+
     return alloc;
 }
 void free_wp(uint32_t num){
@@ -91,8 +92,8 @@ bool check_wp(){
             ++cur->hit_num;
             printf("Hardware watchpoint %d: %s\n\n", cur->NO,
                    cur->expr);
-            printf("Old value = %u\n", cur->pre_val);
-            printf("New value = %u\n", cur->cur_val);
+            printf("Old value = %08u\t%#8x\n", cur->pre_val, cur->pre_val);
+            printf("New value = %08u\t%#8x\n", cur->cur_val, cur->pre_val);
             result = true;
         }
     }
