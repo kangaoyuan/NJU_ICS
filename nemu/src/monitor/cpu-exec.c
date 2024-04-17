@@ -116,6 +116,7 @@ void cpu_exec(uint64_t n) {
         device_update();
 #endif
         printf("one instruction 2==\n");
+        printf("and nemu_state == %d\n", (int)nemu_state.state);
 
         if (nemu_state.state != NEMU_RUNNING)
             break;
