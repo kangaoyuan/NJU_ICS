@@ -3,7 +3,6 @@
 
 #include <isa.h>
 #include <rtl/rtl.h>
-#include <rtl/pseudo.h>
 #include <cpu/decode.h>
 #include <memory/vaddr.h>
 
