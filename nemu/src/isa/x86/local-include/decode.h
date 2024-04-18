@@ -8,6 +8,9 @@
 // decode operand helper, load_val determines whether we need record it.
 #define def_DopHelper(name) void concat(decode_op_, name) (DecodeExecState *s, Operand *op, bool load_val)
 
+// decode operand helper, load_val determines whether we need record it.
+#define def_DopHelper(name) void concat(decode_op_, name) (DecodeExecState *s, Operand *op, bool load_val)
+
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
 static inline void operand_reg(DecodeExecState* s, Operand* op,
