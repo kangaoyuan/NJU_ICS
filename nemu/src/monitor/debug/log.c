@@ -15,12 +15,12 @@ char log_bytebuf[80] = {};
 char log_asmbuf[80] = {};
 static char tempbuf[256] = {};
 
-void strcatf(char *buf, const char *fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  vsnprintf(tempbuf, sizeof(tempbuf), fmt, ap);
-  va_end(ap);
-  strcat(buf, tempbuf);
+void strcatf(char* buf, const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vsnprintf(tempbuf, sizeof(tempbuf), fmt, ap);
+    va_end(ap);
+    strcat(buf, tempbuf);
 }
 
 void asm_print(vaddr_t this_pc, int instr_len, bool print_flag) {

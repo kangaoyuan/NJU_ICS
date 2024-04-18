@@ -20,14 +20,14 @@ typedef struct {
 } Operand;
 
 typedef struct {
+    ISADecodeInfo isa;
+    int           width;
     uint32_t      opcode;
     uint32_t      is_jmp;
     vaddr_t       seq_pc;
     vaddr_t       jmp_pc;
-    Operand       src1, dest, src2;
-    int           width;
     rtlreg_t      tmp_reg[4];
-    ISADecodeInfo isa;
+    Operand       src1, dest, src2;
 } DecodeExecState;
 
 #define def_DHelper(name) void concat(decode_, name) (DecodeExecState *s)

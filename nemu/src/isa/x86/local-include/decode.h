@@ -1,6 +1,9 @@
 #include <cpu/exec.h>
 #include "rtl.h"
 
+// decode operand helper, load_val determines whether we need record it.
+#define def_DopHelper(name) void concat(decode_op_, name) (DecodeExecState *s, Operand *op, bool load_val)
+
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
 static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
@@ -28,16 +31,13 @@ static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, w
   print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
 }
 
-// decode operand helper
-#define def_DopHelper(name) void concat(decode_op_, name) (DecodeExecState *s, Operand *op, bool load_val)
-
 /* Refer to Appendix A in i386 manual for the explanations of these abbreviations */
 
 /* Ib, Iv */
 static inline def_DopHelper(I) {
-  /* pc here is pointing to the immediate */
-  word_t imm = instr_fetch(&s->seq_pc, op->width);
-  operand_imm(s, op, load_val, imm, op->width);
+    /* pc here is pointing to the immediate */
+    word_t imm = instr_fetch(&s->seq_pc, op->width);
+    operand_imm(s, op, load_val, imm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation, but it is different from
@@ -70,7 +70,7 @@ static inline def_DopHelper(a) {
  * eXX: eAX, eCX, eDX, eBX, eSP, eBP, eSI, eDI
  */
 static inline def_DopHelper(r) {
-  operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
+    operand_reg(s, op, load_val, s->opcode & 0x7, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
@@ -83,8 +83,10 @@ static inline def_DopHelper(r) {
  * Rd
  * Sw
  */
-static inline void operand_rm(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val) {
-  read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
+static inline void operand_rm(DecodeExecState* s, Operand* rm,
+                              bool load_rm_val, Operand* reg,
+                              bool load_reg_val) {
+    read_ModR_M(s, rm, load_rm_val, reg, load_reg_val);
 }
 
 /* Ob, Ov */
@@ -151,8 +153,8 @@ static inline def_DHelper(I2E) {
 }
 
 static inline def_DHelper(mov_I2E) {
-  operand_rm(s, id_dest, false, NULL, false);
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, false, NULL, false);
+    decode_op_I(s, id_src1, true);
 }
 
 /* XX <- Ib
@@ -164,8 +166,8 @@ static inline def_DHelper(I2r) {
 }
 
 static inline def_DHelper(mov_I2r) {
-  decode_op_r(s, id_dest, false);
-  decode_op_I(s, id_src1, true);
+    decode_op_r(s, id_dest, false);
+    decode_op_I(s, id_src1, true);
 }
 
 /* used by unary operations */
