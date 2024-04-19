@@ -1,28 +1,28 @@
 #include <cpu/exec.h>
-#include "local-include/rtl.h"
 #include "local-include/reg.h"
 #include "local-include/decode.h"
 
+// anonymous union. hhh -), attention to the big/little end.
 typedef union {
-  struct {
-    uint8_t R_M		:3;
-    uint8_t reg		:3;
-    uint8_t mod		:2;
-  };
-  struct {
-    uint8_t dont_care	:3;
-    uint8_t opcode		:3;
-  };
-  uint8_t val;
+    struct {
+        uint8_t R_M : 3;
+        uint8_t reg : 3;
+        uint8_t mod : 2;
+    };
+    struct {
+        uint8_t dont_care : 3;
+        uint8_t opcode : 3;
+    };
+    uint8_t val;
 } ModR_M;
 
 typedef union {
-  struct {
-    uint8_t base	:3;
-    uint8_t index	:3;
-    uint8_t ss		:2;
-  };
-  uint8_t val;
+    struct {
+        uint8_t base : 3;
+        uint8_t index : 3;
+        uint8_t ss : 2;
+    };
+    uint8_t val;
 } SIB;
 
 static inline void load_addr(DecodeExecState *s, ModR_M *m, Operand *rm) {
@@ -97,12 +97,14 @@ static inline void load_addr(DecodeExecState *s, ModR_M *m, Operand *rm) {
   rm->type = OP_TYPE_MEM;
 }
 
-void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val) {
+void read_ModR_M(DecodeExecState* s, Operand* rm, bool load_rm_val,
+                 Operand* reg, bool load_reg_val) {
     ModR_M m;
     m.val = instr_fetch(&s->seq_pc, 1);
     s->isa.ext_opcode = m.opcode;
     if (reg != NULL)
         operand_reg(s, reg, load_reg_val, m.reg, reg->width);
+
     if (m.mod == 3) {
         operand_reg(s, rm, load_rm_val, m.R_M, rm->width);
     } else {

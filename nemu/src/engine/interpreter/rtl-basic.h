@@ -2,6 +2,7 @@
 #define __RTL_BASIC_H__
 
 #include "c_op.h"
+#include <rtl/rtl_.h>
 #include <memory/vaddr.h>
 
 /* RTL basic instructions */
@@ -45,12 +46,12 @@ def_rtl_compute_reg_imm(sarw)
 
 static inline def_rtl(setrelop, uint32_t relop, rtlreg_t *dest,
     const rtlreg_t *src1, const rtlreg_t *src2) {
-  *dest = interpret_relop(relop, *src1, *src2);
+    *dest = interpret_relop(relop, *src1, *src2);
 }
 
 static inline def_rtl(setrelopi, uint32_t relop, rtlreg_t *dest,
     const rtlreg_t *src1, sword_t imm) {
-  *dest = interpret_relop(relop, *src1, imm);
+    *dest = interpret_relop(relop, *src1, imm);
 }
 
 // mul/div
@@ -102,12 +103,14 @@ static inline def_rtl(idiv64_r, rtlreg_t* dest,
 
 // memory
 
-static inline def_rtl(lm, rtlreg_t *dest, const rtlreg_t* addr, word_t offset, int len) {
-  *dest = vaddr_read(*addr + offset, len);
+static inline def_rtl(lm, rtlreg_t* dest, const rtlreg_t* addr,
+                      word_t offset, int len) {
+    *dest = vaddr_read(*addr + offset, len);
 }
 
-static inline def_rtl(sm, const rtlreg_t* addr, word_t offset, const rtlreg_t* src1, int len) {
-  vaddr_write(*addr + offset, *src1, len);
+static inline def_rtl(sm, const rtlreg_t* addr, word_t offset,
+                      const rtlreg_t* src1, int len) {
+    vaddr_write(*addr + offset, *src1, len);
 }
 
 static inline def_rtl(lms, rtlreg_t *dest, const rtlreg_t* addr, word_t offset, int len) {
@@ -141,8 +144,8 @@ static inline def_rtl(host_sm, void *addr, const rtlreg_t *src1, int len) {
 // control
 
 static inline def_rtl(j, vaddr_t target) {
-  s->jmp_pc = target;
-  s->is_jmp = true;
+    s->jmp_pc = target;
+    s->is_jmp = true;
 }
 
 static inline def_rtl(jr, rtlreg_t *target) {

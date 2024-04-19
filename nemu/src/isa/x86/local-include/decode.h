@@ -1,34 +1,52 @@
-#include <cpu/exec.h>
+#ifndef __X86_DECODE_H__
+#define __X86_DECODE_H__
+
 #include "rtl.h"
+#include <cpu/exec.h>
+#include "rtl/pseudo.h"
 
 // decode operand helper, load_val determines whether we need record it.
 #define def_DopHelper(name) void concat(decode_op_, name) (DecodeExecState *s, Operand *op, bool load_val)
 
 void read_ModR_M(DecodeExecState *s, Operand *rm, bool load_rm_val, Operand *reg, bool load_reg_val);
 
-static inline void operand_reg(DecodeExecState *s, Operand *op, bool load_val, int r, int width) {
-  op->type = OP_TYPE_REG;
-  op->reg = r;
+static inline void operand_reg(DecodeExecState* s, Operand* op,
+                               bool load_val, int r, int width) {
+    op->type = OP_TYPE_REG;
+    op->reg = r;
 
-  if (width == 4) {
-    op->preg = &reg_l(r);
-  } else {
-    assert(width == 1 || width == 2);
-    op->preg = &op->val;
-    if (load_val) rtl_lr(s, &op->val, r, width);
-  }
+    if (width == 4) {
+        op->preg = &reg_l(r);
+    } else {
+        assert(width == 1 || width == 2);
+        op->preg = &op->val;
+        if (load_val)
+            rtl_lr(s, &op->val, r, width);
+    }
 
-  print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
+    print_Dop(op->str, OP_STR_SIZE, "%%%s", reg_name(r, width));
 }
 
-static inline void operand_imm(DecodeExecState *s, Operand *op, bool load_val, word_t imm, int width) {
-  op->type = OP_TYPE_IMM;
-  op->imm = imm;
-  if (load_val) {
-    rtl_li(s, &op->val, imm);
-    op->preg = &op->val;
-  }
-  print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
+static inline void operand_imm(DecodeExecState* s, Operand* op,
+                               bool load_val, word_t imm, int width) {
+    op->type = OP_TYPE_IMM;
+    op->imm = imm;
+    if (load_val) {
+        rtl_li(s, &op->val, imm);
+        op->preg = &op->val;
+    }
+    print_Dop(op->str, OP_STR_SIZE, "$0x%x", imm);
+}
+
+static inline void operand_simm(DecodeExecState* s, Operand* op,
+                               bool load_val, sword_t simm, int width) {
+    op->type = OP_TYPE_IMM;
+    op->simm = simm;
+    if (load_val) {
+        rtl_li(s, &op->val, simm);
+        op->preg = &op->val;
+    }
+    print_Dop(op->str, OP_STR_SIZE, "$0x%x", simm);
 }
 
 /* Refer to Appendix A in i386 manual for the explanations of these abbreviations */
@@ -46,15 +64,17 @@ static inline def_DopHelper(I) {
  */
 /* sign immediate */
 static inline def_DopHelper(SI) {
-  assert(op->width == 1 || op->width == 4);
+    assert(op->width == 1 || op->width == 4);
 
-  /* TODO: Use instr_fetch() to read `op->width' bytes of memory
-   * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
-   * and call `operand_imm()` as following.
-   *
-   operand_imm(s, op, load_val, ???, op->width);
-   */
-  TODO();
+    /* TODO: Use instr_fetch() to read `op->width' bytes of memory
+     * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
+     * and call `operand_imm()` as following.
+     *
+     operand_imm(s, op, load_val, ???, op->width);
+     */
+     word_t simm = instr_fetch(&s->seq_pc, op->width);
+     rtl_sext(s, &simm, &simm, op->width);
+     operand_simm(s, op, load_val, simm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
@@ -197,13 +217,13 @@ static inline def_DHelper(test_I) {
 }
 
 static inline def_DHelper(SI2E) {
-  assert(id_dest->width == 2 || id_dest->width == 4);
-  operand_rm(s, id_dest, true, NULL, false);
-  id_src1->width = 1;
-  decode_op_SI(s, id_src1, true);
-  if (id_dest->width == 2) {
-    *dsrc1 &= 0xffff;
-  }
+    assert(id_dest->width == 2 || id_dest->width == 4);
+    operand_rm(s, id_dest, true, NULL, false);
+    id_src1->width = 1;
+    decode_op_SI(s, id_src1, true);
+    if (id_dest->width == 2) {
+        *dsrc1 &= 0xffff;
+    }
 }
 
 static inline def_DHelper(SI_E2G) {
@@ -262,13 +282,13 @@ static inline def_DHelper(a2O) {
 }
 
 static inline def_DHelper(J) {
-  decode_op_SI(s, id_dest, false);
-  // the target address can be computed in the decode stage
-  s->jmp_pc = id_dest->simm + s->seq_pc;
+    decode_op_SI(s, id_dest, false);
+    // the target address can be computed in the decode stage
+    s->jmp_pc = id_dest->simm + s->seq_pc;
 }
 
 static inline def_DHelper(push_SI) {
-  decode_op_SI(s, id_dest, true);
+    decode_op_SI(s, id_dest, true);
 }
 
 static inline def_DHelper(in_I2a) {
@@ -293,8 +313,15 @@ static inline def_DHelper(out_a2dx) {
   operand_reg(s, id_dest, true, R_DX, 2);
 }
 
-static inline void operand_write(DecodeExecState *s, Operand *op, rtlreg_t* src) {
-  if (op->type == OP_TYPE_REG) { rtl_sr(s, op->reg, src, op->width); }
-  else if (op->type == OP_TYPE_MEM) { rtl_sm(s, s->isa.mbase, s->isa.moff, src, op->width); }
-  else { assert(0); }
+static inline void operand_write(DecodeExecState* s, Operand* op,
+                                 rtlreg_t* src) {
+    if (op->type == OP_TYPE_REG) {
+        rtl_sr(s, op->reg, src, op->width);
+    } else if (op->type == OP_TYPE_MEM) {
+        rtl_sm(s, s->isa.mbase, s->isa.moff, src, op->width);
+    } else {
+        assert(0);
+    }
 }
+
+#endif

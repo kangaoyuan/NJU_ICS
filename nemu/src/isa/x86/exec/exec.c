@@ -1,20 +1,27 @@
 #include <cpu/exec.h>
-#include "../local-include/decode.h"
 #include "all-instr.h"
 
-static inline void set_width(DecodeExecState *s, int width) {
-  if (width == -1) return;
-  if (width == 0) {
-    width = s->isa.is_operand_size_16 ? 2 : 4;
-  }
-  s->src1.width = s->dest.width = s->src2.width = width;
+static inline void set_width(DecodeExecState* s, int width) {
+    if (width == -1)
+        return;
+
+    if (width == 0) {
+        width = s->isa.is_operand_size_16 ? 2 : 4;
+    }
+    s->src1.width = s->dest.width = s->src2.width = width;
 }
 
 /* 0x80, 0x81, 0x83 */
 static inline def_EHelper(gp1) {
   switch (s->isa.ext_opcode) {
-    EMPTY(0) EMPTY(1) EMPTY(2) EMPTY(3)
-    EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+      EXW(0x0, add, -1)
+      EXW(0x1, or, -1)
+      EXW(0x2, adc, -1)
+      EXW(0x3, sbb, -1)
+      EXW(0x4, and, -1)
+      EXW(0x5, sub, -1)
+      EXW(0x6, xor, -1)
+      EXW(0x7, cmp, -1)
   }
 }
 
@@ -76,6 +83,18 @@ again:
     // Separeting D, EX and W code to realize decoupling.
     switch (opcode) {
         EX(0x0f, 2byte_esc)
+        IDEX(0x50, r, push)
+        IDEX(0x51, r, push)
+        IDEX(0x52, r, push)
+        IDEX(0x53, r, push)
+        // There are some methods to avoid, but it's esay to make mistake.
+        IDEX(0x54, r, push)
+        IDEX(0x55, r, push)
+        IDEX(0x56, r, push)
+        IDEX(0x57, r, push)
+        IDEX(0x68, push_SI, push)
+        IDEX(0x69, I_E2G, imul3)
+        IDEXW(0x6a, push_SI, push, 1)
         IDEXW(0x80, I2E, gp1, 1)
         IDEX(0x81, I2E, gp1)
         IDEX(0x83, SI2E, gp1)
@@ -83,6 +102,7 @@ again:
         IDEX(0x89, mov_G2E, mov)
         IDEXW(0x8a, mov_E2G, mov, 1)
         IDEX(0x8b, mov_E2G, mov)
+        EX(0x90, nop)
         IDEXW(0xa0, O2a, mov, 1)
         IDEX(0xa1, O2a, mov)
         IDEXW(0xa2, a2O, mov, 1)
@@ -112,6 +132,9 @@ again:
         IDEXW(0xd2, gp2_cl2E, gp2, 1)
         IDEX(0xd3, gp2_cl2E, gp2)
         EX(0xd6, nemu_trap)
+        IDEX(0xe8, J, call)
+        IDEX(0xe9, J, jmp)
+        IDEXW(0xeb, J, jmp, 1)
         IDEXW(0xf6, E, gp3, 1)
         IDEX(0xf7, E, gp3)
         IDEXW(0xfe, E, gp4, 1)
