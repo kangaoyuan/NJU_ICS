@@ -83,6 +83,7 @@ again:
     // Separeting D, EX and W code to realize decoupling.
     switch (opcode) {
         EX(0x0f, 2byte_esc)
+        IDEX(0x31, G2E, xor)
         IDEX(0x50, r, push)
         IDEX(0x51, r, push)
         IDEX(0x52, r, push)
@@ -125,6 +126,7 @@ again:
         IDEX(0xbf, mov_I2r, mov)
         IDEXW(0xc0, gp2_Ib2E, gp2, 1)
         IDEX(0xc1, gp2_Ib2E, gp2)
+        EX(0xc3, ret)
         IDEXW(0xc6, mov_I2E, mov, 1)
         IDEX(0xc7, mov_I2E, mov)
         IDEXW(0xd0, gp2_1_E, gp2, 1)
