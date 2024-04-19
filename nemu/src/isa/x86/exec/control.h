@@ -43,7 +43,6 @@ static inline def_EHelper(ret) {
 }
 
 static inline def_EHelper(ret_imm) {
-    TODO();
     print_asm("ret %s", id_dest->str);
 }
 

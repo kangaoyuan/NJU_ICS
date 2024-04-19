@@ -1,7 +1,7 @@
 #ifndef __CC_H__
 #define __CC_H__
 
-#include "../local-include/rtl.h"
+#include "../local-include/rtl.h" // IWYU pragma: keep
 
 enum {
   CC_O, CC_NO, CC_B,  CC_NB,
@@ -50,12 +50,16 @@ static inline void rtl_setcc(DecodeExecState* s, rtlreg_t* dest,
         rtl_xor(s, dest, t0, dest);
         break;
     case CC_LE:
+<<<<<<< HEAD
         rtl_get_SF(s, t0);
         rtl_get_OF(s, dest);
         rtl_xor(s, dest, t0, dest);
         rtl_get_ZF(s, t0);
         rtl_or(s, dest, dest, t0);
         break;
+=======
+        TODO();
+>>>>>>> 0a92b12 (>  compile)
     case CC_P:
         panic("PF is not supported");
     default:

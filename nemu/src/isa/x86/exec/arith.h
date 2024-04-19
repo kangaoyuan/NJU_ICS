@@ -1,3 +1,4 @@
+#include "cc.h"
 #include "../local-include/decode.h"
 
 static inline def_EHelper(add) {
