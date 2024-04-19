@@ -82,7 +82,7 @@ static inline def_DopHelper(SI) {
  */
 /* AL/eAX */
 static inline def_DopHelper(a) {
-  operand_reg(s, op, load_val, R_EAX, op->width);
+    operand_reg(s, op, load_val, R_EAX, op->width);
 }
 
 /* This helper function is use to decode register encoded in the opcode. */
@@ -137,7 +137,7 @@ static inline def_DHelper(mov_G2E) {
  * Gv <- Ev
  */
 static inline def_DHelper(E2G) {
-  operand_rm(s, id_src1, true, id_dest, true);
+    operand_rm(s, id_src1, true, id_dest, true);
 }
 
 static inline def_DHelper(mov_E2G) {
@@ -152,8 +152,8 @@ static inline def_DHelper(lea_M2G) {
  * eAX <- Iv
  */
 static inline def_DHelper(I2a) {
-  decode_op_a(s, id_dest, true);
-  decode_op_I(s, id_src1, true);
+    decode_op_a(s, id_dest, true);
+    decode_op_I(s, id_src1, true);
 }
 
 /* Gv <- EvIb

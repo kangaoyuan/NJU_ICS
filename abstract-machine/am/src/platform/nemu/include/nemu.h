@@ -7,6 +7,7 @@
                // it will be expanded as "x86/x86.h", "mips/mips32.h", ...
 
 #if defined(__ISA_X86__)
+// Below comment is the reason for am-kernels/test/cpu-test compile binaries can't run by nemu correctly.
 //# define nemu_trap(code) asm volatile ("int3" : :"a"(code))
 # define nemu_trap(code) asm volatile (".byte 0xd6" : :"a"(code))
 #elif defined(__ISA_MIPS32__)
