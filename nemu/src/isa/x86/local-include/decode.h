@@ -126,7 +126,7 @@ static inline def_DopHelper(O) {
  * Ev <- Gv
  */
 static inline def_DHelper(G2E) {
-  operand_rm(s, id_dest, true, id_src1, true);
+    operand_rm(s, id_dest, true, id_src1, true);
 }
 
 static inline def_DHelper(mov_G2E) {
