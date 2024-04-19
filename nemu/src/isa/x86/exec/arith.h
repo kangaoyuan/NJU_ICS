@@ -1,33 +1,76 @@
 #include "cc.h"
+#include "../local-include/decode.h"
 
 static inline def_EHelper(add) {
-  TODO();
-  print_asm_template2(add);
+    // TODO();
+    rtl_add(s, s0, ddest, dsrc1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    rtl_is_add_carry(s, s1, s0, ddest);
+    rtl_set_CF(s, s1);
+    rtl_is_add_overflow(s, s1, s0, ddest, dsrc1, id_dest->width);
+    rtl_set_OF(s, s1);
+    operand_write(s, id_dest, s0);
+    print_asm_template2(add);
 }
 
 static inline def_EHelper(sub) {
-  TODO();
-  print_asm_template2(sub);
+    // TODO();
+    rtl_sub(s, s0, ddest, dsrc1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    rtl_is_sub_carry(s, s1, ddest, dsrc1);
+    rtl_set_CF(s, s1);
+    rtl_is_sub_overflow(s, s1, s0, ddest, dsrc1, id_dest->width);
+    rtl_set_OF(s, s1);
+    operand_write(s, id_dest, s0);
+    print_asm_template2(sub);
 }
 
 static inline def_EHelper(cmp) {
-  TODO();
-  print_asm_template2(cmp);
+    // TODO();
+    rtl_sub(s, s0, ddest, dsrc1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    rtl_is_sub_carry(s, s1, ddest, dsrc1);
+    rtl_set_CF(s, s1);
+    rtl_is_sub_overflow(s, s1, s0, ddest, dsrc1, id_dest->width);
+    rtl_set_OF(s, s1);
+    print_asm_template2(cmp);
 }
 
 static inline def_EHelper(inc) {
-  TODO();
-  print_asm_template1(inc);
+    // TODO();
+    rtl_li(s, s1, 1);
+    rtl_add(s, s0, ddest, s1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    rtl_is_add_overflow(s, s2, s0, ddest, s1, id_dest->width);
+    rtl_set_OF(s, s2);
+    operand_write(s, id_dest, s0);
+    print_asm_template1(inc);
 }
 
 static inline def_EHelper(dec) {
-  TODO();
-  print_asm_template1(dec);
+    // TODO();
+    rtl_li(s, s1, 1);
+    rtl_sub(s, s0, ddest, s1);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    rtl_is_sub_overflow(s, s2, s0, ddest, s1, id_dest->width);
+    rtl_set_OF(s, s2);
+    operand_write(s, id_dest, s0);
+    print_asm_template1(dec);
 }
 
 static inline def_EHelper(neg) {
-  TODO();
-  print_asm_template1(neg);
+    // TODO();
+    // Below is wrong for not full calculation.
+    /* rtl_neg(s,s0,ddest);
+     * operand_write(s,id_dest,s0); */
+    rtl_li(s, s1, *ddest != 0);
+    rtl_set_CF(s, s1);
+    rtl_sub(s, s0, rz, ddest);
+    rtl_update_ZFSF(s, s0, id_dest->width);
+    rtl_is_sub_overflow(s, s1, s0, rz, ddest, id_dest->width);
+    rtl_set_OF(s, s1);
+    operand_write(s, id_dest, s0);
+    print_asm_template1(neg);
 }
 
 static inline def_EHelper(adc) {

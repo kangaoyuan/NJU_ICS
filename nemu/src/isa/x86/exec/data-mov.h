@@ -1,16 +1,21 @@
+#include "../local-include/decode.h"
+
 static inline def_EHelper(mov) {
-  operand_write(s, id_dest, dsrc1);
-  print_asm_template2(mov);
+    operand_write(s, id_dest, dsrc1);
+    print_asm_template2(mov);
 }
 
 static inline def_EHelper(push) {
-  TODO();
-  print_asm_template1(push);
+    // TODO();
+    rtl_push(s, ddest);
+    print_asm_template1(push);
 }
 
 static inline def_EHelper(pop) {
-  TODO();
-  print_asm_template1(pop);
+    //TODO();
+    rtl_pop(s, s0);
+    operand_write(s, id_dest, s0);
+    print_asm_template1(pop);
 }
 
 static inline def_EHelper(pusha) {

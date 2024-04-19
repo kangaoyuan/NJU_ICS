@@ -1,11 +1,11 @@
-#include "../local-include/rtl.h"
+#include "../local-include/rtl.h"       // IWYU pragma: keep
+#include "../local-include/decode.h"    // IWYU pragma: keep
 
-#include "arith.h"
-#include "control.h"
-#include "data-mov.h"
-#include "logic.h"
-#include "string.h"
-#include "system.h"
+#include "arith.h"      // cmp add sub inc dec neg mul div
+#include "control.h"    // jcc jmp call ret
+#include "data-mov.h"   // lea mov push pop leave
+#include "logic.h"      // test setcc and or xor not shl sar
+#include "system.h"     // in out int iret lidt mov_r2cr mov_cr2r
 
 def_EHelper(nop);
 def_EHelper(inv);
