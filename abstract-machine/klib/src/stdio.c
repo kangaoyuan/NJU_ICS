@@ -8,7 +8,7 @@
 
 static char digits[] = "0123456789ABCDEF";
 
-static void printint(char* out, int xx, int base, int sgn) {
+static void printint(char** out, int xx, int base, int sgn) {
     char buf[32];
     unsigned int x;
     int  i = 0, neg = 0;
@@ -26,16 +26,22 @@ static void printint(char* out, int xx, int base, int sgn) {
     if (neg)
         buf[i++] = '-';
 
-    while (--i >= 0)
-        *out++ = buf[i];
+    while (--i >= 0){
+        **out = buf[i];
+        ++(*out);
+    }
 }
 
-static void printptr(char* out, uint32_t x) {
+static void printptr(char** out, uint32_t x) {
     int i;
-    *out++ = '0';
-    *out++ = 'x';
-    for (i = 0; i < (sizeof(uint32_t) * 2); i++, x <<= 4)
-        *out++ = digits[x >> (sizeof(uint32_t) * 8 - 4)];
+    **out = '0';
+    ++(*out);
+    **out = 'x';
+    ++(*out);
+    for (i = 0; i < (sizeof(uint32_t) * 2); i++, x <<= 4){
+        **out = digits[x >> (sizeof(uint32_t) * 8 - 4)];
+        ++(*out);
+    }
 }
 
 int printf(const char *fmt, ...) {
@@ -80,13 +86,13 @@ int vsprintf(char* out, const char* fmt, va_list ap) {
             } else {
                 cnt++;
                 if (c == 'd') {
-                    printint(out, va_arg(ap, int), 10, 1);
+                    printint(&out, va_arg(ap, int), 10, 1);
                 } else if (c == 'l') {
-                    printint(out, va_arg(ap, unsigned long), 10, 0);
+                    printint(&out, va_arg(ap, unsigned long), 10, 0);
                 } else if (c == 'x') {
-                    printint(out, va_arg(ap, int), 16, 0);
+                    printint(&out, va_arg(ap, int), 16, 0);
                 } else if (c == 'p') {
-                    printptr(out, va_arg(ap, unsigned int));
+                    printptr(&out, va_arg(ap, unsigned int));
                 } else if (c == 's') {
                     s = va_arg(ap, char*);
                     if (s == 0)
@@ -137,13 +143,13 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
         } else if (state == '%') {
             cnt++;
             if (c == 'd') {
-                printint(out, va_arg(ap, int), 10, 1);
+                printint(&out, va_arg(ap, int), 10, 1);
             } else if (c == 'l') {
-                printint(out, va_arg(ap, unsigned long), 10, 0);
+                printint(&out, va_arg(ap, unsigned long), 10, 0);
             } else if (c == 'x') {
-                printint(out, va_arg(ap, int), 16, 0);
+                printint(&out, va_arg(ap, int), 16, 0);
             } else if (c == 'p') {
-                printptr(out, va_arg(ap, unsigned int));
+                printptr(&out, va_arg(ap, unsigned int));
             } else if (c == 's') {
                 s = va_arg(ap, char*);
                 if (s == 0)
