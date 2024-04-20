@@ -76,30 +76,32 @@ int vsprintf(char* out, const char* fmt, va_list ap) {
                 *out++ = c;
             }
         } else if (state == '%') {
-            cnt++;
-            if (c == 'd') {
-                printint(out, va_arg(ap, int), 10, 1);
-            } else if (c == 'l') {
-                printint(out, va_arg(ap, unsigned long), 10, 0);
-            } else if (c == 'x') {
-                printint(out, va_arg(ap, int), 16, 0);
-            } else if (c == 'p') {
-                printptr(out, va_arg(ap, unsigned int));
-            } else if (c == 's') {
-                s = va_arg(ap, char*);
-                if (s == 0)
-                    s = "(null)";
-                while (*s != 0) {
-                    *out++ = *s++;
-                }
-            } else if (c == 'c') {
-                *out++ = va_arg(ap, unsigned int);
-            } else if (c == '%') {
+            if (c == '%') {
                 *out++ = c;
             } else {
-                // Unknown % sequence.  Print it to draw attention.
-                *out++ = '%';
-                *out++ = c;
+                cnt++;
+                if (c == 'd') {
+                    printint(out, va_arg(ap, int), 10, 1);
+                } else if (c == 'l') {
+                    printint(out, va_arg(ap, unsigned long), 10, 0);
+                } else if (c == 'x') {
+                    printint(out, va_arg(ap, int), 16, 0);
+                } else if (c == 'p') {
+                    printptr(out, va_arg(ap, unsigned int));
+                } else if (c == 's') {
+                    s = va_arg(ap, char*);
+                    if (s == 0)
+                        s = "(null)";
+                    while (*s != 0) {
+                        *out++ = *s++;
+                    }
+                } else if (c == 'c') {
+                    *out++ = va_arg(ap, unsigned int);
+                } else {
+                    // Unknown % sequence.  Print it to draw attention.
+                    *out++ = '%';
+                    *out++ = c;
+                }
             }
             state = 0;
         }
