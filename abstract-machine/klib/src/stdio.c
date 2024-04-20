@@ -104,6 +104,7 @@ int vsprintf(char* out, const char* fmt, va_list ap) {
             state = 0;
         }
     }
+    *out = '\0';
 
     return cnt;
 }
