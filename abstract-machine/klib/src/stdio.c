@@ -11,9 +11,8 @@ static char digits[] = "0123456789ABCDEF";
 static void printint(char* out, int xx, int base, int sgn) {
     char buf[32];
     unsigned int x;
-    int  i = 0, neg;
+    int  i = 0, neg = 0;
 
-    neg = 0;
     if (sgn && xx < 0) {
         neg = 1;
         x = -xx;
