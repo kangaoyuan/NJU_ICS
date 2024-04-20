@@ -37,23 +37,25 @@ static inline def_EHelper(leave) {
 }
 
 static inline def_EHelper(cltd) {
-  if (s->isa.is_operand_size_16) {
-    TODO();
-  }
-  else {
-    TODO();
-  }
-  print_asm(s->isa.is_operand_size_16 ? "cwtl" : "cltd");
+    if (s->isa.is_operand_size_16) {
+        //TODO();
+        reg_w(R_DX) = (reg_w(R_AX)>>15 & 1) ? 0xffff : 0;
+    } else {
+        //TODO();
+        cpu.edx = (cpu.eax >> 31 & 1) ? 0xffffffff : 0;
+    }
+    print_asm(s->isa.is_operand_size_16 ? "cwtl" : "cltd");
 }
 
 static inline def_EHelper(cwtl) {
-  if (s->isa.is_operand_size_16) {
-    TODO();
-  }
-  else {
-    TODO();
-  }
-  print_asm(s->isa.is_operand_size_16 ? "cbtw" : "cwtl");
+    if (s->isa.is_operand_size_16) {
+        // TODO();
+        reg_w(R_AX) = *(int8_t*)(&reg_b(R_AL));
+    } else {
+        // TODO();
+        reg_l(R_EAX) = *(int16_t*)(&reg_w(R_AX));
+    }
+    print_asm(s->isa.is_operand_size_16 ? "cbtw" : "cwtl");
 }
 
 static inline def_EHelper(movsx) {
