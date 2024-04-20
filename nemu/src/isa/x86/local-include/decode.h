@@ -130,7 +130,7 @@ static inline def_DHelper(G2E) {
 }
 
 static inline def_DHelper(mov_G2E) {
-  operand_rm(s, id_dest, false, id_src1, true);
+    operand_rm(s, id_dest, false, id_src1, true);
 }
 
 /* Gb <- Eb
@@ -141,11 +141,11 @@ static inline def_DHelper(E2G) {
 }
 
 static inline def_DHelper(mov_E2G) {
-  operand_rm(s, id_src1, true, id_dest, false);
+    operand_rm(s, id_src1, true, id_dest, false);
 }
 
 static inline def_DHelper(lea_M2G) {
-  operand_rm(s, id_src1, false, id_dest, false);
+    operand_rm(s, id_src1, false, id_dest, false);
 }
 
 /* AL <- Ib
@@ -204,7 +204,7 @@ static inline def_DHelper(E) {
 }
 
 static inline def_DHelper(setcc_E) {
-  operand_rm(s, id_dest, false, NULL, false);
+    operand_rm(s, id_dest, false, NULL, false);
 }
 
 static inline def_DHelper(gp7_E) {

@@ -29,8 +29,11 @@ static inline def_EHelper(popa) {
 }
 
 static inline def_EHelper(leave) {
-  TODO();
-  print_asm("leave");
+    // The reverse action of push ebp; mov esp ebp;
+    // TODO();
+    rtl_mv(s, &cpu.esp, &cpu.ebp);
+    rtl_pop(s, &cpu.ebp);
+    print_asm("leave");
 }
 
 static inline def_EHelper(cltd) {
@@ -67,7 +70,7 @@ static inline def_EHelper(movzx) {
 }
 
 static inline def_EHelper(lea) {
-  rtl_addi(s, ddest, s->isa.mbase, s->isa.moff);
-  operand_write(s, id_dest, ddest);
-  print_asm_template2(lea);
+    rtl_addi(s, ddest, s->isa.mbase, s->isa.moff);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(lea);
 }

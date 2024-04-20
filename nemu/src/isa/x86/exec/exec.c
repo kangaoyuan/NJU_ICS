@@ -51,28 +51,72 @@ static inline def_EHelper(gp4) {
 
 /* 0xff */
 static inline def_EHelper(gp5) {
-  switch (s->isa.ext_opcode) {
-    EMPTY(0) EMPTY(1) EMPTY(2) EMPTY(3)
-    EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
-  }
+    switch (s->isa.ext_opcode) {
+        EXW(0x0, inc, -1)
+        EXW(0x1, dec, -1)
+        EXW(0x2, call_rm, -1)
+        EMPTY(3)
+        EXW(0x4, jmp_rm, -1)
+        EMPTY(5)
+        EXW(0x6, push, -1)
+        EMPTY(7)
+    }
 }
 
 /* 0x0f 0x01*/
 static inline def_EHelper(gp7) {
-  switch (s->isa.ext_opcode) {
-    EMPTY(0) EMPTY(1) EMPTY(2) EMPTY(3)
-    EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
-  }
+    switch (s->isa.ext_opcode) {
+        EMPTY(0)
+        EMPTY(1) EMPTY(2) EMPTY(3) EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
+    }
 }
 
 static inline def_EHelper(2byte_esc) {
-  uint8_t opcode = instr_fetch(&s->seq_pc, 1);
-  s->opcode = opcode;
-  switch (opcode) {
-  /* TODO: Add more instructions!!! */
-    IDEX (0x01, gp7_E, gp7)
-    default: exec_inv(s);
-  }
+    uint8_t opcode = instr_fetch(&s->seq_pc, 1);
+    s->opcode = opcode;
+    switch (opcode) {
+        /* TODO: Add more instructions!!! */
+        IDEX(0x01, gp7_E, gp7)
+        IDEX(0x80, J, jcc)
+        IDEX(0x81, J, jcc)
+        IDEX(0x82, J, jcc)
+        IDEX(0x83, J, jcc)
+        IDEX(0x84, J, jcc)
+        IDEX(0x85, J, jcc)
+        IDEX(0x86, J, jcc)
+        IDEX(0x87, J, jcc)
+        IDEX(0x88, J, jcc)
+        IDEX(0x89, J, jcc)
+        IDEX(0x8a, J, jcc)
+        IDEX(0x8b, J, jcc)
+        IDEX(0x8c, J, jcc)
+        IDEX(0x8d, J, jcc)
+        IDEX(0x8e, J, jcc)
+        IDEX(0x8f, J, jcc)
+        IDEXW(0x90, setcc_E, setcc, 1)
+        IDEXW(0x91, setcc_E, setcc, 1)
+        IDEXW(0x92, setcc_E, setcc, 1)
+        IDEXW(0x93, setcc_E, setcc, 1)
+        IDEXW(0x94, setcc_E, setcc, 1)
+        IDEXW(0x95, setcc_E, setcc, 1)
+        IDEXW(0x96, setcc_E, setcc, 1)
+        IDEXW(0x97, setcc_E, setcc, 1)
+        IDEXW(0x98, setcc_E, setcc, 1)
+        IDEXW(0x99, setcc_E, setcc, 1)
+        IDEXW(0x9a, setcc_E, setcc, 1)
+        IDEXW(0x9b, setcc_E, setcc, 1)
+        IDEXW(0x9c, setcc_E, setcc, 1)
+        IDEXW(0x9d, setcc_E, setcc, 1)
+        IDEXW(0x9e, setcc_E, setcc, 1)
+        IDEXW(0x9f, setcc_E, setcc, 1)
+        IDEX(0xaf, E2G, imul2)
+        IDEXW(0xb6, mov_E2G, movzx, 1)
+        IDEXW(0xb7, mov_E2G, movzx, 2)
+        IDEXW(0xbe, mov_E2G, movsx, 1)
+        IDEXW(0xbf, mov_E2G, movsx, 2)
+    default:
+        exec_inv(s);
+    }
 }
 
 static inline void fetch_decode_exec(DecodeExecState *s) {
@@ -83,12 +127,54 @@ again:
     // Separeting D, EX and W code to realize decoupling.
     switch (opcode) {
         EX(0x0f, 2byte_esc)
+        IDEXW(0x00, G2E, add, 1)
+        IDEX(0x01, G2E, add)
+        IDEXW(0x02, E2G, add, 1)
+        IDEX(0x03, E2G, add)
+        IDEXW(0x04, I2a, add, 1)
+        IDEX(0x05, I2a, add)
+        IDEXW(0x08, G2E, or, 1)
+        IDEX(0x09, G2E, or)
+        IDEXW(0x0a, E2G, or, 1)
+        IDEX(0x0b, E2G, or)
+        IDEXW(0x0c, I2a, or, 1)
+        IDEX(0x0d, I2a, or)
+        IDEXW(0x10, G2E, adc, 1)
+        IDEX(0x11, G2E, adc)
+        IDEXW(0x12, E2G, adc, 1)
+        IDEX(0x13, E2G, adc)
+        IDEXW(0x14, I2a, adc, 1)
+        IDEX(0x15, I2a, adc)
+        IDEXW(0x18, G2E, sbb, 1)
+        IDEX(0x19, G2E, sbb)
+        IDEXW(0x1a, E2G, sbb, 1)
+        IDEX(0x1b, E2G, sbb)
+        IDEXW(0x1c, I2a, sbb, 1)
+        IDEX(0x1d, I2a, sbb)
+        IDEXW(0x20, G2E, and, 1)
+        IDEX(0x21, G2E, and)
+        IDEXW(0x22, E2G, and, 1)
+        IDEX(0x23, E2G, and)
+        IDEXW(0x24, I2a, and, 1)
+        IDEX(0x25, I2a, and)
+        IDEXW(0x28, G2E, sub, 1)
+        IDEX(0x29, G2E, sub)
+        IDEXW(0x2a, E2G, sub, 1)
+        IDEX(0x2b, E2G, sub)
+        IDEXW(0x2c, I2a, sub, 1)
+        IDEX(0x2d, I2a, sub)
         IDEXW(0x30, G2E, xor, 1)
         IDEX(0x31, G2E, xor)
         IDEXW(0x32, E2G, xor, 1)
         IDEX(0x33, E2G, xor)
         IDEXW(0x34, I2a, xor, 1)
         IDEX(0x35, I2a, xor)
+        IDEXW(0x38, G2E, cmp, 1)
+        IDEX(0x39, G2E, cmp)
+        IDEXW(0x3a, E2G, cmp, 1)
+        IDEX(0x3b, E2G, cmp)
+        IDEXW(0x3c, I2a, cmp, 1)
+        IDEX(0x3d, I2a, cmp)
         IDEX(0x50, r, push)
         IDEX(0x51, r, push)
         IDEX(0x52, r, push)
@@ -118,6 +204,7 @@ again:
         IDEX(0x89, mov_G2E, mov)
         IDEXW(0x8a, mov_E2G, mov, 1)
         IDEX(0x8b, mov_E2G, mov)
+        IDEX(0x8d, lea_M2G, lea)
         EX(0x90, nop)
         IDEXW(0xa0, O2a, mov, 1)
         IDEX(0xa1, O2a, mov)
@@ -144,6 +231,7 @@ again:
         EX(0xc3, ret)
         IDEXW(0xc6, mov_I2E, mov, 1)
         IDEX(0xc7, mov_I2E, mov)
+        EX(0xc9, leave)
         IDEXW(0xd0, gp2_1_E, gp2, 1)
         IDEX(0xd1, gp2_1_E, gp2)
         IDEXW(0xd2, gp2_cl2E, gp2, 1)
