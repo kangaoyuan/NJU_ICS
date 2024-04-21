@@ -1,4 +1,5 @@
 #include <monitor/difftest.h>
+#include "../local-include/decode.h"
 
 uint32_t pio_read_l(ioaddr_t);
 uint32_t pio_read_w(ioaddr_t);
@@ -45,11 +46,36 @@ static inline def_EHelper(iret) {
 }
 
 static inline def_EHelper(in) {
-  TODO();
-  print_asm_template2(in);
+    switch (id_src1->width) {
+    case 1:
+        *s0 = pio_read_b(*dsrc1);
+        break;
+    case 2:
+        *s0 = pio_read_w(*dsrc1);
+        break;
+    case 4:
+        *s0 = pio_read_l(*dsrc1);
+        break;
+    default:
+        panic("Invalid width");
+    }
+    operand_write(s, id_dest, s0);
+    print_asm_template2(in);
 }
 
 static inline def_EHelper(out) {
-  TODO();
-  print_asm_template2(out);
+    switch (id_src1->width) {
+    case 1:
+        pio_write_b(*ddest, *dsrc1);
+        break;
+    case 2:
+        pio_write_w(*ddest, *dsrc1);
+        break;
+    case 4:
+        pio_write_l(*ddest, *dsrc1);
+        break;
+    default:
+        panic("Invalid width");
+    }
+    print_asm_template2(out);
 }

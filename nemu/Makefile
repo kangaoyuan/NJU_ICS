@@ -1,7 +1,7 @@
 count:
 	find ./ -name "*.c" -o -name "*.h" | xargs grep -v "^$$" | wc -l
 
-ISA = x86
+ISA ?= x86
 ISAS = $(shell ls src/isa/)
 ifeq ($(filter $(ISAS), $(ISA)), ) # ISA must be valid
 $(error Invalid ISA. Supported: $(ISAS))
