@@ -292,25 +292,25 @@ static inline def_DHelper(push_SI) {
 }
 
 static inline def_DHelper(in_I2a) {
-  id_src1->width = 1;
-  decode_op_I(s, id_src1, true);
-  decode_op_a(s, id_dest, false);
+    id_src1->width = 1;
+    decode_op_I(s, id_src1, true);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(in_dx2a) {
-  operand_reg(s, id_src1, true, R_DX, 2);
-  decode_op_a(s, id_dest, false);
+    operand_reg(s, id_src1, true, R_DX, 2);
+    decode_op_a(s, id_dest, false);
 }
 
 static inline def_DHelper(out_a2I) {
-  decode_op_a(s, id_src1, true);
-  id_dest->width = 1;
-  decode_op_I(s, id_dest, true);
+    decode_op_a(s, id_src1, true);
+    id_dest->width = 1;
+    decode_op_I(s, id_dest, true);
 }
 
 static inline def_DHelper(out_a2dx) {
-  decode_op_a(s, id_src1, true);
-  operand_reg(s, id_dest, true, R_DX, 2);
+    decode_op_a(s, id_src1, true);
+    operand_reg(s, id_dest, true, R_DX, 2);
 }
 
 static inline void operand_write(DecodeExecState* s, Operand* op,
