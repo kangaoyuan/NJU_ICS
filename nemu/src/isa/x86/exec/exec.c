@@ -28,14 +28,14 @@ static inline def_EHelper(gp1) {
 /* 0xc0, 0xc1, 0xd0, 0xd1, 0xd2, 0xd3 */
 static inline def_EHelper(gp2) {
     switch (s->isa.ext_opcode) {
-        EMPTY(0)
-        EMPTY(1)
-        EMPTY(2)
-        EMPTY(3)
-        EXW(4, shl, -1)
-        EXW(5, shr, -1)
-        EMPTY(6)
-        EXW(7, sar, -1)
+        EXW(0x0, rol, -1)
+        EMPTY(0x1)
+        EMPTY(0x2)
+        EMPTY(0x3)
+        EXW(0x4, shl, -1)
+        EXW(0x5, shr, -1)
+        EMPTY(0x6)
+        EXW(0x7, sar, -1)
     }
 }
 
@@ -43,13 +43,13 @@ static inline def_EHelper(gp2) {
 static inline def_EHelper(gp3) {
     switch (s->isa.ext_opcode) {
         IDEXW(0x0, test_I, test, -1)
-        EMPTY(1)
-        EXW(2, not, -1)
-        EXW(3, neg, -1)
-        EXW(4, mul, -1)
-        EXW(5, imul1, -1)
-        EXW(6, div, -1)
-        EXW(7, idiv, -1)
+        EMPTY(0x1)
+        EXW(0x2, not, -1)
+        EXW(0x3, neg, -1)
+        EXW(0x4, mul, -1)
+        EXW(0x5, imul1, -1)
+        EXW(0x6, div, -1)
+        EXW(0x7, idiv, -1)
     }
 }
 

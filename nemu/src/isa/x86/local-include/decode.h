@@ -249,9 +249,9 @@ static inline def_DHelper(gp2_cl2E) {
 }
 
 static inline def_DHelper(gp2_Ib2E) {
-  operand_rm(s, id_dest, true, NULL, false);
-  id_src1->width = 1;
-  decode_op_I(s, id_src1, true);
+    operand_rm(s, id_dest, true, NULL, false);
+    id_src1->width = 1;
+    decode_op_I(s, id_src1, true);
 }
 
 /* Ev <- GvIb
