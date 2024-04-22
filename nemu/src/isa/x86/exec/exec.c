@@ -5,9 +5,9 @@ static inline void set_width(DecodeExecState* s, int width) {
     if (width == -1)
         return;
 
-    if (width == 0) {
+    if (width == 0)
         width = s->isa.is_operand_size_16 ? 2 : 4;
-    }
+
     s->src1.width = s->dest.width = s->src2.width = width;
 }
 
