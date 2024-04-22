@@ -89,8 +89,19 @@ static inline def_EHelper(rol){
     if (*dsrc1 > 8 * id_dest->width)
         assert(0);
     rtl_shri(s, s0, ddest, 8 * id_dest->width - *dsrc1);
-    rtl_andi(s, s0, s0, (1u << *dsrc1) - 1);
     rtl_shli(s, s1, ddest, *dsrc1);
+    rtl_or(s, s1, s1, s0);
+    operand_write(s, id_dest, s1);
+    rtl_andi(s, s0, s0, 1);
+    rtl_set_CF(s, s0);
+    print_asm_template2(rol);
+}
+
+static inline def_EHelper(ror){
+    if (*dsrc1 > 8 * id_dest->width)
+        assert(0);
+    rtl_shli(s, s0, ddest, 8 * id_dest->width - *dsrc1);
+    rtl_shri(s, s1, ddest, *dsrc1);
     rtl_or(s, s1, s1, s0);
     operand_write(s, id_dest, s1);
     rtl_andi(s, s0, s0, 1);
