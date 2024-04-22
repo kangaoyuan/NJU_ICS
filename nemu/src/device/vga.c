@@ -29,7 +29,6 @@ static SDL_Renderer *renderer = NULL;
 static uint32_t *vgactl_port_base = NULL;
 static uint32_t (*vmem) [SCREEN_W] = NULL;
 
-static inline void update_screen() __attribute__((used));
 
 static inline void update_screen() {
 #ifdef SHOW_SCREEN
