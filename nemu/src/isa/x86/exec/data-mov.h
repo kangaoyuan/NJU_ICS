@@ -76,3 +76,31 @@ static inline def_EHelper(lea) {
     operand_write(s, id_dest, ddest);
     print_asm_template2(lea);
 }
+
+static inline def_EHelper(movsb) {
+    rtl_lm(s, s0, &cpu.esi, 0, 1);
+    rtl_sm(s, &cpu.edi, 0, s0, 1);
+    rtl_addi(s, &cpu.esi, &cpu.esi, 1);
+    rtl_addi(s, &cpu.edi, &cpu.edi, 1);
+    print_asm_template1(movs);
+}
+
+static inline def_EHelper(movsl) {
+    switch (id_dest->width) {
+    case 2:
+        rtl_lms(s, s0, &cpu.esi, 0, 2);
+        rtl_sm(s, &cpu.edi, 0, s0, 2);
+        *s1 = 2;
+        rtl_add(s, &cpu.esi, &cpu.esi, s1);
+        rtl_add(s, &cpu.edi, &cpu.edi, s1);
+        break;
+    case 4:
+        rtl_lms(s, s0, &cpu.esi, 0, 4);
+        rtl_sm(s, &cpu.edi, 0, s0, 4);
+        *s1 = 4;
+        rtl_add(s, &cpu.esi, &cpu.esi, s1);
+        rtl_add(s, &cpu.edi, &cpu.edi, s1);
+        break;
+    }
+    print_asm_template1(movl);
+}
