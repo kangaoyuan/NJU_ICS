@@ -9,8 +9,8 @@ void pio_write_w(ioaddr_t, uint32_t);
 void pio_write_b(ioaddr_t, uint32_t);
 
 static inline def_EHelper(lidt) {
-  TODO();
-  print_asm_template1(lidt);
+    TODO();
+    print_asm_template1(lidt);
 }
 
 static inline def_EHelper(mov_r2cr) {

@@ -28,28 +28,27 @@ Context* __am_irq_handle(Context *c) {
   return c;
 }
 
-bool cte_init(Context*(*handler)(Event, Context*)) {
-  static GateDesc32 idt[NR_IRQ];
+bool cte_init(Context* (*handler)(Event, Context*)) {
+    static GateDesc32 idt[NR_IRQ];
 
-  // initialize IDT
-  for (unsigned int i = 0; i < NR_IRQ; i ++) {
-    idt[i]  = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecnull, DPL_KERN);
-  }
+    // initialize IDT
+    for (unsigned int i = 0; i < NR_IRQ; i++) {
+        idt[i] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecnull, DPL_KERN);
+    }
 
-  // ----------------------- interrupts ----------------------------
-  idt[32]   = GATE32(STS_IG, KSEL(SEG_KCODE), __am_irq0,    DPL_KERN);
-  // ---------------------- system call ----------------------------
-  idt[0x80] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecsys,  DPL_USER);
-  idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
+    // ----------------------- interrupts ----------------------------
+    idt[32] = GATE32(STS_IG, KSEL(SEG_KCODE), __am_irq0, DPL_KERN);
+    // ---------------------- system call ----------------------------
+    idt[0x80] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecsys, DPL_USER);
+    idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
 
-  set_idt(idt, sizeof(idt));
+    set_idt(idt, sizeof(idt));
 
-  // register event handler
-  user_handler = handler;
+    // register event handler
+    user_handler = handler;
 
-  return true;
+    return true;
 }
-
 
 Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
   return NULL;
