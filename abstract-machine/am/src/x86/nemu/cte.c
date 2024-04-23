@@ -14,6 +14,7 @@ void __am_vectrap();
 void __am_vecnull();
 
 Context* __am_irq_handle(Context* c) {
+    printf("in irq_handle c->irq == %x", c->irq);
     if (user_handler) {
         Event ev = {0};
         switch (c->irq) {
