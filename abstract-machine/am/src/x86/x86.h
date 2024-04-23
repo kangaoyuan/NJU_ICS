@@ -1,3 +1,4 @@
+#include <klib.h>
 // CPU rings
 #define DPL_KERN       0x0     // Kernel (ring 0)
 #define DPL_USER       0x3     // User (ring 3)
@@ -281,6 +282,7 @@ static inline void set_cr0(uintptr_t cr0) {
 }
 
 static inline void set_idt(void* idt, int size) {
+    printf("in cte_init, idt == %x\n", idt);
     static volatile struct {
         int16_t size;
         void*   idt;
