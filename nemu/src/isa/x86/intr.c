@@ -17,7 +17,6 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     rtl_push(s, &cpu.cs);
     rtl_push(s, &ret_addr);
 
-    printf("int instruction after hardware push, esp == %x\n", cpu.esp);
     rtl_j(s, (hi << 16) | lo);
 }
 
