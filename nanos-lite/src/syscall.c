@@ -6,6 +6,9 @@ void do_syscall(Context* c) {
     a[0] = c->GPR1;
 
     switch (a[0]) {
+    case 0x0:
+        halt(c->GPR2);
+        break;
     case 0x1:
         yield();
         c->GPRx = 0;
