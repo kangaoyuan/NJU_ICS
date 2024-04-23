@@ -10,9 +10,9 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     printf("int execution, NO == %x\n", NO);
     uint32_t idt = cpu.idtr_base;
     printf("int execution, idt == %x\n", idt);
-    printf("I reach here\n");
     uint32_t lo = vaddr_read(idt + 8 * NO, 2);
     uint32_t hi = vaddr_read(idt + 8 * NO + 6, 2);
+    printf("int execution, addr == %x\n", (hi << 16) | lo);
 
     cpu.eflags.IF = false;
 
