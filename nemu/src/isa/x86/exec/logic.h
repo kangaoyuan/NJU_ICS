@@ -108,3 +108,25 @@ static inline def_EHelper(ror){
     rtl_set_CF(s, s0);
     print_asm_template2(rol);
 }
+
+static inline def_EHelper(shld){
+    rtl_mv(s, s0, dsrc1);
+    rtl_mv(s, s1, dsrc2);
+    *s0 %= 32;
+    rtl_shl(s, ddest, ddest, s0);
+    rtl_shri(s, s1, s1, 32-*s0);
+    rtl_or(s, ddest, ddest, s1);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(shld);
+}
+
+static inline def_EHelper(shrd){
+    rtl_mv(s, s0, dsrc1);
+    rtl_mv(s, s1, dsrc2);
+    *s0 %= 32;
+    rtl_shr(s, ddest, ddest, s0);
+    rtl_shli(s, s1, s1, 32-*s0);
+    rtl_or(s, ddest, ddest, s1);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(shld);
+}
