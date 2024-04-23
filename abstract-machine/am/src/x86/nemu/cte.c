@@ -13,19 +13,29 @@ void __am_vecsys();
 void __am_vectrap();
 void __am_vecnull();
 
+Context* __am_irq_handle(Context* c) {
+    if (user_handler) {
+        Event ev = {0};
+        switch (c->irq) {
+        case 32:
+            ev.event = EVENT_IRQ_TIMER;
+            break;
+        case 0x80:
+            ev.event = EVENT_SYSCALL;
+            break;
+        case 0x81:
+            ev.event = EVENT_YIELD;
+            break;
+        default:
+            ev.event = EVENT_ERROR;
+            break;
+        }
 
-Context* __am_irq_handle(Context *c) {
-  if (user_handler) {
-    Event ev = {0};
-    switch (c->irq) {
-      default: ev.event = EVENT_ERROR; break;
+        c = user_handler(ev, c);
+        assert(c != NULL);
     }
 
-    c = user_handler(ev, c);
-    assert(c != NULL);
-  }
-
-  return c;
+    return c;
 }
 
 bool cte_init(Context* (*handler)(Event, Context*)) {
@@ -55,7 +65,7 @@ Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
 }
 
 void yield() {
-  asm volatile("int $0x81");
+    asm volatile("int $0x81");
 }
 
 bool ienabled() {
