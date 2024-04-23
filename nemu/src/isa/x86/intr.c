@@ -7,7 +7,7 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
      */
 
     //TODO();
-    printf("int execution, NO == %d\n", NO);
+    printf("int execution, NO == %x\n", NO);
     uint32_t idt = cpu.idtr_base;
     uint32_t lo = vaddr_read(idt + 8 * NO, 2);
     uint32_t hi = vaddr_read(idt + 8 * NO + 6, 2);
