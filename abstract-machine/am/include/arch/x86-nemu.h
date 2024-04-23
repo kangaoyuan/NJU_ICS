@@ -4,9 +4,9 @@
 struct Context {
     // TODO: fix the order of these members to match trap.S
     void*     cr3;
-    uintptr_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
-    int       irq;
-    uintptr_t eip, cs, eflags;
+    uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+    uint32_t       irq;
+    uint32_t eip, cs, eflags;
 };
 
 #define GPR1 eax
