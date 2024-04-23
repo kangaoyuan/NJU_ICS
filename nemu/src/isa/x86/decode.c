@@ -65,6 +65,7 @@ static inline void load_addr(DecodeExecState* s, ModR_M* m, Operand* rm) {
     }
 
     s->isa.mbase = (base_reg != -1 ? &reg_l(base_reg) : rz);
+
     if (index_reg != -1) {
         rtl_shli(s, s1, &reg_l(index_reg), scale);
         rtl_add(s, &s->isa.mbr, s->isa.mbase, s1);

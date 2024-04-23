@@ -9,7 +9,10 @@ void pio_write_w(ioaddr_t, uint32_t);
 void pio_write_b(ioaddr_t, uint32_t);
 
 static inline def_EHelper(lidt) {
-    TODO();
+    //TODO();
+    vaddr_t addr = *s->isa.mbase + s->isa.moff;
+    cpu.idtr_limit = vaddr_read(addr, 2);
+    cpu.idtr_base = vaddr_read(addr+2, 4);
     print_asm_template1(lidt);
 }
 
