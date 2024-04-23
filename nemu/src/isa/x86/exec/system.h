@@ -14,6 +14,7 @@ static inline def_EHelper(lidt) {
     vaddr_t addr = *s->isa.mbase + s->isa.moff;
     cpu.idtr_limit = vaddr_read(addr, 2);
     cpu.idtr_base = vaddr_read(addr+2, 4);
+    printf("lidt execution, idt == %x\n", cpu.idtr_base);
     print_asm_template1(lidt);
 }
 
