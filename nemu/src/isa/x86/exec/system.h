@@ -12,7 +12,6 @@ void raise_intr(DecodeExecState *s, uint32_t NO, vaddr_t ret_addr);
 static inline def_EHelper(lidt) {
     //TODO();
     vaddr_t addr = *s->isa.mbase + s->isa.moff;
-    printf("lidt execution, addr = %x\n", *s->isa.mbase + s->isa.moff);
     cpu.idtr_limit = vaddr_read(addr, 2);
     cpu.idtr_base = vaddr_read(addr+2, 4);
     printf("lidt execution, cpu.idtr_base == %x\n", cpu.idtr_base);

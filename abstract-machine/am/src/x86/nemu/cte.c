@@ -54,6 +54,7 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
     idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
 
     printf("in cte_init, idt == %x\n", idt);
+    printf("in cte_init, __am_vectrap == %x\n", __am_vectrap);
     set_idt(idt, sizeof(idt));
 
     // register event handler

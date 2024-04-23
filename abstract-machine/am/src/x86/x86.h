@@ -282,7 +282,7 @@ static inline void set_cr0(uintptr_t cr0) {
 }
 
 static inline void set_idt(void* idt, int size) {
-    printf("in cte_init, idt == %x\n", idt);
+    printf("in set_idt, idt == %x\n", idt);
     static volatile struct {
         int16_t size;
         void*   idt;
