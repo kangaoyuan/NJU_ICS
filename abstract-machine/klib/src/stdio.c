@@ -90,8 +90,10 @@ int vsprintf(char* out, const char* fmt, va_list ap) {
                 } else if (c == 'l') {
                     printint(&out, va_arg(ap, unsigned long), 10, 0);
                 } else if (c == 'x') {
+                    *out++ = '0';
+                    *out++ = 'x';
                     printint(&out, va_arg(ap, int), 16, 0);
-                } else if (c == 'p') {
+                } else if (c == 'p' || c == 'u') {
                     printptr(&out, va_arg(ap, unsigned int));
                 } else if (c == 's') {
                     s = va_arg(ap, char*);
