@@ -27,7 +27,7 @@ void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    const char file_name[] = "/bin/dummy";
+    const char file_name[] = "/bin/hello";
     naive_uload(NULL, file_name);
 }
 
