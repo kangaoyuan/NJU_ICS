@@ -1,7 +1,9 @@
-#include <stdint.h>
 #include <stdio.h>
+#include <fcntl.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <unistd.h>
 #include <sys/time.h>
 
@@ -16,7 +18,10 @@ uint32_t NDL_GetTicks() {
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  return 0;
+    int fd = open("/dev/events", 0, 0);
+    int ret = read(fd, buf, len);
+    assert(close(fd) == 0);
+    return ret == 0 ? 0 : 1;
 }
 
 void NDL_OpenCanvas(int *w, int *h) {
