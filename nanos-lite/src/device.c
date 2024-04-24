@@ -23,8 +23,9 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
 }
 
 size_t events_read(void *buf, size_t offset, size_t len) {
-    int keycode = io_read(AM_INPUT_KEYBRD).keycode;
-    bool keydown = io_read(AM_INPUT_KEYBRD).keydown;
+    AM_INPUT_KEYBRD_T key = io_read(AM_INPUT_KEYBRD);
+    int keycode = key.keycode;
+    bool keydown = key.keydown;
 
     if(keycode == AM_KEY_NONE)
         return 0;
@@ -36,11 +37,31 @@ size_t events_read(void *buf, size_t offset, size_t len) {
 }
 
 size_t dispinfo_read(void *buf, size_t offset, size_t len) {
-  return 0;
+    AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
+    int width = info.width;
+    int height = info.height;
+
+    memset(buf, 0, len);
+    sprintf((char*)buf, "WIDTH:%d\nHEIGHT:%d\n", width, height);
+
+	return strlen(buf);
 }
 
 size_t fb_write(const void *buf, size_t offset, size_t len) {
-  return 0;
+    AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
+    int width = info.width;
+    int height = info.height;
+    assert(offset <= width * height * 4);
+
+    int x = (offset/4) % width;
+    int y = (offset/4) / width;
+
+    if (offset + len > width * height * 4)
+        len = width * height * 4 - offset;
+
+    io_write(AM_GPU_FBDRAW, x, y, (void*)buf, len/4, 1, true);
+
+    return len;
 }
 
 int sys_gettimeofday(struct timeval* tv, struct timezone* tz){
