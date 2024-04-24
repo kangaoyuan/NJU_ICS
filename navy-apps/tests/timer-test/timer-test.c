@@ -10,7 +10,7 @@ int main() {
     time_t init_sec = init.tv_sec;
     suseconds_t init_usec = init.tv_usec;
 
-    size_t times = 1;
+    int times = 1;
 
     while (1) {
         assert(gettimeofday(&now, NULL) == 0);
@@ -19,7 +19,7 @@ int main() {
 
         uint64_t time_gap = (now_sec - init_sec) * 1000000 + (now_usec - init_usec); // unit: us
         if (time_gap > 500000 * times) {
-            printf("Half a second passed, %zu time(s)\n", times);
+            printf("Half a second passed, %d time(s)\n", times);
             times++;
         }
     }
