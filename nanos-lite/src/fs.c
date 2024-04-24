@@ -44,7 +44,9 @@ void init_fs() {
 
 int fs_open(const char* pathname, int flags, int mode) {
     int i, fd = -1;
+    printf("search file_name = %s\n", pathname);
     for (i = 0; i < FILE_NUM; ++i) {
+        printf("[%d] file_name = %s\n", i, file_table[i].name);
         if (!strcmp(pathname, file_table[i].name)) {
             fd = i;
             file_table[i].open_offset = 0;
