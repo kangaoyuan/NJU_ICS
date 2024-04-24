@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <sys/time.h>
 
+#define HAS_NDL
+
 #ifndef HAS_NDL
 #include <assert.h>
 #include <sys/time.h>
