@@ -53,9 +53,8 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
 
     uint32_t mem_unit =
         src->format->BitsPerPixel == 8 ? sizeof(char) : sizeof(uint32_t);
-    printf("mem_unit == %d\n", mem_unit);
-    uint32_t dst_off = (dst_x + dst_y * rect_w) * 4;
-    uint32_t src_off = (src_x + src_y * rect_w) * 4;
+    uint32_t dst_off = (dst_x + dst_y * dst->w) * 4;
+    uint32_t src_off = (src_x + src_y * src->w) * 4;
 
     for (int j = 0; j < rect_h; j++) {
         memcpy(dst->pixels + dst_off, src->pixels + src_off,
