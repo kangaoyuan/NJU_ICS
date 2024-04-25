@@ -58,9 +58,9 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
 
     for (int j = 0; j < rect_h; j++) {
         memcpy(dst->pixels + dst_off, src->pixels + src_off,
-               rect_w * 4);
-        dst_off += rect_w * 4;
-        src_off += rect_w * 4;
+               src->w * 4);
+        dst_off += dst->w * 4;
+        src_off += src->w * 4;
     }
 
 }
