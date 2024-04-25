@@ -15,12 +15,12 @@ int SDL_PushEvent(SDL_Event *ev) {
 int SDL_PollEvent(SDL_Event* ev) {
     unsigned buf_size = 64;
     char*    buf = (char*)malloc(buf_size * sizeof(char));
+
     if (NDL_PollEvent(buf, buf_size) == 1) {
-        if (strncmp(buf, "kd", 2) == 0) {
+        if (strncmp(buf, "kd", 2) == 0)
             ev->key.type = SDL_KEYDOWN;
-        } else {
+        else
             ev->key.type = SDL_KEYUP;
-        }
 
         for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]);
              ++i) {
@@ -30,20 +30,38 @@ int SDL_PollEvent(SDL_Event* ev) {
             }
         }
 
-        free(buf);
+        //free(buf);
         return 1;
     } else {
         ev->key.type =
             SDL_USEREVENT;  // avoid too many `Redirecting file open ...`
         ev->key.keysym.sym = 0;
+        //free(buf);
+        return 0;
     }
-
-    free(buf);
-    return 0;
 }
 
 int SDL_WaitEvent(SDL_Event* event) {
-    SDL_PollEvent(event);
+    unsigned buf_size = 64;
+    char *buf = (char *)malloc(buf_size * sizeof(char));
+
+    while (NDL_PollEvent(buf, buf_size) == 0); // wait ...
+
+    if (strncmp(buf, "kd", 2) == 0)
+        event->key.type = SDL_KEYDOWN;
+    else
+        event->key.type = SDL_KEYUP;
+
+
+    for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]); ++i) {
+        if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0
+                && strlen(keyname[i]) == strlen(buf) - 4) {
+            event->key.keysym.sym = i;
+            break;
+        }
+    }
+
+    //free(buf);
     return 1;
 }
 
