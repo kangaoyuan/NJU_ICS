@@ -1,6 +1,7 @@
 #include <NDL.h>
 #include <SDL.h>
 #include <assert.h>
+#include <string.h>
 
 #define keyname(k) #k,
 
@@ -27,7 +28,7 @@ int SDL_PollEvent(SDL_Event* ev) {
 
         for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]);
              ++i) {
-            if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0) {
+            if ( !strncmp(buf + 3, keyname[i], strlen(keyname[i])) ) {
                 ev->key.keysym.sym = i;
                 break;
             }
@@ -47,7 +48,7 @@ int SDL_PollEvent(SDL_Event* ev) {
 int SDL_WaitEvent(SDL_Event* event) {
     //unsigned buf_size = 64;
     //char *buf = (char *)malloc(buf_size * sizeof(char));
-    char buf[64] = {0};
+    static char buf[64] = {0};
 
     while (NDL_PollEvent(buf, 64) == 0); // wait ...
 
@@ -58,8 +59,8 @@ int SDL_WaitEvent(SDL_Event* event) {
 
 
     for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]); ++i) {
-        if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0
-                && strlen(keyname[i]) == strlen(buf) - 4) {
+        if ( strlen(buf + 3) - 1 == strlen(keyname[i]) &&
+             !strncmp(buf + 3, keyname[i], strlen(keyname[i])) ) {
             event->key.keysym.sym = i;
             break;
         }
@@ -70,7 +71,8 @@ int SDL_WaitEvent(SDL_Event* event) {
 }
 
 int SDL_PeepEvents(SDL_Event *ev, int numevents, int action, uint32_t mask) {
-  return 0;
+    assert(0);
+    return 0;
 }
 
 uint8_t* SDL_GetKeyState(int *numkeys) {

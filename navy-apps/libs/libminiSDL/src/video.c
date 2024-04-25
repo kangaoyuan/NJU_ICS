@@ -33,36 +33,31 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
     assert(dst && src);
     assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
-    int dst_x, dst_y, dst_w, dst_h;
-    int src_x, src_y, src_w, src_h;
+    uint32_t * data = (uint32_t *)src->pixels;
+    uint32_t * base = (uint32_t *)dst->pixels;
 
-    if (!srcrect) {
-        src_x = src_y = 0;
-        src_w = src->w, src_h = src->h;
-    } else {
-        src_x = srcrect->x, src_y = srcrect->y;
-        src_w = srcrect->w, src_h = srcrect->h;
-    }
-    if (!dstrect) {
-        dst_x = dst_y = 0;
-        dst_w = dst->w, dst_h = dst->h;
-    } else {
-        dst_x = dstrect->x, dst_y = dstrect->y;
-        dst_w = dstrect->w, dst_h = dstrect->w;
-    }
+    int src_w = src->w;
+    int src_h = src->h;
+    int dst_w = dst->w;
+    int dst_h = dst->h;
+    int srcrect_x = !srcrect ? 0 : srcrect->x;
+    int srcrect_y = !srcrect ? 0 : srcrect->y;
+    int dstrect_x = !dstrect ? 0 : dstrect->x;
+    int dstrect_y = !dstrect ? 0 : dstrect->y;
+    int width = !srcrect ? src->w : srcrect->w;
+    int height = !srcrect ? src->h : srcrect->h;
 
-    uint32_t mem_unit =
-        src->format->BitsPerPixel == 8 ? sizeof(char) : sizeof(uint32_t);
-    uint32_t dst_off = (dst_x + dst_y * dst->w) * 4;
-    uint32_t src_off = (src_x + src_y * src->w) * 4;
+    width = width <  (dst->w - dstrect_x) ? width : (dst->w - dstrect_x);
+    height = height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
 
-    for (int j = 0; j < src_h; j++) {
-        memcpy(dst->pixels + dst_off, src->pixels + src_off,
-               src->w * 4);
-        dst_off += dst->w * 4;
-        src_off += src->w * 4;
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            base[(dstrect_y + i) * dst_w + dstrect_x + j] =
+                data[(srcrect_y + i) * src_w + srcrect_x + j];
+        }
     }
 
+    return;
 }
 
 // This performs a fast fill of the given rectangle with some color.
