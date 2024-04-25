@@ -23,7 +23,7 @@ int NDL_PollEvent(char *buf, int len) {
     memset(buf, 0, len);
     int fd = open("/dev/events", 0, 0);
     int ret = read(fd, buf, len);
-    assert(close(fd) == 0);
+    close(fd);
     return ret == 0 ? 0 : 1;
 }
 
@@ -78,7 +78,7 @@ void NDL_DrawRect(uint32_t *pixels, int x, int y, int w, int h) {
         write(fd_fb, pixels + i * w, 4 * w);
     }
 
-    assert(close(fd_fb) == 0);
+    close(fd_fb);
 }
 
 void NDL_OpenAudio(int freq, int channels, int samples) {
