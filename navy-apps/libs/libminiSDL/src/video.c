@@ -1,6 +1,7 @@
 #include <NDL.h>
 #include <sdl-video.h>
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -34,56 +35,35 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
     assert(dst && src);
     assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
-    /*int dst_x, dst_y;*/
-    /*int src_x, src_y, rect_w, rect_h;*/
+    int dst_x, dst_y;
+    int src_x, src_y, rect_w, rect_h;
 
-    /*if (!srcrect) {*/
-        /*src_x = src_y = 0;*/
-        /*rect_w = src->w, rect_h = src->h;*/
-    /*} else {*/
-        /*src_x = srcrect->x, src_y = srcrect->y;*/
-        /*rect_w = srcrect->w, rect_h = srcrect->h;*/
-    /*}*/
-    /*if (!dstrect) {*/
-        /*dst_x = dst_y = 0;*/
-    /*} else {*/
-        /*dst_x = dstrect->x, dst_y = dstrect->y;*/
-    /*}*/
-
-    /*uint32_t mem_unit =*/
-        /*src->format->BitsPerPixel == 8 ? sizeof(char) : sizeof(uint32_t);*/
-    /*uint32_t dst_off = (dst_x + dst_y * rect_w) * mem_unit;*/
-    /*uint32_t src_off = (src_x + src_y * rect_w) * mem_unit;*/
-
-    /*for (int j = 0; j < rect_h; j++) {*/
-        /*memcpy(dst->pixels + dst_off, src->pixels + src_off,*/
-               /*rect_w * mem_unit);*/
-        /*dst_off += rect_w * mem_unit;*/
-        /*src_off += rect_w * mem_unit;*/
-    /*}*/
-
-    uint32_t* src_pixels = (uint32_t*)src->pixels;
-    uint32_t* dst_pixels = (uint32_t*)dst->pixels;
-
-    int rect_w, rect_h, src_x, src_y, dst_x, dst_y;
-    if (srcrect){
-      rect_w = srcrect->w; rect_h = srcrect->h;
-      src_x = srcrect->x; src_y = srcrect->y;
-    }else {
-      rect_w = src->w; rect_h = src->h;
-      src_x = 0; src_y = 0;
+    if (!srcrect) {
+        src_x = src_y = 0;
+        rect_w = src->w, rect_h = src->h;
+    } else {
+        src_x = srcrect->x, src_y = srcrect->y;
+        rect_w = srcrect->w, rect_h = srcrect->h;
     }
-    if (dstrect){
-      dst_x = dstrect->x, dst_y = dstrect->y;
-    }else {
-      dst_x = 0; dst_y = 0;
+    if (!dstrect) {
+        dst_x = dst_y = 0;
+    } else {
+        dst_x = dstrect->x, dst_y = dstrect->y;
     }
 
-    for (int i = 0; i < rect_h; ++i){
-      for (int j = 0; j < rect_w; ++j){
-        dst_pixels[(dst_y + i) * dst->w + dst_x + j] = src_pixels[(src_y + i) * src->w + src_x + j];
-      }
+    uint32_t mem_unit =
+        src->format->BitsPerPixel == 8 ? sizeof(char) : sizeof(uint32_t);
+    printf("mem_unit == %d\n", mem_unit);
+    uint32_t dst_off = (dst_x + dst_y * rect_w) * 4;
+    uint32_t src_off = (src_x + src_y * rect_w) * 4;
+
+    for (int j = 0; j < rect_h; j++) {
+        memcpy(dst->pixels + dst_off, src->pixels + src_off,
+               rect_w * 4);
+        dst_off += rect_w * 4;
+        src_off += rect_w * 4;
     }
+
 }
 
 // This performs a fast fill of the given rectangle with some color.
