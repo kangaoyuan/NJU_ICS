@@ -42,7 +42,7 @@ size_t dispinfo_read(void *buf, size_t offset, size_t len) {
     int height = info.height;
 
     memset(buf, 0, len);
-    sprintf((char*)buf, "WIDTH:%d\nHEIGHT:%d\n", width, height);
+    sprintf((char*)buf, "WIDTH: %d\nHEIGHT: %d\n", width, height);
 
 	return strlen(buf);
 }
