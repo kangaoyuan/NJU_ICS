@@ -2,30 +2,33 @@
 #include <SDL.h>
 #include <SDL_bdf.h>
 
-static const char *font_fname = "/share/fonts/Courier-7.bdf";
+Terminal *term = NULL;
 static BDF_Font *font = NULL;
 static SDL_Surface *screen = NULL;
-Terminal *term = NULL;
+static const char *font_fname = "/share/fonts/Courier-7.bdf";
 
 void builtin_sh_run();
 void extern_app_run(const char *app_path);
 
-int main(int argc, char *argv[]) {
-  SDL_Init(0);
-  font = new BDF_Font(font_fname);
+int main(int argc, char* argv[]) {
+    SDL_Init(0);
+    font = new BDF_Font(font_fname);
 
-  // setup display
-  int win_w = font->w * W;
-  int win_h = font->h * H;
-  screen = SDL_SetVideoMode(win_w, win_h, 32, SDL_HWSURFACE);
+    // setup display
+    int win_w = font->w * W;
+    int win_h = font->h * H;
+    screen = SDL_SetVideoMode(win_w, win_h, 32, SDL_HWSURFACE);
 
-  term = new Terminal(W, H);
+    term = new Terminal(W, H);
 
-  if (argc < 2) { builtin_sh_run(); }
-  else { extern_app_run(argv[1]); }
+    if (argc < 2) {
+        builtin_sh_run();
+    } else {
+        extern_app_run(argv[1]);
+    }
 
-  // should not reach here
-  assert(0);
+    // should not reach here
+    assert(0);
 }
 
 static void draw_ch(int x, int y, char ch, uint32_t fg, uint32_t bg) {
