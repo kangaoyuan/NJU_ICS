@@ -27,28 +27,28 @@
  */
 
 // This performs a fast blit from the source to the destination suface.
-// The width and height in srcrect determined the size of the copied rectangle and only the position is used in the dsrect(the width and height are ignored).
-// If srcrect is NULL, the entire surface is copied. If dstrect is NULL, then the destination position (upper left corner) is (0, 0).
-// The final blit rectangle is saved in dstrect after all clipping is performed (srcrect is not modified).
+// This assumes that the source and destination rectangles are the same size. If either srcrect or dstrect are NULL, the entire surface (src or dst) is copied.
 void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
                      SDL_Rect* dstrect) {
     assert(dst && src);
     assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
-    int dst_x, dst_y;
-    int src_x, src_y, rect_w, rect_h;
+    int dst_x, dst_y, dst_w, dst_h;
+    int src_x, src_y, src_w, src_h;
 
     if (!srcrect) {
         src_x = src_y = 0;
-        rect_w = src->w, rect_h = src->h;
+        src_w = src->w, src_h = src->h;
     } else {
         src_x = srcrect->x, src_y = srcrect->y;
-        rect_w = srcrect->w, rect_h = srcrect->h;
+        src_w = srcrect->w, src_h = srcrect->h;
     }
     if (!dstrect) {
         dst_x = dst_y = 0;
+        dst_w = dst->w, dst_h = dst->h;
     } else {
         dst_x = dstrect->x, dst_y = dstrect->y;
+        dst_w = dstrect->w, dst_h = dstrect->w;
     }
 
     uint32_t mem_unit =
@@ -56,7 +56,7 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
     uint32_t dst_off = (dst_x + dst_y * dst->w) * 4;
     uint32_t src_off = (src_x + src_y * src->w) * 4;
 
-    for (int j = 0; j < rect_h; j++) {
+    for (int j = 0; j < src_h; j++) {
         memcpy(dst->pixels + dst_off, src->pixels + src_off,
                src->w * 4);
         dst_off += dst->w * 4;
