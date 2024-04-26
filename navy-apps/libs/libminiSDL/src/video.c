@@ -85,10 +85,29 @@ void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
 
 void SDL_UpdateRect(SDL_Surface* s, int x, int y, int w, int h) {
     if (x == 0 && y == 0 && w == 0 && h == 0) {
-        NDL_DrawRect((uint32_t*)s->pixels, x, y, s->w, s->h);  // assume the size of screen
+        w = s->w;
+        h = s->h;
+    }
+
+    if (!s->format->palette) {
+        NDL_DrawRect((uint32_t*)s->pixels, x, y, w, h);
+        return;
+    } else {
+        uint8_t*  pixels_index = s->pixels;
+        uint32_t* pixels = malloc(w * h * sizeof(uint32_t));
+
+        for (int i = 0; i < w * h; ++i) {
+            SDL_Color color = s->format->palette->colors[pixels_index[i]];
+            uint32_t  p_elem =
+                color.a << 24 | color.r << 16 | color.g << 8 | color.b;
+            pixels[i] = p_elem;
+        }
+
+        assert(pixels);
+        NDL_DrawRect(pixels, x, y, w, h);
+        free(pixels);
         return;
     }
-    NDL_DrawRect((uint32_t*)s->pixels, x, y, w, h);
 }
 
 // APIs below are already implemented.
