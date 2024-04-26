@@ -234,7 +234,7 @@ ssize_t write(int fd, const void *buf, size_t count) {
     return count;
   }
   int rv = glibc_write(fd, buf, count);
-   update_screen();
+  update_screen();
   return rv;
 }
 
