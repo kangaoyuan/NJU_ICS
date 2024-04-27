@@ -49,7 +49,7 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T* kbd) {
     assert(buf);
     memset(buf, 0, buf_size);
 
-    int rv = NDL_PollEvent(buf, sizeof(buf));
+    int rv = NDL_PollEvent(buf, buf_size);
 
     if (rv > 0) {
         if (strncmp(buf, "kd", 2) == 0) {
@@ -82,7 +82,7 @@ void __am_gpu_config(AM_GPU_CONFIG_T *cfg) {
     char*    buf = (char*)malloc(buf_size * sizeof(char));
     assert(buf);
     memset(buf, 0, buf_size);
-    read(fd, buf, sizeof(buf));
+    read(fd, buf, buf_size);
 
     int width, height;
     sscanf(buf, "WIDTH: %d\nHEIGHT: %d\n", &width, &height);

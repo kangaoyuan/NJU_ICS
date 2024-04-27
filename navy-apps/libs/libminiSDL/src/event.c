@@ -58,8 +58,6 @@ int SDL_WaitEvent(SDL_Event* event) {
 
     while (NDL_PollEvent(buf, 64) == 0); // wait ...
 
-    printf("== The key is %s, we need to see. ===\n", buf );
-
     if (strncmp(buf, "kd", 2) == 0)
         event->key.type = SDL_KEYDOWN;
     else
