@@ -50,7 +50,6 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T* kbd) {
     memset(buf, 0, buf_size);
 
     int rv = NDL_PollEvent(buf, buf_size);
-
     if (rv > 0) {
         if (strncmp(buf, "kd", 2) == 0) {
             kbd->keydown = 1;
@@ -58,8 +57,7 @@ void __am_input_keybrd(AM_INPUT_KEYBRD_T* kbd) {
             kbd->keydown = 0;
         }
 
-        for (unsigned i = 0; i < sizeof(keyname) / sizeof(keyname[0]);
-             ++i) {
+        for (unsigned i = 0; true ; ++i) {
             if (strncmp(buf + 3, keyname[i], strlen(buf) - 4) == 0 &&
                 strlen(keyname[i]) == strlen(buf) - 4) {
                 kbd->keycode = i;
