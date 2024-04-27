@@ -95,11 +95,10 @@ int NDL_QueryAudio() {
 }
 
 int NDL_Init(uint32_t flags) {
-  if (getenv("NWM_APP")) {
-    evtdev = 3;
-  }
-  return 0;
+    if (getenv("NWM_APP")) {
+        evtdev = 3;
+    }
+    return 0;
 }
 
-void NDL_Quit() {
-}
+void NDL_Quit() {}
