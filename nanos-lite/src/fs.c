@@ -92,7 +92,9 @@ size_t fs_write(int fd, const void* buf, size_t len) {
     size_t ret = -1, true_len = -1;
 
     if (file_table[fd].write != NULL) {
+        printf("fs_write, len == %d\n", len);
         ret = file_table[fd].write(buf, file_table[fd].open_offset, len);
+        printf("fs_write, ret == %d\n", ret);
     } else {
         if (fd == FD_EVENTS ||
             file_table[fd].open_offset + len < file_table[fd].size) {
