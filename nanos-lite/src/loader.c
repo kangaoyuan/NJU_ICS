@@ -40,7 +40,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             fs_lseek(fd, p.p_offset, 0);
             rv = fs_read(fd, (void *)p.p_vaddr, p.p_memsz);
             /*rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);*/
-            printf("p.p_memsz == %d, rv == %d\n", p.p_memsz, rv);
             assert(rv == p.p_memsz);
             // for ELF file, from p_offset to p_offset + p_filesz.
             memset((void*)(p.p_vaddr + p.p_filesz), 0,
