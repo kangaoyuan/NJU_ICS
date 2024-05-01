@@ -24,10 +24,12 @@ static void sh_prompt() {
 
 static void sh_handle_cmd(const char* cmd) {
     static char exec[128] = {0};
+
     if(!cmd)
         return;
+
     if(!strncmp(cmd, "echo", 4)){
-        sh_printf("%s\n", cmd+5);
+        sh_printf("%s", cmd+5);
     } else {
         strcpy(exec, cmd);
         exec[strlen(exec)-1] = '\0';
@@ -36,7 +38,7 @@ static void sh_handle_cmd(const char* cmd) {
         char* argv[16] = {0}, *token = strtok(exec, " ");
         while(token){
             argv[argc++] = token;
-            strtok(NULL, " ");
+            token = strtok(NULL, " ");
         }
         argv[argc] = NULL;
         execvp(argv[0], argv);
