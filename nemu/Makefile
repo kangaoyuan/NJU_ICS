@@ -1,11 +1,5 @@
 NAME = nemu
 
-run:
-	ifdef TEST_EXPR
-	CFLAGS += -DTEST_EXPR
-	$(MAKE) -C $(NEMU_HOME)/tools/gen-expr
-	endif
-
 count:
 	find ./ -name "*.c" -o -name "*.h" | xargs grep -v "^$$" | wc -l
 
@@ -95,7 +89,18 @@ $(OBJ_DIR)/%.o: src/%.c
 # Some convenient rules
 
 .PHONY: app run gdb clean run-env $(DIFF_REF_SO)
+
+ifdef TEST_EXPR
+CFLAGS += -DTEST_EXPR
+GEN_EXPR_CMD := $(MAKE) -C $(NEMU_HOME)/tools/gen-expr
+else
+GEN_EXPR_CMD :=
+endif
+
 app: $(BINARY)
+	$(GEN_EXPR_CMD)
+	$(BINARY)
+	
 
 override ARGS ?= --log=$(BUILD_DIR)/nemu-log.txt
 override ARGS += --diff=$(DIFF_REF_SO)
