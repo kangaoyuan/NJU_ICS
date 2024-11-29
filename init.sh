@@ -1,8 +1,8 @@
 #!/bin/bash
 
-version=master
+# version=master
 # Only for nemu if you would like to choose x86, `bash init.sh nemu`
-# version=ics2020 
+version=ics2020 
 
 function init() {
   if [ -d $1 ]; then
