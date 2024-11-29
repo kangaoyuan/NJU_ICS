@@ -353,16 +353,17 @@ void test_expr(){
         bool     flag;
         unsigned ans, eval;
         char     expression[70000] = {0};
+        // EOF can be treated as the ending indicator.
         int rv = fscanf(fp, "result == %u, expr == %[^\n] ", &ans, expression);
         Assert(rv == 2, "test_expr failed");
         eval = expr(expression, &flag);
         Assert(flag == true, "test_expr failed");
         if (ans != eval){
-            printf("Wrong %d:\n", i);
+            printf("\e[1;31m" "Wrong %d" "\e[0m" ":\n", i);
             printf("result == %u, eval == %u\n", ans, eval);
         }
         else
-            printf("\33[1;31m""correct %d""\33[0m\n", i);
+            printf("\33[1;32m""correct %d""\33[0m\n", i);
     }
     fclose(fp);
 }

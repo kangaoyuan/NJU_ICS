@@ -1,8 +1,10 @@
 NAME = nemu
 
-ifdef TEST_EXPR
-CFLAGS += -DTEST_EXPR
-endif
+run:
+	ifdef TEST_EXPR
+	CFLAGS += -DTEST_EXPR
+	$(MAKE) -C $(NEMU_HOME)/tools/gen-expr
+	endif
 
 count:
 	find ./ -name "*.c" -o -name "*.h" | xargs grep -v "^$$" | wc -l
