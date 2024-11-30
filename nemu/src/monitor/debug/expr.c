@@ -6,7 +6,7 @@
  */
 
 #include <regex.h>
-#include "memory/vaddr.h"
+#include "memory/paddr.h"
 
 enum {
 
@@ -290,7 +290,7 @@ static uint32_t eval(int left, int right) {
         if(tokens[op].type == TK_NEG)
             return -eval(op+1, right);
         if(tokens[op].type == TK_DEREF)
-            return vaddr_read(eval(op+1, right), 4);
+            return paddr_read(eval(op+1, right), 4);
 
         uint32_t val1 = eval(left, op - 1);
         uint32_t val2 = eval(op + 1, right);

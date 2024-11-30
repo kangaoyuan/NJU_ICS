@@ -92,8 +92,8 @@ bool check_wp(){
             ++cur->hit_num;
             printf("Hardware watchpoint %d: %s\n\n", cur->NO,
                    cur->expr);
-            printf("Old value = %08u\t%#8x\n", cur->pre_val, cur->pre_val);
-            printf("New value = %08u\t%#8x\n", cur->cur_val, cur->pre_val);
+            printf("Old value = 0x%08x\t%08u\n", cur->pre_val, cur->pre_val);
+            printf("New value = 0x%08x\t%08u\n", cur->cur_val, cur->cur_val);
             result = true;
         }
     }

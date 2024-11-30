@@ -93,12 +93,14 @@ $(OBJ_DIR)/%.o: src/%.c
 ifdef TEST_EXPR
 CFLAGS += -DTEST_EXPR
 GEN_EXPR_CMD := $(MAKE) -C $(NEMU_HOME)/tools/gen-expr
+GEN_TEST_CASE := $(NEMU_HOME)/tools/gen-expr 10000 > input
 else
 GEN_EXPR_CMD :=
 endif
 
 app: $(BINARY)
 	$(GEN_EXPR_CMD)
+	$(GEN_TEST_CASE)
 	$(BINARY)
 	
 
