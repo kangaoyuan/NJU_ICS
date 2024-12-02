@@ -30,6 +30,12 @@ static uint32_t *vgactl_port_base = NULL;
 static uint32_t (*vmem) [SCREEN_W] = NULL;
 
 static inline void update_screen() __attribute__((used));
+
+static inline void vga_io_handler(uint32_t offset, int len, bool is_write){
+    if(is_write)
+        update_screen();
+}
+
 static inline void update_screen() {
 #ifdef SHOW_SCREEN
     SDL_UpdateTexture(texture, NULL, vmem, SCREEN_W * sizeof(vmem[0][0]));
