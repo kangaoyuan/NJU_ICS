@@ -85,6 +85,21 @@ static inline def_EHelper(setcc) {
     print_asm("set%s %s", get_cc_name(cc), id_dest->str);
 }
 
+static inline def_EHelper(bsr){
+    if(*dsrc1 == 0){
+        cpu.eflags.ZF = 1; 
+    } else {
+        *s1 = id_dest->width * 8 - 1;
+        cpu.eflags.ZF = 0;
+
+        while((*dsrc1 >> *s1) == 0){
+            (*s1)--; 
+        } 
+        operand_write(s, id_dest, s1);
+    }
+    print_asm_template2(bsr);
+}
+
 static inline def_EHelper(rol){
     if (*dsrc1 > 8 * id_dest->width)
         assert(0);
@@ -107,4 +122,26 @@ static inline def_EHelper(ror){
     rtl_andi(s, s0, s0, 1);
     rtl_set_CF(s, s0);
     print_asm_template2(rol);
+}
+
+static inline def_EHelper(shld){
+    rtl_mv(s, s0, dsrc1);
+    rtl_mv(s, s1, dsrc2);
+    *s0 %= 32;
+    rtl_shl(s, ddest, ddest, s0);
+    rtl_shri(s, s1, s1, 32-*s0);
+    rtl_or(s, ddest, ddest, s1);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(shld);
+}
+
+static inline def_EHelper(shrd){
+    rtl_mv(s, s0, dsrc1);
+    rtl_mv(s, s1, dsrc2);
+    *s0 %= 32;
+    rtl_shr(s, ddest, ddest, s0);
+    rtl_shli(s, s1, s1, 32-*s0);
+    rtl_or(s, ddest, ddest, s1);
+    operand_write(s, id_dest, ddest);
+    print_asm_template2(shrd);
 }
