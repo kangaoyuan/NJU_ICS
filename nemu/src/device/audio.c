@@ -66,9 +66,9 @@ static void init_audio_sdl(){
 }
 
 static void audio_io_handler(uint32_t offset, int len, bool is_write) {
-    if(audio_base[reg_init] == false){
+    if(audio_base[reg_init] == true){
         init_audio_sdl(); 
-        audio_base[reg_init] = true;
+        audio_base[reg_init] = false;
     }
 }
 
