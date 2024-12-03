@@ -55,5 +55,5 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
     audio_base[cnt+i] = audio_data[i]; 
   }
 
-  outl(AUDIO_COUNT_ADDR, cnt);
+  outl(AUDIO_COUNT_ADDR, cnt + len);
 }
