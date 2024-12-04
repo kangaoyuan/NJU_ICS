@@ -25,20 +25,21 @@ static uint32_t *audio_base = NULL;
 
 // SDL callback function to fill audio data from MMIO STREAM_BUF to SDL.
 static inline void audio_play(void *userdata, uint8_t *stream, int len) {
+    static uint32_t rd_idx;
     SDL_memset(stream, 0, len);
     uint32_t cnt = audio_base[reg_count];
-    uint32_t size = audio_base[reg_sbuf_size];
+    uint32_t sbuf_size = audio_base[reg_sbuf_size];
 
     int nread = len > cnt ? cnt : len;
-    for(int index = 0; index < nread; index++){
-        if(audio_base[reg_count]){
-            *stream++ = sbuf[index % size]; 
-            audio_base[reg_count]--;
-        }
+    if((rd_idx + nread) > sbuf_size){
+        SDL_MixAudio(stream, sbuf + rd_idx, sbuf_size - rd_idx, SDL_MIX_MAXVOLUME); 
+        SDL_MixAudio(stream + (sbuf_size - rd_idx), sbuf, nread - (sbuf_size - rd_idx), SDL_MIX_MAXVOLUME); 
+    } else {
+        SDL_MixAudio(stream, sbuf + rd_idx, nread, SDL_MIX_MAXVOLUME);    
     }
-    for(int i = 0; i < cnt - nread; i++){
-        sbuf[i] = sbuf[i + nread]; 
-    }
+    rd_idx = (rd_idx + nread) % sbuf_size;
+
+    audio_base[reg_count] -= nread;
 
     // It be done from the first statement.
     /*
@@ -72,18 +73,20 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     }
 }
 
-
 void init_audio() {
   uint32_t space_size = nr_reg * sizeof(uint32_t);
   audio_base = (void *)new_space(space_size);
-  add_pio_map("audio", AUDIO_PORT, (void *)audio_base, space_size, audio_io_handler);
-  add_mmio_map("audio", AUDIO_MMIO, (void *)audio_base, space_size, audio_io_handler);
+  add_pio_map("audio", AUDIO_PORT, (void *)audio_base, space_size,
+              audio_io_handler);
+  add_mmio_map("audio", AUDIO_MMIO, (void *)audio_base, space_size,
+               audio_io_handler);
   audio_base[reg_count] = 0;
   audio_base[reg_init] = false;
   audio_base[reg_sbuf_size] = STREAM_BUF_MAX_SIZE;
 
   sbuf = (void *)new_space(STREAM_BUF_MAX_SIZE);
-  add_mmio_map("audio-sbuf", STREAM_BUF, (void *)sbuf, STREAM_BUF_MAX_SIZE, NULL);
+  add_mmio_map("audio-sbuf", STREAM_BUF, (void *)sbuf, STREAM_BUF_MAX_SIZE,
+               NULL);
 }
 
 #endif	/* HAS_IOE */

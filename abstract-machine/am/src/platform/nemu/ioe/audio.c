@@ -50,9 +50,11 @@ void __am_audio_play(AM_AUDIO_PLAY_T *ctl) {
     cnt = inl(AUDIO_COUNT_ADDR); 
   }
 
+  static uint32_t wr_idx = 0;
   uint8_t* audio_base = (uint8_t*)(uintptr_t)(AUDIO_SBUF_ADDR);
   for(int i = 0; i < len; ++i){
-    audio_base[cnt+i] = audio_data[i]; 
+    audio_base[wr_idx] = audio_data[i]; 
+    wr_idx = (wr_idx + 1) % sbuf_size;
   }
 
   outl(AUDIO_COUNT_ADDR, cnt + len);
