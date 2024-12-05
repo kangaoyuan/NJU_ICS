@@ -42,7 +42,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     assert(rv == sizeof(Elf_Ehdr));
     assert(elf_header.e_machine == EXPECT_TYPE);
     uint64_t magic_number = *(uint64_t *)elf_header.e_ident; // Combine first 8 bytes of e_ident
-    assert(magic_number == 0x7F454C4601010100); // Compare with the expected magic number
+    assert(magic_number == 0x00010101464C457F); // Compare with the expected magic number
 
     // Get Phdr.
     Elf_Phdr pro_header[elf_header.e_phnum];
