@@ -8,7 +8,7 @@ static Context* do_event(Event e, Context* c) {
         do_syscall(c);
         break;
     case EVENT_YIELD:
-        printf("Goal Yield\n");
+        printf("In nanos, Goal Yield\n");
         break;
     default:
         panic("Unhandled event ID = %d", e.event);
