@@ -29,6 +29,7 @@ void init_proc() {
     // load program here
     /*const char file_name[] = "/bin/nterm";*/
     /*naive_uload(NULL, file_name);*/
+    naive_uload(NULL, NULL);
 }
 
 Context* schedule(Context *prev) {
