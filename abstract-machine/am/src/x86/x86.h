@@ -288,6 +288,7 @@ static inline void set_idt(void* idt, int size) {
     } __attribute__((packed)) data;
     data.idt = idt;
     data.size = size;
+    printf("&data == %p, data.idt == %p\n", &data, data.idt);
     asm volatile("lidt (%0)" : : "r"(&data));
 }
 
