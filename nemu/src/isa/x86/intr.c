@@ -5,8 +5,11 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     /* TODO: Trigger an interrupt/exception with ``NO''.
      * That is, use ``NO'' to index the IDT.
      */
+    if(NO >= cpu.idtr_limit){
+        assert(0); 
+    }
 
-    //TODO();
+    // Here we need vaddr_read to access the IDT content.
     uint32_t idt = cpu.idtr_base;
     uint32_t lo = vaddr_read(idt + 8 * NO, 2);
     uint32_t hi = vaddr_read(idt + 8 * NO + 6, 2);

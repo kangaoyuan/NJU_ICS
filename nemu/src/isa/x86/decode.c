@@ -121,7 +121,11 @@ void read_ModR_M(DecodeExecState* s, Operand* rm, bool load_rm_val,
     } else {
         load_addr(s, &m, rm);
         if (load_rm_val)
+            // *dest = vaddr_read(*addr + offset, len);
+            // rm->val = vaddr_read(*s->isa.mbase + s->isa.moff, rm->width);
             rtl_lm(s, &rm->val, s->isa.mbase, s->isa.moff, rm->width);
+        // rm == dest, rm->preg == *ddest
+        // &rm->val = *s->isa.mbase + s->isa->isa.moff
         rm->preg = &rm->val;
     }
 }

@@ -22,13 +22,13 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
-    switch_boot_pcb();
+    /*switch_boot_pcb();*/
 
     Log("Initializing processes...");
 
     // load program here
-    const char file_name[] = "/bin/nterm";
-    naive_uload(NULL, file_name);
+    /*const char file_name[] = "/bin/nterm";*/
+    /*naive_uload(NULL, file_name);*/
 }
 
 Context* schedule(Context *prev) {

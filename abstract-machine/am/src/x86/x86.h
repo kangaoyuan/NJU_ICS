@@ -286,8 +286,8 @@ static inline void set_idt(void* idt, int size) {
         int16_t size;
         void*   idt;
     } __attribute__((packed)) data;
-    data.size = size;
     data.idt = idt;
+    data.size = size;
     asm volatile("lidt (%0)" : : "r"(&data));
 }
 

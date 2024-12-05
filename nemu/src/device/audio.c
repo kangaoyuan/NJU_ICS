@@ -73,6 +73,14 @@ static void audio_io_handler(uint32_t offset, int len, bool is_write) {
     }
 }
 
+/*
+ *static void subf_io_handler(uint32_t offset, int len, bool is_write) {
+ *    if(is_write){
+ *        audio_base[reg_count] += len; 
+ *    }
+ *}
+ */
+
 void init_audio() {
   uint32_t space_size = nr_reg * sizeof(uint32_t);
   audio_base = (void *)new_space(space_size);
@@ -87,6 +95,10 @@ void init_audio() {
   sbuf = (void *)new_space(STREAM_BUF_MAX_SIZE);
   add_mmio_map("audio-sbuf", STREAM_BUF, (void *)sbuf, STREAM_BUF_MAX_SIZE,
                NULL);
+  /*
+   *add_mmio_map("audio-sbuf", STREAM_BUF, (void *)sbuf, STREAM_BUF_MAX_SIZE,
+   *             sbuf_io_handler);
+   */
 }
 
 #endif	/* HAS_IOE */
