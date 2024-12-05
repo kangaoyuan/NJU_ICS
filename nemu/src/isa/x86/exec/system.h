@@ -13,7 +13,7 @@ static inline def_EHelper(lidt) {
     //TODO();
     vaddr_t addr = *s->isa.mbase + s->isa.moff;
     printf("Inside the EHelper lidt\n");
-    printf("id_dest == %p, id_dest->val == %x", id_dest, id_dest->val);
+    printf("id_dest == %p, id_dest->val == %x\n", id_dest, id_dest->val);
     printf("ddest(id_dest->preg) == %p, *ddest == %x\n", ddest, *ddest);
     printf("*s->isa.mbase + s->isa.moff == %x\n", *s->isa.mbase + s->isa.moff);
     cpu.idtr_limit = vaddr_read(addr, 2);

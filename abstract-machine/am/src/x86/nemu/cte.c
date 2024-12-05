@@ -60,7 +60,7 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
     idt[0x80] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vecsys, DPL_USER);
     idt[0x81] = GATE32(STS_TG, KSEL(SEG_KCODE), __am_vectrap, DPL_KERN);
 
-    printf("Before set_idt, I can tell your the address and val of idt[0x81]: %p, %x", idt, (idt[0x81].off_31_16 << 16) + idt[0x81].off_15_0);
+    printf("Before set_idt, I can tell your the address and val of idt[0x81]: %p, %x\n", idt, (idt[0x81].off_31_16 << 16) + idt[0x81].off_15_0);
     set_idt(idt, sizeof(idt));
 
     return true;
