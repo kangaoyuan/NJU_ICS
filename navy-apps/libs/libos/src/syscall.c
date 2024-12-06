@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "syscall.h"
+#include <stdio.h>
 
 // helper macros
 #define _concat(x, y) x ## y
@@ -68,18 +69,22 @@ int _open(const char* path, int flags, mode_t mode) {
 }
 
 int _write(int fd, void* buf, size_t count) {
+    printf("In navy-app, the write(%d, %p, %lu)", fd, buf, count);
     return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
 void* _sbrk(intptr_t increment) {
     extern char _end;
-    static char* pro_brk = 0;
-    if(!pro_brk)
-        pro_brk = &_end;
+    static char* proc_brk = 0;
+    if(!proc_brk)
+        // Attention here, we need the & address-of operator to do.
+        proc_brk = &_end;
 
-    intptr_t pre_brk = (intptr_t)pro_brk;
-    if(!_syscall_(SYS_brk, increment, 0, 0)){
-        pro_brk += increment;
+    intptr_t pre_brk = (intptr_t)proc_brk;
+    intptr_t req_brk = (intptr_t)proc_brk + increment;
+    // Attention for the argument passed to the system call.
+    if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
+        proc_brk += increment;
         return (void*)pre_brk;
     } else {
         return (void*)-1;
