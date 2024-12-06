@@ -28,9 +28,9 @@ void do_syscall(Context* c) {
         c->GPRx = 0;
         break;
     case SYS_write: {
-        int    fd = (int)c->GPR2;
-        char*  buf = (char*)c->GPR3;
-        size_t len = (size_t)c->GPR4;
+        int    fd = (int)a[1];
+        char*  buf = (char*)a[2];
+        size_t len = (size_t)a[3];
         c->GPRx = fs_write(fd, buf, len);
         break;
     }
