@@ -38,6 +38,7 @@ void do_syscall(Context* c) {
         c->GPRx = 0;
         break;
     case SYS_open:
+        // The same argument meaning to the previous fs_ function. 
         c->GPRx = fs_open((void*)a[1], a[2], a[3]);
         break;
     case SYS_read:

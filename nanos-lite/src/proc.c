@@ -27,9 +27,9 @@ void init_proc() {
     Log("Initializing processes...");
 
     // load program here
-    /*const char file_name[] = "/bin/nterm";*/
+    /*const char file_name[] = "/bin/exectuable_file";*/
     /*naive_uload(NULL, file_name);*/
-    naive_uload(NULL, NULL);
+    naive_uload(NULL, "/bin/file-test");
 }
 
 Context* schedule(Context *prev) {

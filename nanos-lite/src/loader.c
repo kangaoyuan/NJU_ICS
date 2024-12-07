@@ -30,15 +30,12 @@ size_t ramdisk_read(void* buf, size_t offset, size_t len);
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
     //TODO();
-    /*
-     *int fd = fs_open(filename, 0, 0);
-     *assert(fd >= 0);
-     */
+    int fd = fs_open(filename, 0, 0);
 
     // Get Ehdr.
     Elf_Ehdr elf_header;
-    int rv = ramdisk_read(&elf_header, 0, sizeof(Elf_Ehdr));
-    //int rv = fs_read(fd, &elf_header, sizeof(Elf_Ehdr));
+    //int rv = ramdisk_read(&elf_header, 0, sizeof(Elf_Ehdr));
+    int rv = fs_read(fd, &elf_header, sizeof(Elf_Ehdr));
     assert(rv == sizeof(Elf_Ehdr));
     assert(elf_header.e_machine == EXPECT_TYPE);
     uint64_t magic_number = *(uint64_t *)elf_header.e_ident; // Combine first 8 bytes of e_ident
@@ -50,19 +47,19 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
     // Get Phdr.
     Elf_Phdr pro_header[elf_header.e_phnum];
-    rv = ramdisk_read(pro_header, elf_header.e_phoff, sizeof(Elf_Phdr)*elf_header.e_phnum);
-    //rv = fs_read(fd, pro_header, sizeof(Elf_Phdr)*elf_header.e_phnum);
+    //rv = ramdisk_read(pro_header, elf_header.e_phoff, sizeof(Elf_Phdr)*elf_header.e_phnum);
+    rv = fs_read(fd, pro_header, sizeof(Elf_Phdr)*elf_header.e_phnum);
     assert(rv == sizeof(Elf_Phdr)*elf_header.e_phnum);
 
     for (int i = 0; i < elf_header.e_phnum; i++) {
         Elf_Phdr p = pro_header[i];
         if (p.p_type == PT_LOAD) {
-            //fs_lseek(fd, p.p_offset, 0);
+            fs_lseek(fd, p.p_offset, 0);
 #ifdef HAV_VME
 #else
             // for Mem, from p_vaddr to p_vaddr + p_memsz.
-            //rv = fs_read(fd, (void *)p.p_vaddr, p.p_memsz);
-            rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);
+            //rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);
+            rv = fs_read(fd, (void *)p.p_vaddr, p.p_memsz);
             assert(rv == p.p_memsz);
             // for ELF file, from p_offset to p_offset + p_filesz.
             memset((void*)(p.p_vaddr + p.p_filesz), 0,
@@ -71,7 +68,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
         }
     }
 
-    //fs_close(fd);
+    fs_close(fd);
     return elf_header.e_entry;
 }
 

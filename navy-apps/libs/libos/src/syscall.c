@@ -69,13 +69,13 @@ int _open(const char* path, int flags, mode_t mode) {
 }
 
 int _write(int fd, void* buf, size_t count) {
-    printf("In navy-app, the write(%d, %p, %lu)", fd, buf, count);
     return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
 void* _sbrk(intptr_t increment) {
     extern char _end;
     static char* proc_brk = 0;
+    // Here, you can find an intersting tricky.
     if(!proc_brk)
         // Attention here, we need the & address-of operator to do.
         proc_brk = &_end;
