@@ -29,7 +29,7 @@ void init_proc() {
     // load program here
     /*const char file_name[] = "/bin/exectuable_file";*/
     /*naive_uload(NULL, file_name);*/
-    naive_uload(NULL, "/bin/file-test");
+    naive_uload(NULL, "/bin/timer-test");
 }
 
 Context* schedule(Context *prev) {
