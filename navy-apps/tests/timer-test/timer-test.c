@@ -3,11 +3,11 @@
 #include <assert.h>
 #include <sys/time.h>
 
+// Control the abstract level
 #define HAS_NDL
 
+
 #ifndef HAS_NDL
-#include <assert.h>
-#include <sys/time.h>
 
 void gettimeofday_test() {
     printf("gettimeofday test start...\n");
@@ -36,7 +36,7 @@ void gettimeofday_test() {
 #include <NDL.h>
 
 void NDL_GetTicks_test() {
-  NDL_Init(0);
+    NDL_Init(0);
     printf("NDL_GetTicks test start...\n");
 
     uint32_t init = NDL_GetTicks();
