@@ -1,10 +1,10 @@
 #include <NDL.h>
 #include <sdl-video.h>
-#include <assert.h>
 #include <stdio.h>
+#include <assert.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
 
 /*
  *typedef struct SDL_Rect {
@@ -14,10 +14,25 @@
  */
 
 /*
+ *typedef struct SDL_PixelFormat{
+ *    SDL_Palette* palette;                           // Pointer to the paletter
+ *    uint8_t      BitsPerPixel;                      // Bits used to represent each pixel in surface
+ *    uint8_t      BytesPerPixel;                     // Bytes used to represent each pixel in surface
+ *    uint8_t      Rloss, Gloss, Bloss, Aloss;
+ *    uint8_t      Rshift, Gshift, Bshift, Ashift;
+ *    uint32_t     Rmask, Gmask, Bmask, Amask;
+ *    uint32_t     colorkey;                          // Pixel value of transparent pixels
+ *    uint8_t      alph;                              // Overall surface alpha value
+ *} SDL_PixelFormat;
+ */
+
+// For 8-bit pixel formats, all pixels are represented by a uint8_t which contains an index to 
+// s->format->palette->color, s->format->palette->color[*(uint8_t*)s->pixels], s->format->palette->color[*(uint8_t*)s->pixels]->[r|g|b]
+/*
  *typedef struct SDL_Surface{
- *    int w, h;                   // width and height of the surface
- *    void* pixels;               // Pinter to the actual pixel data
- *    int refcount;
+ *    int w, h;                   // width and height of the surface in pixels
+ *    void* pixels;               // Pinter to the actual pixel data, when multi-thread, we need lock to do.
+ *    int refcount;               // Used when freeing surface
  *    uint16_t pitch;             // length of a surface scanline in bytes
  *    uint32_t flags;             // surface flags
  *    SDL_Rect clip_rect;         // surface clip rectangle
@@ -26,8 +41,11 @@
  *} SDL_Surface;
  */
 
+
+
 // This performs a fast blit from the source to the destination suface.
-// This assumes that the source and destination rectangles are the same size. If either srcrect or dstrect are NULL, the entire surface (src or dst) is copied.
+// The width and height in srcrect determine the size of the copied rect, only the position is used in the dstrect(the width and height are ignored)
+// This assumes that the source and destination rectangles are the same size. If srcrect is NULL, the entire surface is copied. If dstrect is NULL, the destination position is (0, 0)(left-upper corner)
 void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
                      SDL_Rect* dstrect) {
     assert(dst && src);
@@ -36,6 +54,8 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
     if (src->format->BitsPerPixel == 32) {
         uint32_t* data = (uint32_t*)src->pixels;
         uint32_t* base = (uint32_t*)dst->pixels;
+        int       width = !srcrect ? src->w : srcrect->w;
+        int       height = !srcrect ? src->h : srcrect->h;
         int       src_w = src->w;
         int       src_h = src->h;
         int       dst_w = dst->w;
@@ -44,12 +64,10 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
         int       srcrect_y = !srcrect ? 0 : srcrect->y;
         int       dstrect_x = !dstrect ? 0 : dstrect->x;
         int       dstrect_y = !dstrect ? 0 : dstrect->y;
-        int       width = !srcrect ? src->w : srcrect->w;
-        int       height = !srcrect ? src->h : srcrect->h;
 
+        // Here, I'm coding conservatively, we can assert the w and h is identical
         width = width < (dst->w - dstrect_x) ? width : (dst->w - dstrect_x);
-        height =
-            height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
+        height = height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
 
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
@@ -59,10 +77,10 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
         }
 
     } else if (src->format->BitsPerPixel == 8) {
-        // Can I arrive here?
-        // Yes, you can. So comment it. assert(0);
         uint8_t* data = (uint8_t*)src->pixels;
         uint8_t* base = (uint8_t*)dst->pixels;
+        int      width = !srcrect ? src->w : srcrect->w;
+        int      height = !srcrect ? src->h : srcrect->h;
         int      src_w = src->w;
         int      src_h = src->h;
         int      dst_w = dst->w;
@@ -71,12 +89,9 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
         int      srcrect_y = !srcrect ? 0 : srcrect->y;
         int      dstrect_x = !dstrect ? 0 : dstrect->x;
         int      dstrect_y = !dstrect ? 0 : dstrect->y;
-        int      width = !srcrect ? src->w : srcrect->w;
-        int      height = !srcrect ? src->h : srcrect->h;
 
         width = width < (dst->w - dstrect_x) ? width : (dst->w - dstrect_x);
-        height =
-            height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
+        height = height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
 
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
@@ -92,6 +107,7 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
 // This performs a fast fill of the given rectangle with some color.
 // If dstrect is NULL, the whole surface will be filled with color pixel format.
 void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
+    assert(dst);
     if (dst->format->BitsPerPixel == 32) {
         uint32_t* base = (uint32_t*)dst->pixels;
         if (dstrect == NULL) {
@@ -114,8 +130,6 @@ void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
                 base[(rect_y + i) * dst->w + rect_x + j] = color;
         }
     } else if (dst->format->BitsPerPixel == 8) {
-        // Can I arrive here?
-        // Later, you will go. assert(0);
         SDL_Color* target = &(dst->format->palette->colors[255]);
         target->a = (color >> 24) & 0xff;
         target->r = (color >> 16) & 0xff;
@@ -141,27 +155,28 @@ void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
     }
 }
 
-void SDL_UpdateRect(SDL_Surface* s, int x, int y, int w, int h) {
+// Makes sure the given area is updated on the given scrren. please RTFM 
+void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
     if (x == 0 && y == 0 && w == 0 && h == 0) {
-        w = s->w;
-        h = s->h;
+        w = screen->w;
+        h = screen->h;
     }
-    if(w > s->w) w = s->w;
-    if(h > s->h) h = s->h;
+    if(w > screen->w) w = screen->w;
+    if(h > screen->h) h = screen->h;
 
-    if (!s->format->palette) {
-        NDL_DrawRect((uint32_t*)s->pixels, x, y, w, h);
-        return;
+    if (!screen->format->palette) {
+        assert(screen->format->BitsPerPixel == 32);
+        NDL_DrawRect((uint32_t*)screen->pixels, x, y, w, h);
     } else {
-        uint8_t*  pixels_index = s->pixels;
+        uint8_t*  pixels_index = screen->pixels;
         uint32_t* pixels = malloc(w * h * sizeof(uint32_t));
         assert(pixels);
 
         for (int i = 0; i < h; ++i) {
             for(int j = 0; j < w; j++){
-                int ref = (y * s->w + x) + (i * s->w + j);
+                int ref = (y * screen->w + x) + (i * screen->w + j);
                 SDL_Color color =
-                    s->format->palette->colors[pixels_index[ref]];
+                    screen->format->palette->colors[pixels_index[ref]];
                 uint32_t p_elem =
                     color.a << 24 | color.r << 16 | color.g << 8 | color.b;
                 pixels[i*w + j] = p_elem;
@@ -170,8 +185,8 @@ void SDL_UpdateRect(SDL_Surface* s, int x, int y, int w, int h) {
 
         NDL_DrawRect(pixels, x, y, w, h);
         free(pixels);
-        return;
     }
+    return;
 }
 
 // APIs below are already implemented.

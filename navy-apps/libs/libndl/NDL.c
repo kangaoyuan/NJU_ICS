@@ -26,6 +26,7 @@ int NDL_PollEvent(char *buf, int len) {
     return ret == 0 ? 0 : 1;
 }
 
+// The parameters are canvas itself width and height
 void NDL_OpenCanvas(int* w, int* h) {
     if (getenv("NWM_APP")) {
         int fbctl = 4;
