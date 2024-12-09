@@ -16,7 +16,7 @@
 #include <SDL_bdf.h>
 
 const char *font_fname = "/share/fonts/Courier-7.bdf";
-static BDF_Font *font;
+static BDF_Font *font = NULL;
 static SDL_Surface *screen = NULL;
 static SDL_Surface *logo_sf = NULL;
 
@@ -64,9 +64,7 @@ static void prev() {
 }
 
 static void clear_display(void) {
-  printf("Here Bad thing happen\n");
   SDL_FillRect(screen, NULL, 0xffffff);
-  printf("Can I get here\n");
 }
 
 int main(int argc, char *argv[], char *envp[]) {
