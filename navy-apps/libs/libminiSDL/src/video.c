@@ -14,6 +14,24 @@
  */
 
 /*
+ *typedef struct SDL_Color{
+ *    uint8_t r;
+ *    uint8_t g;
+ *    uint8_t b;
+ *    uint8_t unused
+ *} SDL_Color;
+ */
+
+/*
+ *typedef struct {
+ *    int ncolors;
+ *    SDL_Color* colors; // SDL_Color elements make up the palette
+ *} SDL_Palette;
+ */
+// A SDL_Palette should never need to be created manually, it's automatically created when allocating
+// a SDL_PixelFormat for a surface. If the BitsPerPixel > 8, the palette is NULL.
+
+/*
  *typedef struct SDL_PixelFormat{
  *    SDL_Palette* palette;                           // Pointer to the paletter
  *    uint8_t      BitsPerPixel;                      // Bits used to represent each pixel in surface
@@ -25,9 +43,11 @@
  *    uint8_t      alph;                              // Overall surface alpha value
  *} SDL_PixelFormat;
  */
+// A SDL_PixelFormat describes the foramt of the pixel data stord at the SDL_Surface.
 
-// For 8-bit pixel formats, all pixels are represented by a uint8_t which contains an index to 
-// s->format->palette->color, s->format->palette->color[*(uint8_t*)s->pixels], s->format->palette->color[*(uint8_t*)s->pixels]->[r|g|b]
+// For 8-bit pixel formats, all pixels are represented by a uint8_t val which contains an index to 
+// s->format->palette->colors, s->format->palette->colors[*(uint8_t*)s->pixels], s->format->palette->colors[*(uint8_t*)s->pixels]->[r|g|b]
+// Above 8-bit Pixel formats are considered to be TrueColor formats and the color info is stored in the pixels themselves, not in a palette. 
 /*
  *typedef struct SDL_Surface{
  *    int w, h;                   // width and height of the surface in pixels
@@ -43,7 +63,7 @@
 
 
 
-// This performs a fast blit from the source to the destination suface.
+// This performs a fast blit from the src to the dst suface.
 // The width and height in srcrect determine the size of the copied rect, only the position is used in the dstrect(the width and height are ignored)
 // This assumes that the source and destination rectangles are the same size. If srcrect is NULL, the entire surface is copied. If dstrect is NULL, the destination position is (0, 0)(left-upper corner)
 void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
@@ -51,52 +71,38 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
     assert(dst && src);
     assert(dst->format->BitsPerPixel == src->format->BitsPerPixel);
 
+    // The width and height in srcrcet determine the size of copied rect
+    int dst_x = !dstrect ? 0 : dstrect->x;
+    int dst_y = !dstrect ? 0 : dstrect->y;
+    int src_x = !srcrect ? 0 : srcrect->x;
+    int src_y = !srcrect ? 0 : srcrect->y;
+    int width = !srcrect ? src->w : srcrect->w;
+    int height = !srcrect ? src->h : srcrect->h;
+
+    // Here, I'm coding conservatively, we can ensure the constraint in the
+    // upper caller.
+    width = width < (dst->w - dst_x) ? width : (dst->w - dst_x);
+    height = height < (dst->h - dst_y) ? height : (dst->h - dst_y);
+
     if (src->format->BitsPerPixel == 32) {
         uint32_t* data = (uint32_t*)src->pixels;
         uint32_t* base = (uint32_t*)dst->pixels;
-        int       width = !srcrect ? src->w : srcrect->w;
-        int       height = !srcrect ? src->h : srcrect->h;
-        int       src_w = src->w;
-        int       src_h = src->h;
-        int       dst_w = dst->w;
-        int       dst_h = dst->h;
-        int       srcrect_x = !srcrect ? 0 : srcrect->x;
-        int       srcrect_y = !srcrect ? 0 : srcrect->y;
-        int       dstrect_x = !dstrect ? 0 : dstrect->x;
-        int       dstrect_y = !dstrect ? 0 : dstrect->y;
-
-        // Here, I'm coding conservatively, we can assert the w and h is identical
-        width = width < (dst->w - dstrect_x) ? width : (dst->w - dstrect_x);
-        height = height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
 
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                base[(dstrect_y + i) * dst_w + dstrect_x + j] =
-                    data[(srcrect_y + i) * src_w + srcrect_x + j];
+                base[(dst_y + i) * dst->w + dst_x + j] =
+                    data[(src_y + i) * src->w + src_x + j];
             }
         }
 
     } else if (src->format->BitsPerPixel == 8) {
         uint8_t* data = (uint8_t*)src->pixels;
         uint8_t* base = (uint8_t*)dst->pixels;
-        int      width = !srcrect ? src->w : srcrect->w;
-        int      height = !srcrect ? src->h : srcrect->h;
-        int      src_w = src->w;
-        int      src_h = src->h;
-        int      dst_w = dst->w;
-        int      dst_h = dst->h;
-        int      srcrect_x = !srcrect ? 0 : srcrect->x;
-        int      srcrect_y = !srcrect ? 0 : srcrect->y;
-        int      dstrect_x = !dstrect ? 0 : dstrect->x;
-        int      dstrect_y = !dstrect ? 0 : dstrect->y;
-
-        width = width < (dst->w - dstrect_x) ? width : (dst->w - dstrect_x);
-        height = height < (dst->h - dstrect_y) ? height : (dst->h - dstrect_y);
 
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
-                base[(dstrect_y + i) * dst_w + dstrect_x + j] =
-                    data[(srcrect_y + i) * src_w + srcrect_x + j];
+                base[(dst_y + i) * dst->w + dst_x + j] =
+                    data[(src_y + i) * src->w + src_x + j];
             }
         }
     }
@@ -108,49 +114,35 @@ void SDL_BlitSurface(SDL_Surface* src, SDL_Rect* srcrect, SDL_Surface* dst,
 // If dstrect is NULL, the whole surface will be filled with color pixel format.
 void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
     assert(dst);
+    int rec_x = !dstrect ? dstrect->x : 0;
+    int rec_y = !dstrect ? dstrect->y : 0;
+    int rec_w = !dstrect ? dstrect->w < (dst->w - dstrect->x)
+                               ? dstrect->w
+                               : (dst->w - dstrect->x)
+                         : dst->w;
+    int rec_h = !dstrect ? (dstrect->h < (dst->h - dstrect->y)
+                               ? dstrect->h
+                               : (dst->h - dstrect->y))
+                        : dst->h;
+
+
     if (dst->format->BitsPerPixel == 32) {
-        uint32_t* base = (uint32_t*)dst->pixels;
-        if (dstrect == NULL) {
-            for (int i = 0; i < dst->w * dst->h; ++i)
-                base[i] = color;
-            return;
-        }
-
-        int rect_x = dstrect->x;
-        int rect_y = dstrect->y;
-        int rect_w = dstrect->w < (dst->w - dstrect->x)
-                         ? dstrect->w
-                         : (dst->w - dstrect->x);
-        int rect_h = dstrect->h < (dst->h - dstrect->y)
-                         ? dstrect->h
-                         : (dst->h - dstrect->y);
-
-        for (int i = 0; i < rect_h; ++i) {
-            for (int j = 0; j < rect_w; ++j)
-                base[(rect_y + i) * dst->w + rect_x + j] = color;
+        printf("32 bits branch\n");
+        for (int i = rec_y; i < rec_h; ++i) {
+            for (int j = rec_x; j < rec_w; ++j)
+                dst->pixels[i * dst->w + j] = color;
         }
     } else if (dst->format->BitsPerPixel == 8) {
+        printf("8 bits branch\n");
         SDL_Color* target = &(dst->format->palette->colors[255]);
         target->a = (color >> 24) & 0xff;
         target->r = (color >> 16) & 0xff;
         target->g = (color >> 8) & 0xff;
         target->b = (color) & 0xff;
 
-        int x = dstrect ? dstrect->x : 0;
-        int y = dstrect ? dstrect->y : 0;
-        int w = dstrect ? (dstrect->w < (dst->w - dstrect->x)
-                               ? dstrect->w
-                               : (dst->w - dstrect->x))
-                        : dst->w;
-        int h = dstrect ? (dstrect->h < (dst->h - dstrect->y)
-                               ? dstrect->h
-                               : (dst->h - dstrect->y))
-                        : dst->h;
-
-        for (size_t i = y; i < h + y; i++) {
-            for (size_t j = x; j < w + x; j++) {
-                dst->pixels[i * (dst->w) + j] = 255;
-            }
+        for (int i = rec_y; i < rec_h; ++i) {
+            for (int j = rec_x; j < rec_w; ++j)
+                dst->pixels[i * dst->w + j] = 255;
         }
     }
 }
