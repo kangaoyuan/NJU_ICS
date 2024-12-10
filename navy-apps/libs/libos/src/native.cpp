@@ -107,6 +107,8 @@ static void audio_fill(void *userdata, uint8_t *stream, int len) {
 }
 
 static void open_display() {
+  printf("open_display called at %s:%d\n", __FILE__, __LINE__);
+
   SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_TIMER);
 #ifdef MODE_800x600
   SDL_CreateWindowAndRenderer(disp_w, disp_h, 0, &window, &renderer);
@@ -271,12 +273,14 @@ struct Init {
 
     SDL_Init(0);
     if (!getenv("NWM_APP")) {
+      printf("Inside the Init ctor for the MWA_APP env failure\n");
       open_display();
       open_event();
     }
     open_audio();
   }
   ~Init() {
+      printf("Inside the init dcotr, it should show in the later\n");
   }
 };
 

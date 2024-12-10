@@ -13,7 +13,7 @@ SDL_Surface* IMG_Load_RW(SDL_RWops *src, int freesrc) {
 
 SDL_Surface* IMG_Load(const char *filename) {
     FILE* fp = fopen(filename, "r");
-    if (!fp) return NULL;
+    assert(fp);
 
     fseek(fp, 0L, SEEK_END);
     long size = ftell(fp);
@@ -23,7 +23,7 @@ SDL_Surface* IMG_Load(const char *filename) {
     assert(fread(buf, 1, size, fp) == size);
 
     SDL_Surface * surface = STBIMG_LoadFromMemory(buf, size);
-    assert(surface != NULL);
+    assert(surface);
 
     fclose(fp);
     free(buf);

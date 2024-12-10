@@ -1,8 +1,8 @@
 #ifndef __NTERM_H__
 #define __NTERM_H__
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
