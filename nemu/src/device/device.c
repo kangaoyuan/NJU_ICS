@@ -50,7 +50,8 @@ void device_update() {
 
 void sdl_clear_event_queue() {
   SDL_Event event;
-  while (SDL_PollEvent(&event));
+  while (SDL_PollEvent(&event))
+    ;
 }
 
 void init_device() {

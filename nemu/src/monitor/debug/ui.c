@@ -16,7 +16,7 @@ static char* rl_gets() {
     static char* line_read = NULL;
 
     if (line_read) {
-        // malloc() is called in readline() and returns the text of the line read, which has the final newline removed.
+        // The return value of readline() is allocated with malloc(3); the caller must free it when finished, which has the final newline removed.
         free(line_read);
         line_read = NULL;
     }
@@ -24,6 +24,7 @@ static char* rl_gets() {
     line_read = readline("(nemu) ");
 
     if (line_read && *line_read) {
+        // Is a magic? wow, amazing or miracle.
         add_history(line_read);
     }
 
@@ -213,7 +214,7 @@ void ui_mainloop() {
         return;
     }
 
-    for (char* str; (str = rl_gets()) != NULL;) {
+    for (char* str = NULL; (str = rl_gets()) != NULL;) {
         char* str_end = str + strlen(str);
 
         /* extract the first token as the command */
@@ -239,6 +240,7 @@ void ui_mainloop() {
         for (i = 0; i < NR_CMD; i++) {
             if (strcmp(cmd, cmd_table[i].name) == 0) {
                 if (cmd_table[i].handler(args) < 0) {
+                    // For cmd_q to quit
                     return;
                 }
                 // end of the process.

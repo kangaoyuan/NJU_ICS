@@ -1,5 +1,3 @@
-NAME = nemu
-
 count:
 	find ./ -name "*.c" -o -name "*.h" | xargs grep -v "^$$" | wc -l
 
@@ -9,12 +7,15 @@ ifeq ($(filter $(ISAS), $(ISA)), ) # ISA must be valid
 $(error Invalid ISA. Supported: $(ISAS))
 endif
 
+NAME = nemu
+
 ENGINE ?= interpreter
 ENGINES = $(shell ls src/engine/)
 ifeq ($(filter $(ENGINES), $(ENGINE)), ) # ENGINE must be valid
 $(error Invalid ENGINE. Supported: $(ENGINES))
 endif
 
+# x86-nemu-interpreter
 $(info Building $(ISA)-$(NAME)-$(ENGINE))
 
 INC_DIR += ./include ./src/engine/$(ENGINE)
@@ -68,7 +69,7 @@ LD = gcc
 INCLUDES  = $(addprefix -I, $(INC_DIR))
 CFLAGS   += -O2 -MMD -Wall -Werror -ggdb3 $(INCLUDES) \
             -D__ENGINE_$(ENGINE)__ \
-            -D__ISA__=$(ISA) -D__ISA_$(ISA)__ -D_ISA_H_=\"isa/$(ISA).h\"
+            -D__ISA_$(ISA)__ -D__ISA__=$(ISA) -D_ISA_H_=\"isa/$(ISA).h\"
 
 # Files to be compiled
 SRCS = $(shell find src/ -name "*.c" | grep -v "isa\|engine")
@@ -96,7 +97,13 @@ GEN_EXPR_CMD := $(MAKE) -C $(NEMU_HOME)/tools/gen-expr
 GEN_TEST_CASE := $(NEMU_HOME)/tools/gen-expr 10000 > input
 else
 GEN_EXPR_CMD :=
+GEN_TEST_CASE :=
 endif
+
+$(BINARY): $(OBJS)
+	$(call git_commit, "compile")
+	@echo + LD $@
+	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
 
 app: $(BINARY)
 	$(GEN_EXPR_CMD)
@@ -110,11 +117,6 @@ override ARGS += --diff=$(DIFF_REF_SO)
 # Command to execute NEMU
 IMG :=
 NEMU_EXEC := $(BINARY) $(ARGS) $(IMG)
-
-$(BINARY): $(OBJS)
-	$(call git_commit, "compile")
-	@echo + LD $@
-	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
 
 run-env: $(BINARY) $(DIFF_REF_SO)
 

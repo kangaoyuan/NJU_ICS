@@ -1,0 +1,17 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "-std=c++11",
+      "-O1",
+      "-fPIC",
+      "-o",
+      "build/native.so",
+      "src/native.cpp"
+    ],
+    "directory": "/home/gaoyuan/NJU_ICS/navy-apps/libs/libos",
+    "file": "/home/gaoyuan/NJU_ICS/navy-apps/libs/libos/src/native.cpp",
+    "output": "/home/gaoyuan/NJU_ICS/navy-apps/libs/libos/build/native.so"
+  }
+]
