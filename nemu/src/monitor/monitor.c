@@ -51,7 +51,9 @@ static inline long load_img() {
     Log("The image is %s, size = %ld", img_file, size);
 
     fseek(fp, 0, SEEK_SET);
+    // IMAGE_START is the convention for the nemu to run
     int ret = fread(guest_to_host(IMAGE_START), size, 1, fp);
+    //On success, fread() and fwrite() return the number of items read or written
     assert(ret == 1);
 
     fclose(fp);
