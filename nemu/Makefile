@@ -89,7 +89,7 @@ $(OBJ_DIR)/%.o: src/%.c
 
 # Some convenient rules
 
-.PHONY: app run gdb clean run-env $(DIFF_REF_SO)
+.PHONY: app test run gdb clean run-env $(DIFF_REF_SO)
 
 ifdef TEST_EXPR
 CFLAGS += -DTEST_EXPR
@@ -106,6 +106,8 @@ $(BINARY): $(OBJS)
 	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
 
 app: $(BINARY)
+
+test: $(BINARY)
 	$(GEN_EXPR_CMD)
 	$(GEN_TEST_CASE)
 	$(BINARY)
