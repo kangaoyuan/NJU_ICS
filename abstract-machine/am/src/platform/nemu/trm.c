@@ -4,6 +4,7 @@
 extern char _heap_start;
 int main(const char *args);
 
+/* _heap_start is defined inside the linker.ld script, the meaning from the name is obvious */
 Area heap = RANGE(&_heap_start, PMEM_END);
 #ifndef MAINARGS
 #define MAINARGS ""

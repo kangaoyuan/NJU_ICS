@@ -1,4 +1,4 @@
-# Makefile for AbstractMachine Kernels and Libraries
+# Makefile for AbstractMachine Kernels and Libraries(am and klib)
 
 ### *Get a more readable version of this Makefile* by `make html` (requires python-markdown)
 html:
@@ -7,13 +7,13 @@ html:
 
 ## 1. Basic Setup and Checks
 
-### Default to create a bare-metal kernel image
+### Default to create a bare-metal kernel image to specific platform
 ifeq ($(MAKECMDGOALS),)
   MAKECMDGOALS  = image
   .DEFAULT_GOAL = image
 endif
 
-### Override checks when `make clean/clean-all/html`
+### Override(namely ignore) checks when `make clean/clean-all/html`
 ifeq ($(findstring $(MAKECMDGOALS),clean|clean-all|html),)
 
 ### Print build info message
