@@ -182,11 +182,13 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
     } else {
         printf("8 bits Update screen\n");
         uint8_t*  pixels_index = screen->pixels;
+        printf("Malloc 8 bits Update screen\n");
         uint32_t* pixels = malloc(screen->w * screen->h * sizeof(uint32_t));
         assert(pixels);
 
         for (int i = 0; i < h; ++i) {
             for(int j = 0; j < w; j++){
+                printf("Get 8 bits pixels\n");
                 int ref = (y * screen->w + x) + (i * screen->w + j);
                 SDL_Color color =
                     screen->format->palette->colors[pixels_index[ref]];
