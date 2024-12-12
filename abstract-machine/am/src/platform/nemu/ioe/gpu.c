@@ -48,5 +48,7 @@ void __am_gpu_status(AM_GPU_STATUS_T *status) {
 }
 
 // It's only for learning the workflow
-void __am_gpu_memcpy(AM_GPU_MEMCPY_T *cpy){
-}
+/*
+ *void __am_gpu_memcpy(AM_GPU_MEMCPY_T *cpy){
+ *}
+ */
