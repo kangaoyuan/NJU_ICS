@@ -5,12 +5,14 @@
 
 void __am_gpu_init() {
     // Below code is for testing.
-    int       w = inw(VGACTL_ADDR + 2);  // TODO: get the correct width
-    int       h = inw(VGACTL_ADDR);  // TODO: get the correct height
-    uint32_t* fb = (uint32_t*)(uintptr_t)FB_ADDR;
-    for (int i = 0; i < w * h; i++)
-        fb[i] = i;
-    outl(SYNC_ADDR, 1);
+    /*
+     *int       w = inw(VGACTL_ADDR + 2);  // TODO: get the correct width
+     *int       h = inw(VGACTL_ADDR);  // TODO: get the correct height
+     *uint32_t* fb = (uint32_t*)(uintptr_t)FB_ADDR;
+     *for (int i = 0; i < w * h; i++)
+     *    fb[i] = i;
+     *outl(SYNC_ADDR, 1);
+     */
 }
 
 void __am_gpu_config(AM_GPU_CONFIG_T* cfg) {
