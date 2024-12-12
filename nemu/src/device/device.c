@@ -6,13 +6,12 @@
 #include <SDL2/SDL.h>
 #include <monitor/monitor.h>
 
-void init_serial();
-void init_timer();
 void init_vga();
+void init_timer();
+void init_alarm();
 void init_i8042();
 void init_audio();
-
-void init_alarm();
+void init_serial();
 
 void vga_update_screen();
 void send_key(uint8_t, bool);
@@ -28,6 +27,7 @@ void device_update() {
         return;
     }
     device_update_flag = false;
+
     vga_update_screen();
 
     SDL_Event event;
