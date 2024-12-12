@@ -166,6 +166,7 @@ void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
 
 // Makes sure the given area is updated on the given scrren. please RTFM 
 void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
+    printf("Update screen\n");
     if (x == 0 && y == 0 && w == 0 && h == 0) {
         w = screen->w;
         h = screen->h;
@@ -316,9 +317,7 @@ void SDL_SetPalette(SDL_Surface *s, int flags, SDL_Color *colors, int firstcolor
   assert(firstcolor == 0);
 
   s->format->palette->ncolors = ncolors;
-  printf("here is core ?!?\n");
   memcpy(s->format->palette->colors, colors, sizeof(SDL_Color) * ncolors);
-  printf("can i reach here?\n");
 
   printf("miracle to setting surface\n");
   if(s->flags & SDL_HWSURFACE) {
@@ -328,7 +327,7 @@ void SDL_SetPalette(SDL_Surface *s, int flags, SDL_Color *colors, int firstcolor
       uint8_t g = colors[i].g;
       uint8_t b = colors[i].b;
     }
-    printf("miracle to update rect");
+    printf("miracle to update rect\n");
     SDL_UpdateRect(s, 0, 0, 0, 0);
   }
 }
