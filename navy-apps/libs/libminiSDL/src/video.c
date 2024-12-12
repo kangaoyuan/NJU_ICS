@@ -195,6 +195,7 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
                 pixels[i*w + j] = p_elem;
             }
         }
+        printf("Over SDL 8 bits Update screen\n");
 
         NDL_DrawRect(pixels, x, y, w, h);
         free(pixels);
