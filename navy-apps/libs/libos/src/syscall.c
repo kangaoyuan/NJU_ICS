@@ -83,6 +83,9 @@ void* _sbrk(intptr_t increment) {
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
     // Attention for the argument passed to the system call.
+    if((char *)req_brk < &_end){
+        return (void*)-1; 
+    }
     if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
         proc_brk += increment;
         return (void*)pre_brk;
