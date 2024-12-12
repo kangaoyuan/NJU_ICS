@@ -175,34 +175,24 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
     if(h > screen->h) h = screen->h;
 
     if (!screen->format->palette) {
-        printf("32 bits Update screen\n");
         assert(screen->format->BitsPerPixel == 32);
         NDL_DrawRect((uint32_t*)screen->pixels, x, y, w, h);
         printf("Ending 32 bits Update screen\n");
     } else {
-        printf("8 bits Update screen\n");
         uint8_t*  pixels_index = screen->pixels;
-        printf("Malloc 8 bits Update screen\n");
         uint32_t* pixels = malloc(screen->w * screen->h * sizeof(uint32_t));
         assert(pixels);
 
         for (int i = 0; i < h; ++i) {
             for(int j = 0; j < w; j++){
-                printf("Get 8 bits pixels\n");
                 int ref = (y * screen->w + x) + (i * screen->w + j);
-                printf("Get 8 bits pixels, ref == %d\n", ref);
-                printf("before color");
                 SDL_Color color =
                     screen->format->palette->colors[pixels_index[ref]];
-                printf("after color");
-                printf("Get 8 bits color, a == %d, r == %d, g == %d, b == %d\n", color.a, color.r, color.g, color.b);
                 uint32_t p_elem =
                     color.a << 24 | color.r << 16 | color.g << 8 | color.b;
-                printf("Get 8 bits pixels, p_elem == %d\n", p_elem);
                 pixels[i*w + j] = p_elem;
             }
         }
-        printf("Over SDL 8 bits Update screen\n");
 
         NDL_DrawRect(pixels, x, y, w, h);
         free(pixels);
