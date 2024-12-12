@@ -175,9 +175,12 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
     if(h > screen->h) h = screen->h;
 
     if (!screen->format->palette) {
+        printf("32 bits Update screen\n");
         assert(screen->format->BitsPerPixel == 32);
         NDL_DrawRect((uint32_t*)screen->pixels, x, y, w, h);
+        printf("Ending 32 bits Update screen\n");
     } else {
+        printf("8 bits Update screen\n");
         uint8_t*  pixels_index = screen->pixels;
         uint32_t* pixels = malloc(screen->w * screen->h * sizeof(uint32_t));
         assert(pixels);
@@ -195,6 +198,7 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
 
         NDL_DrawRect(pixels, x, y, w, h);
         free(pixels);
+        printf("Ending 8 bits Update screen\n");
     }
     return;
 }
