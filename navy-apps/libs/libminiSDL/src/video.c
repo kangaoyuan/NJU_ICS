@@ -191,8 +191,10 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
                 printf("Get 8 bits pixels\n");
                 int ref = (y * screen->w + x) + (i * screen->w + j);
                 printf("Get 8 bits pixels, ref == %d\n", ref);
+                printf("before color");
                 SDL_Color color =
                     screen->format->palette->colors[pixels_index[ref]];
+                printf("after color");
                 printf("Get 8 bits color, a == %d, r == %d, g == %d, b == %d\n", color.a, color.r, color.g, color.b);
                 uint32_t p_elem =
                     color.a << 24 | color.r << 16 | color.g << 8 | color.b;
