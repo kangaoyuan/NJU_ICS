@@ -1,13 +1,8 @@
 #ifndef __RTL_BASIC_H__
 #define __RTL_BASIC_H__
 
-<<<<<<< HEAD
 #include "c_op.h" // IWYU pragma: keep
 #include <common.h>
-=======
-#include "c_op.h"
-#include <rtl/rtl_.h>
->>>>>>> 0a92b12 (>  compile)
 #include <memory/vaddr.h>
 
 /* RTL basic instructions */

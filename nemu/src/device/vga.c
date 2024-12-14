@@ -3,7 +3,7 @@
 #ifdef HAS_IOE
 
 #define SHOW_SCREEN
-#define MODE_800x600
+//#define MODE_800x600
 
 #ifdef MODE_800x600
 #   define SCREEN_W 800
@@ -30,11 +30,6 @@ static uint32_t *vgactl_port_base = NULL;
 static uint32_t (*vmem) [SCREEN_W] = NULL;
 
 static inline void update_screen() __attribute__((used));
-
-static inline void vga_io_handler(uint32_t offset, int len, bool is_write){
-    if(is_write)
-        update_screen();
-}
 
 static inline void update_screen() {
 #ifdef SHOW_SCREEN
