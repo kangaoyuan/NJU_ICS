@@ -1,6 +1,7 @@
 #ifndef __MACRO_H__
 #define __MACRO_H__
 
+// This is a tricky for the expansion of macro
 #define str_temp(x) #x
 #define str(x) str_temp(x)
 
@@ -16,4 +17,4 @@
 #define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1)) // similar to x[hi:lo] in verilog
 #define SEXT(x, len) ({ struct { int64_t n : len; } __x = { .n = x }; (int64_t)__x.n; })
 
-#endif
+#endif // __MACRO_H__

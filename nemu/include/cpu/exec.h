@@ -3,12 +3,12 @@
 
 #include <isa.h>
 #include <rtl/rtl.h>
-#include <memory/vaddr.h>
 #include <cpu/decode.h>
+#include <memory/vaddr.h>
 
 #define def_EHelper(name) void concat(exec_, name) (DecodeExecState *s)
 
-// empty decode helper
+// def_DHelper(empty) == void decode_empty(DecodeExecState *s) empty decode helper
 #define decode_empty(s)
 
 #define IDEXW(idx, id, ex, w) CASE_ENTRY(idx, concat(decode_, id), concat(exec_, ex), w)

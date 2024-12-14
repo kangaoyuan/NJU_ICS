@@ -14,15 +14,15 @@ typedef struct {
         word_t   imm;
         sword_t  simm;
     };
-    rtlreg_t* preg;
     rtlreg_t  val;
+    rtlreg_t* preg;
     char      str[OP_STR_SIZE];
 } Operand;
 
 typedef struct {
     uint32_t      opcode;
-    vaddr_t       seq_pc;  // sequential pc
     uint32_t      is_jmp;
+    vaddr_t       seq_pc;
     vaddr_t       jmp_pc;
     Operand       src1, dest, src2;
     int           width;

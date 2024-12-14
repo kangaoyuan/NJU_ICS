@@ -22,6 +22,7 @@
 #include <string.h>// IWYU pragma: keep
 
 //below doesn't help, so using Include What You Use // IWYU pragma: keep
+// or 
 //#pragma clang diagnostic ignored "-Wno-unused-include"
 
 #ifdef ISA64
@@ -47,4 +48,4 @@ typedef uint8_t bool;
 #include <debug.h>
 #include <macro.h>
 
-#endif
+#endif // __COMMON_H__

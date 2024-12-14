@@ -17,6 +17,7 @@ extern FILE* log_fp;
 #	define log_write(...)
 #endif
 
+// Here, we don't use the ## to specify the __VA_ARGS__ for the assurance.
 #define _Log(...) \
   do { \
     printf(__VA_ARGS__); \

@@ -2,16 +2,17 @@
 #include <memory/paddr.h>
 #include <memory/vaddr.h>
 #include <device/map.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 
 static uint8_t pmem[PMEM_SIZE] PG_ALIGN = {};
 
-void* guest_to_host(paddr_t addr) {
-    return &pmem[addr];
+uint8_t* guest_to_host(paddr_t addr) {
+    return &pmem[addr] - PMEM_BASE;
 }
-paddr_t host_to_guest(void* addr) {
-    return (void*)pmem - addr;
+paddr_t host_to_guest(uint8_t* addr) {
+    return addr - pmem + PMEM_BASE;
 }
 
 IOMap* fetch_mmio_map(paddr_t addr);
