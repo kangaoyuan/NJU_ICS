@@ -2,8 +2,8 @@
 
 #ifdef HAS_IOE
 
-#include <device/alarm.h>
 #include <SDL2/SDL.h>
+#include <device/alarm.h>
 #include <monitor/monitor.h>
 
 void init_vga();

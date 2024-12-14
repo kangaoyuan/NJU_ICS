@@ -166,7 +166,6 @@ void SDL_FillRect(SDL_Surface* dst, SDL_Rect* dstrect, uint32_t color) {
 
 // Makes sure the given area is updated on the given scrren. please RTFM 
 void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
-    printf("Update screen\n");
     if (x == 0 && y == 0 && w == 0 && h == 0) {
         w = screen->w;
         h = screen->h;
@@ -177,7 +176,6 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
     if (!screen->format->palette) {
         assert(screen->format->BitsPerPixel == 32);
         NDL_DrawRect((uint32_t*)screen->pixels, x, y, w, h);
-        printf("Ending 32 bits Update screen\n");
     } else {
         uint8_t*  pixels_index = screen->pixels;
         uint32_t* pixels = malloc(screen->w * screen->h * sizeof(uint32_t));
@@ -196,7 +194,6 @@ void SDL_UpdateRect(SDL_Surface* screen, int x, int y, int w, int h) {
 
         NDL_DrawRect(pixels, x, y, w, h);
         free(pixels);
-        printf("Ending 8 bits Update screen\n");
     }
     return;
 }
@@ -321,7 +318,6 @@ void SDL_SetPalette(SDL_Surface *s, int flags, SDL_Color *colors, int firstcolor
   s->format->palette->ncolors = ncolors;
   memcpy(s->format->palette->colors, colors, sizeof(SDL_Color) * ncolors);
 
-  printf("miracle to setting surface\n");
   if(s->flags & SDL_HWSURFACE) {
     assert(ncolors == 256);
     for (int i = 0; i < ncolors; i ++) {
@@ -329,7 +325,6 @@ void SDL_SetPalette(SDL_Surface *s, int flags, SDL_Color *colors, int firstcolor
       uint8_t g = colors[i].g;
       uint8_t b = colors[i].b;
     }
-    printf("miracle to update rect\n");
     SDL_UpdateRect(s, 0, 0, 0, 0);
   }
 }
