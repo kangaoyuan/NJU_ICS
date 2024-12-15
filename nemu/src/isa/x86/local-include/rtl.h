@@ -65,88 +65,29 @@ static inline def_rtl(pop, rtlreg_t* dest) {
 static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
     const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
     // dest <- is_overflow(src1 - src2)
-    // TODO();
-    switch (width) {
-    case 1:
-        if (((int8_t)(*src1) < (int8_t)(*src2) && (int8_t)(*res) > 0) ||
-            ((int8_t)(*src1) > (int8_t)(*src2) && (int8_t)(*res) < 0)) {
-            *dest = true;
-        } else {
-            *dest = false;
-        }
-        break;
-    case 2:
-        if (((int16_t)(*src1) < (int16_t)(*src2) && (int16_t)(*res) > 0) ||
-            ((int16_t)(*src1) > (int16_t)(*src2) && (int16_t)(*res) < 0)) {
-            *dest = true;
-        } else {
-            *dest = false;
-        }
-        break;
-    case 4:
-        if (((int32_t)(*src1) < (int32_t)(*src2) && (int32_t)(*res) > 0) ||
-            ((int32_t)(*src1) > (int32_t)(*src2) && (int32_t)(*res) < 0)) {
-            *dest = true;
-        } else {
-            *dest = false;
-        }
-        break;
-    default:
-        assert(0);
-    }
+    // Overflow ocuurs in sbutraction is similar to addition when two numbers with the same sign produce a result with a different sign, here is a tricky to do.
+    *t0 = ~*src2;
+    *dest = ((*src1 >> (width * 8 - 1) & 1) == (*t0 >> (width * 8 - 1) & 1) &&
+             (*src1 >> (width * 8 - 1) & 1) == (*res >> (width * 8 - 1) & 1));
 }
 
 static inline def_rtl(is_sub_carry, rtlreg_t* dest,
     const rtlreg_t* src1, const rtlreg_t* src2) {
     // dest <- is_carry(src1 - src2)
-    // TODO();
     rtl_setrelop(s, RELOP_LTU, dest, src1, src2);
 }
 
 static inline def_rtl(is_add_overflow, rtlreg_t* dest,
     const rtlreg_t* res, const rtlreg_t* src1, const rtlreg_t* src2, int width) {
     // dest <- is_overflow(src1 + src2)
-    // TODO();
-    switch (width) {
-    case 1:
-        if (((int8_t)(*src1) > 0 && (int8_t)(*src2) > 0 &&
-             (int8_t)(*res) < 0) ||
-            ((int8_t)(*src1) < 0 && (int8_t)(*src2) < 0 &&
-             (int8_t)(*res) > 0)) {
-            *dest = true;
-        } else {
-            *dest = false;
-        }
-        break;
-    case 2:
-        if (((int16_t)(*src1) > 0 && (int16_t)(*src2) > 0 &&
-             (int16_t)(*res) < 0) ||
-            ((int16_t)(*src1) < 0 && (int16_t)(*src2) < 0 &&
-             (int16_t)(*res) > 0)) {
-            *dest = true;
-        } else {
-            *dest = false;
-        }
-        break;
-    case 4:
-        if (((int32_t)(*src1) > 0 && (int32_t)(*src2) > 0 &&
-             (int32_t)(*res) < 0) ||
-            ((int32_t)(*src1) < 0 && (int32_t)(*src2) < 0 &&
-             (int32_t)(*res) > 0)) {
-            *dest = true;
-        } else {
-            *dest = false;
-        }
-        break;
-    default:
-        assert(0);
-    }
+    // Overflow ocuurs in addition when two numbers with the same sign produce a result with a different sign.
+    *dest = ((*src1 >> (width * 8 - 1) & 1) == (*src2 >> (width * 8 - 1) & 1) &&
+             (*src1 >> (width * 8 - 1) & 1) == (*res >> (width * 8 - 1) & 1));
 }
 
 static inline def_rtl(is_add_carry, rtlreg_t* dest,
     const rtlreg_t* res, const rtlreg_t* src1) {
     // dest <- is_carry(src1 + src2)
-    // TODO();
     rtl_setrelop(s, RELOP_LTU, dest, res, src1);
 }
 
@@ -165,19 +106,15 @@ def_rtl_setget_eflags(SF)
 
 static inline def_rtl(update_ZF, const rtlreg_t* result, int width) {
     // eflags.ZF <- is_zero(result[width * 8 - 1 .. 0])
-    //TODO();
     switch (width) {
     case 1:
         *t0 = ((*result & 0xff) == 0);
-        rtl_set_ZF(s, t0);
         break;
     case 2:
         *t0 = ((*result & 0xffff) == 0);
-        rtl_set_ZF(s, t0);
         break;
     case 4:
         *t0 = (*result == 0);
-        rtl_set_ZF(s, t0);
         break;
     default:
         assert(0);
@@ -187,7 +124,6 @@ static inline def_rtl(update_ZF, const rtlreg_t* result, int width) {
 
 static inline def_rtl(update_SF, const rtlreg_t* result, int width) {
     // eflags.SF <- is_sign(result[width * 8 - 1 .. 0])
-    //TODO();
     rtl_msb(s, t0, result, width);
     rtl_set_SF(s, t0);
 }

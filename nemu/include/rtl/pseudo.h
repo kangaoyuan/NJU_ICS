@@ -10,10 +10,12 @@
 /* RTL pseudo instructions */
 
 static inline def_rtl(li, rtlreg_t* dest, const rtlreg_t imm) {
+    // dst <- imm
     rtl_addi(s, dest, rz, imm);
 }
 
 static inline def_rtl(mv, rtlreg_t* dest, const rtlreg_t* src1) {
+    // dst <- src1
     if (dest != src1)
         rtl_add(s, dest, rz, src1);
 }
