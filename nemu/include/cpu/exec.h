@@ -3,7 +3,6 @@
 
 #include <isa.h>
 #include <rtl/rtl.h>
-#include <rtl/pseudo.h>
 #include <cpu/decode.h>
 #include <memory/vaddr.h>
 
@@ -21,12 +20,12 @@
 // set_width() is defined in src/isa/$isa/exec/exec.c
 #define CASE_ENTRY(idx, id, ex, w) case idx: set_width(s, w); id(s); ex(s); break;
 
+// Here we assume the instr is 4 bytes length.
 static inline uint32_t instr_fetch(vaddr_t* pc, int len) {
     uint32_t instr = vaddr_ifetch(*pc, len);
 #ifdef DEBUG
     uint8_t* p_instr = (void*)&instr;
-    int      i;
-    for (i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) {
         extern char log_bytebuf[];
         strcatf(log_bytebuf, "%02x ", p_instr[i]);
     }
