@@ -234,10 +234,11 @@ again:
         IDEX(0x5f, r, pop)
         EX(0x60, pusha)
         EX(0x61, popa)
-        IDEX(0x68, push_SI, push)
-        IDEX(0x69, I_E2G, imul3)
+        IDEX(0x68,  I, push)
+        IDEX(0x69,  I_E2G, imul3)
+        // push imm8 instruction, which need sext.
         IDEXW(0x6a, push_SI, push, 1)
-        IDEXW(0x6b, I_E2G, imul3, 1)
+        IDEX(0x6b,  Ib_E2G, imul3)
 
         IDEXW(0x70, J, jcc, 1)
         IDEXW(0x71, J, jcc, 1)
@@ -268,6 +269,7 @@ again:
         EX(0x90, nop)
         EX(0x98, cwtl)
         EX(0x99, cltd)
+
         IDEXW(0xa0, O2a, mov, 1)
         IDEX(0xa1, O2a, mov)
         IDEXW(0xa2, a2O, mov, 1)
@@ -292,6 +294,7 @@ again:
         IDEX(0xbd, mov_I2r, mov)
         IDEX(0xbe, mov_I2r, mov)
         IDEX(0xbf, mov_I2r, mov)
+
         IDEXW(0xc0, gp2_Ib2E, gp2, 1)
         IDEX(0xc1, gp2_Ib2E, gp2)
         EX(0xc3, ret)

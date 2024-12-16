@@ -74,15 +74,10 @@ static inline def_DopHelper(SI) {
      */
     word_t imm = instr_fetch(&s->seq_pc, op->width);
     // rtl_sext(s, op->preg, &imm, op->width);
+    // Above method records the imm to the op->preg, not same to the below.
     if (op->width == 1 && ((imm >> 7) & 1))
-      imm = imm | 0xffffff00;
+        imm = imm | 0xffffff00;
     operand_imm(s, op, load_val, imm, op->width);
-
-    /*
-     *word_t simm = instr_fetch(&s->seq_pc, op->width);
-     *rtl_sext(s, &simm, &simm, op->width);
-     *operand_simm(s, op, load_val, simm, op->width);
-     */
 }
 
 /* I386 manual does not contain this abbreviation.
@@ -169,6 +164,11 @@ static inline def_DHelper(I2a) {
  * use for imul */
 static inline def_DHelper(I_E2G) {
   operand_rm(s, id_src2, true, id_dest, false);
+  decode_op_I(s, id_src1, true);
+}
+static inline def_DHelper(Ib_E2G) {
+  operand_rm(s, id_src2, true, id_dest, false);
+  id_src1->width = 1;
   decode_op_I(s, id_src1, true);
 }
 
@@ -289,9 +289,27 @@ static inline def_DHelper(a2O) {
   decode_op_O(s, id_dest, false);
 }
 
+/*
+ *static inline def_DopHelper(I) {
+ *    [> pc here is pointing to the immediate <]
+ *    word_t imm = instr_fetch(&s->seq_pc, op->width);
+ *    operand_imm(s, op, load_val, imm, op->width);
+ *}
+ */
+/*
+ *static inline def_DopHelper(SI) {
+ *    assert(op->width == 1 || op->width == 4);
+ *
+ *    word_t imm = instr_fetch(&s->seq_pc, op->width);
+ *    if (op->width == 1 && ((imm >> 7) & 1))
+ *        imm = imm | 0xffffff00;
+ *    operand_imm(s, op, load_val, imm, op->width);
+ *}
+ */
+
 static inline def_DHelper(J) {
     decode_op_SI(s, id_dest, false);
-    s->jmp_pc = id_dest->simm + s->seq_pc;
+    s->jmp_pc = id_dest->imm + s->seq_pc;
 }
 
 static inline def_DHelper(push_SI) {

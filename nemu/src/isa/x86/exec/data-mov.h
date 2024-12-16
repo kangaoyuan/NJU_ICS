@@ -13,8 +13,7 @@ static inline def_EHelper(push) {
 
 static inline def_EHelper(pop) {
     //TODO();
-    rtl_pop(s, s0);
-    operand_write(s, id_dest, s0);
+    rtl_pop(s, ddest);
     print_asm_template1(pop);
 }
 
@@ -37,7 +36,7 @@ static inline def_EHelper(popa) {
     rtl_pop(s, &cpu.edi);
     rtl_pop(s, &cpu.esi);
     rtl_pop(s, &cpu.ebp);
-    rtl_pop(s, s0);
+    cpu.esp += 4;
     rtl_pop(s, &cpu.ebx);
     rtl_pop(s, &cpu.edx);
     rtl_pop(s, &cpu.ecx);
