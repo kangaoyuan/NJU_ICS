@@ -17,6 +17,8 @@ void __am_vecnull();
 
 // called from above exception/interpret entry point to do the work registered from OS.
 Context* __am_irq_handle(Context* c) {
+    printf("inside __am_irq_handle: address of c 0x%x\n", c);
+    printf("inside __am_irq_handle: irq of c %d\n", c->irq);
     if (user_handler) {
         Event ev = {0};
         // Construct event to the user_handler registered by OS from Context.
