@@ -64,20 +64,20 @@ static inline def_DopHelper(I) {
  */
 /* sign immediate */
 static inline def_DopHelper(SI) {
-    assert(op->width == 1 || op->width == 4);
-
     /* TODO: Use instr_fetch() to read `op->width' bytes of memory
      * pointed by 's->seq_pc'. Interpret the result as a signed immediate,
      * and call `operand_imm()` as following.
      *
      operand_imm(s, op, load_val, ???, op->width);
      */
-    word_t imm = instr_fetch(&s->seq_pc, op->width);
+    assert(op->width == 1 || op->width == 4);
+
+    word_t simm = instr_fetch(&s->seq_pc, op->width);
     // rtl_sext(s, op->preg, &imm, op->width);
     // Above method records the imm to the op->preg, not same to the below.
-    if (op->width == 1 && ((imm >> 7) & 1))
-        imm = imm | 0xffffff00;
-    operand_imm(s, op, load_val, imm, op->width);
+    if (op->width == 1 && ((simm >> 7) & 1))
+        simm = simm | 0xffffff00;
+    operand_simm(s, op, load_val, simm, op->width);
 }
 
 /* I386 manual does not contain this abbreviation.
@@ -308,7 +308,9 @@ static inline def_DHelper(a2O) {
  */
 
 static inline def_DHelper(J) {
-    decode_op_SI(s, id_dest, true);
+    decode_op_SI(s, id_dest, false);
+    // the target address can be computed in the decode stage.
+    s->jmp_pc = s->seq_pc + id_dest->simm;
 }
 
 static inline def_DHelper(push_SI) {
