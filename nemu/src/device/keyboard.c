@@ -47,12 +47,14 @@ static void i8042_data_io_handler(uint32_t offset, int len, bool is_write) {
         i8042_data_port_base[0] = key_queue[key_f];
         key_f = (key_f + 1) % KEY_QUEUE_LEN;
     } else {
+        // No keyboard event remain.
         i8042_data_port_base[0] = _KEY_NONE;
     }
 }
 
 void init_i8042() {
     i8042_data_port_base = (void*)new_space(4);
+    // Actually only one element.
     i8042_data_port_base[0] = _KEY_NONE;
     add_pio_map("keyboard", I8042_DATA_PORT, (void*)i8042_data_port_base, 4,
                 i8042_data_io_handler);

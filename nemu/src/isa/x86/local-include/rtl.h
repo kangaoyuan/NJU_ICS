@@ -5,7 +5,7 @@
 #include <rtl/rtl.h>
 #include <rtl/pseudo.h>
 
-/* RTL pseudo instructions */
+/* ISA RTL pseudo instructions */
 
 static inline def_rtl(lr, rtlreg_t* dest, int r, int width) {
     // Load register
@@ -44,6 +44,7 @@ static inline def_rtl(sr, int r, const rtlreg_t* src1, int width) {
 static inline def_rtl(push, const rtlreg_t* src1) {
     // esp <- esp - 4
     // M[esp] <- src1
+    
     if (ddest == &cpu.esp) {
         // Keep the original val, the root is the src and dst are identical
         rtl_sm(s, &cpu.esp-1, 0, src1, 4); 

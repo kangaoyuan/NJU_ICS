@@ -11,45 +11,48 @@ static inline void set_width(DecodeExecState* s, int width) {
     s->src1.width = s->dest.width = s->src2.width = width;
 }
 
+// The same instruction group need extra the ModR/M byte's reg/opcode field
+// to supply the opcode of instruction.
+
 /* 0x80, 0x81, 0x83 */
 static inline def_EHelper(gp1) {
   switch (s->isa.ext_opcode) {
-      EXW(0x0, add, -1)
-      EXW(0x1, or, -1)
-      EXW(0x2, adc, -1)
-      EXW(0x3, sbb, -1)
-      EXW(0x4, and, -1)
-      EXW(0x5, sub, -1)
-      EXW(0x6, xor, -1)
-      EXW(0x7, cmp, -1)
+      EXW(0x0, add, id_dest->width)
+      EXW(0x1, or,  id_dest->width)
+      EXW(0x2, adc, id_dest->width)
+      EXW(0x3, sbb, id_dest->width)
+      EXW(0x4, and, id_dest->width)
+      EXW(0x5, sub, id_dest->width)
+      EXW(0x6, xor, id_dest->width)
+      EXW(0x7, cmp, id_dest->width)
   }
 }
 
 /* 0xc0, 0xc1, 0xd0, 0xd1, 0xd2, 0xd3 */
 static inline def_EHelper(gp2) {
     switch (s->isa.ext_opcode) {
-        EXW(0x0, rol, -1)
-        EXW(0x1, ror, -1)
+        EX(0x0, rol)
+        EX(0x1, ror)
         EMPTY(0x2)
         EMPTY(0x3)
-        EXW(0x4, shl, -1)
-        EXW(0x5, shr, -1)
+        EXW(0x4, shl, id_dest->width)
+        EXW(0x5, shr, id_dest->width)
         EMPTY(0x6)
-        EXW(0x7, sar, -1)
+        EXW(0x7, sar, id_dest->width)
     }
 }
 
 /* 0xf6, 0xf7 */
 static inline def_EHelper(gp3) {
     switch (s->isa.ext_opcode) {
-        IDEXW(0x0, test_I, test, -1)
+        IDEXW(0x0, test_I, test, id_dest->width)
         EMPTY(0x1)
-        EXW(0x2, not, -1)
-        EXW(0x3, neg, -1)
-        EXW(0x4, mul, -1)
-        EXW(0x5, imul1, -1)
-        EXW(0x6, div, -1)
-        EXW(0x7, idiv, -1)
+        EXW(0x2, not, id_dest->width)
+        EXW(0x3, neg, id_dest->width)
+        EXW(0x4, mul, id_dest->width)
+        EXW(0x5, imul1, id_dest->width)
+        EXW(0x6, div, id_dest->width)
+        EXW(0x7, idiv, id_dest->width)
     }
 }
 
@@ -143,57 +146,59 @@ static inline void fetch_decode_exec(DecodeExecState *s) {
 again:
     opcode = instr_fetch(&s->seq_pc, 1);
     s->opcode = opcode;
-    // Separeting D, EX and W code to realize decoupling.
+    // Separeting Width, Decode and Eexcute to realize decoupling.
+    // Attention, set width is the first step, maybe it's crucial.
     switch (opcode) {
         EX(0x0f, 2byte_esc)
         IDEXW(0x00, G2E, add, 1)
-        IDEX(0x01, G2E, add)
+        IDEX(0x01,  G2E, add)
         IDEXW(0x02, E2G, add, 1)
-        IDEX(0x03, E2G, add)
+        IDEX(0x03,  E2G, add)
         IDEXW(0x04, I2a, add, 1)
-        IDEX(0x05, I2a, add)
+        IDEX(0x05,  I2a, add)
         IDEXW(0x08, G2E, or, 1)
-        IDEX(0x09, G2E, or)
+        IDEX(0x09,  G2E, or)
         IDEXW(0x0a, E2G, or, 1)
-        IDEX(0x0b, E2G, or)
+        IDEX(0x0b,  E2G, or)
         IDEXW(0x0c, I2a, or, 1)
-        IDEX(0x0d, I2a, or)
+        IDEX(0x0d,  I2a, or)
         IDEXW(0x10, G2E, adc, 1)
-        IDEX(0x11, G2E, adc)
+        IDEX(0x11,  G2E, adc)
         IDEXW(0x12, E2G, adc, 1)
-        IDEX(0x13, E2G, adc)
+        IDEX(0x13,  E2G, adc)
         IDEXW(0x14, I2a, adc, 1)
-        IDEX(0x15, I2a, adc)
+        IDEX(0x15,  I2a, adc)
         IDEXW(0x18, G2E, sbb, 1)
-        IDEX(0x19, G2E, sbb)
+        IDEX(0x19,  G2E, sbb)
         IDEXW(0x1a, E2G, sbb, 1)
-        IDEX(0x1b, E2G, sbb)
+        IDEX(0x1b,  E2G, sbb)
         IDEXW(0x1c, I2a, sbb, 1)
-        IDEX(0x1d, I2a, sbb)
+        IDEX(0x1d,  I2a, sbb)
         IDEXW(0x20, G2E, and, 1)
-        IDEX(0x21, G2E, and)
+        IDEX(0x21,  G2E, and)
         IDEXW(0x22, E2G, and, 1)
-        IDEX(0x23, E2G, and)
+        IDEX(0x23,  E2G, and)
         IDEXW(0x24, I2a, and, 1)
-        IDEX(0x25, I2a, and)
+        IDEX(0x25,  I2a, and)
         IDEXW(0x28, G2E, sub, 1)
-        IDEX(0x29, G2E, sub)
+        IDEX(0x29,  G2E, sub)
         IDEXW(0x2a, E2G, sub, 1)
-        IDEX(0x2b, E2G, sub)
+        IDEX(0x2b,  E2G, sub)
         IDEXW(0x2c, I2a, sub, 1)
-        IDEX(0x2d, I2a, sub)
+        IDEX(0x2d,  I2a, sub)
         IDEXW(0x30, G2E, xor, 1)
-        IDEX(0x31, G2E, xor)
+        IDEX(0x31,  G2E, xor)
         IDEXW(0x32, E2G, xor, 1)
-        IDEX(0x33, E2G, xor)
+        IDEX(0x33,  E2G, xor)
         IDEXW(0x34, I2a, xor, 1)
-        IDEX(0x35, I2a, xor)
+        IDEX(0x35,  I2a, xor)
         IDEXW(0x38, G2E, cmp, 1)
-        IDEX(0x39, G2E, cmp)
+        IDEX(0x39,  G2E, cmp)
         IDEXW(0x3a, E2G, cmp, 1)
-        IDEX(0x3b, E2G, cmp)
+        IDEX(0x3b,  E2G, cmp)
         IDEXW(0x3c, I2a, cmp, 1)
-        IDEX(0x3d, I2a, cmp)
+        IDEX(0x3d,  I2a, cmp)
+
         IDEX(0x40, r, inc)
         IDEX(0x41, r, inc)
         IDEX(0x42, r, inc)
@@ -233,6 +238,7 @@ again:
         IDEX(0x69, I_E2G, imul3)
         IDEXW(0x6a, push_SI, push, 1)
         IDEXW(0x6b, I_E2G, imul3, 1)
+
         IDEXW(0x70, J, jcc, 1)
         IDEXW(0x71, J, jcc, 1)
         IDEXW(0x72, J, jcc, 1)
@@ -290,7 +296,7 @@ again:
         IDEX(0xc1, gp2_Ib2E, gp2)
         EX(0xc3, ret)
         IDEXW(0xc6, mov_I2E, mov, 1)
-        IDEX(0xc7, mov_I2E, mov)
+        IDEX(0xc7,  mov_I2E, mov)
         EX(0xc9, leave)
         IDEXW(0xcd, I, int, 1)
         EX(0xcf, iret)
@@ -302,18 +308,18 @@ again:
         IDEXW(0xe4, in_I2a, in, 1)
         IDEX(0xe5, in_I2a, in)
         IDEXW(0xe6, out_a2I, out, 1)
-        IDEX(0xe7, out_a2I, out)
-        IDEX(0xe8, J, call)
-        IDEX(0xe9, J, jmp)
+        IDEX(0xe7,  out_a2I, out)
+        IDEX(0xe8,  J, call)
+        IDEX(0xe9,  J, jmp)
         IDEXW(0xeb, J, jmp, 1)
         IDEXW(0xec, in_dx2a, in, 1)
-        IDEX(0xed, in_dx2a, in)
+        IDEX(0xed,  in_dx2a, in)
         IDEXW(0xee, out_a2dx, out, 1)
-        IDEX(0xef, out_a2dx, out)
+        IDEX(0xef,  out_a2dx, out)
         IDEXW(0xf6, E, gp3, 1)
-        IDEX(0xf7, E, gp3)
+        IDEX(0xf7,  E, gp3)
         IDEXW(0xfe, E, gp4, 1)
-        IDEX(0xff, E, gp5)
+        IDEX(0xff,  E, gp5)
     case 0x66:
         s->isa.is_operand_size_16 = true;
         goto again;

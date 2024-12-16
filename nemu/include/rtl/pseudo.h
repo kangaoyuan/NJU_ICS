@@ -67,6 +67,7 @@ static inline def_rtl(zext, rtlreg_t* dest, const rtlreg_t* src1, int width) {
 
 static inline def_rtl(msb, rtlreg_t* dest, const rtlreg_t* src1, int width) {
     // dest <- src1[width * 8 - 1]
+    //*dest = *src1 >> (width * 8 - 1);
     *dest = *src1 >> (width * 8 - 1) & 1;
 }
 

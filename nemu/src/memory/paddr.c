@@ -2,7 +2,6 @@
 #include <memory/paddr.h>
 #include <memory/vaddr.h>
 #include <device/map.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 

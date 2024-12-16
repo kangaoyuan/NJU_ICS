@@ -1,7 +1,6 @@
 #include <common.h>
 
 #ifdef HAS_IOE
-
 #define SHOW_SCREEN
 //#define MODE_800x600
 
@@ -12,14 +11,12 @@
 #   define SCREEN_W 400
 #   define SCREEN_H 300
 #endif
-
 #define SCREEN_SIZE ((SCREEN_H * SCREEN_W) * sizeof(uint32_t))
 
 #include <device/map.h>
 #include <SDL2/SDL.h>
 
 #define VMEM 0xa0000000
-
 #define VGACTL_PORT 0x100 // Note that this is not the standard
 #define VGACTL_MMIO 0xa1000100
 

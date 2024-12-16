@@ -113,6 +113,7 @@ void read_ModR_M(DecodeExecState* s, Operand* rm, bool load_rm_val,
     ModR_M m;
     m.val = instr_fetch(&s->seq_pc, 1);
     s->isa.ext_opcode = m.opcode;
+
     if (reg != NULL)
         operand_reg(s, reg, load_reg_val, m.reg, reg->width);
 
