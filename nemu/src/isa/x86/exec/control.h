@@ -16,6 +16,17 @@ static inline def_EHelper(jmp) {
 static inline def_EHelper(jcc) {
     // the target address is calculated at the decode stage
     uint32_t cc = s->opcode & 0xf;
+    switch(id_dest->width){
+    case 1:
+        s->jmp_pc = s->seq_pc + (int8_t)(*ddest);
+        break;
+    case 2:
+        s->jmp_pc = s->seq_pc + (int16_t)(*ddest);
+        break;
+    case 4: 
+        s->jmp_pc = s->seq_pc + (int32_t)(*ddest);
+        break;
+    }
     *s0 = 0;
     rtl_setcc(s, s0, cc);
     rtl_jrelop(s, RELOP_NE, s0, rz, s->jmp_pc);

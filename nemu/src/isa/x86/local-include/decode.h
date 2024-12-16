@@ -308,8 +308,7 @@ static inline def_DHelper(a2O) {
  */
 
 static inline def_DHelper(J) {
-    decode_op_SI(s, id_dest, false);
-    s->jmp_pc = id_dest->imm + s->seq_pc;
+    decode_op_SI(s, id_dest, true);
 }
 
 static inline def_DHelper(push_SI) {
