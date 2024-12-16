@@ -5,6 +5,7 @@ static inline void set_width(DecodeExecState* s, int width) {
     if (width == -1)
         return;
 
+    // operand-size prefix
     if (width == 0)
         width = s->isa.is_operand_size_16 ? 2 : 4;
 
@@ -59,8 +60,8 @@ static inline def_EHelper(gp3) {
 /* 0xfe */
 static inline def_EHelper(gp4) {
     switch (s->isa.ext_opcode) {
-        EXW(0x0, inc, 1)
-        EXW(0x1, dec, 1)
+        EXW(0x0, inc, id_dest->width)
+        EXW(0x1, dec, id_dest->width)
         EMPTY(2) EMPTY(3) EMPTY(4) EMPTY(5) EMPTY(6) EMPTY(7)
     }
 }
@@ -68,13 +69,13 @@ static inline def_EHelper(gp4) {
 /* 0xff */
 static inline def_EHelper(gp5) {
     switch (s->isa.ext_opcode) {
-        EXW(0x0, inc, -1)
-        EXW(0x1, dec, -1)
-        EXW(0x2, call_rm, -1)
+        EXW(0x0, inc, id_dest->width)
+        EXW(0x1, dec, id_dest->width)
+        EXW(0x2, call_rm, id_dest->width)
         EMPTY(3)
-        EXW(0x4, jmp_rm, -1)
+        EX(0x4, jmp_rm)
         EMPTY(5)
-        EXW(0x6, push, -1)
+        EX(0x6, push)
         EMPTY(7)
     }
 }
@@ -219,7 +220,6 @@ again:
         IDEX(0x51, r, push)
         IDEX(0x52, r, push)
         IDEX(0x53, r, push)
-        // There are some methods to avoid, but it's esay to make mistake.
         IDEX(0x54, r, push)
         IDEX(0x55, r, push)
         IDEX(0x56, r, push)
@@ -271,13 +271,13 @@ again:
         EX(0x99, cltd)
 
         IDEXW(0xa0, O2a, mov, 1)
-        IDEX(0xa1, O2a, mov)
+        IDEX(0xa1,  O2a, mov)
         IDEXW(0xa2, a2O, mov, 1)
-        IDEX(0xa3, a2O, mov)
+        IDEX(0xa3,  a2O, mov)
         EX(0xa4, movsb)
         EX(0xa5, movsl)
         IDEXW(0xa8, I2a, test, 1)
-        IDEX(0xa9, I2a, test)
+        IDEX(0xa9,  I2a, test)
         IDEXW(0xb0, mov_I2r, mov, 1)
         IDEXW(0xb1, mov_I2r, mov, 1)
         IDEXW(0xb2, mov_I2r, mov, 1)
@@ -304,12 +304,12 @@ again:
         IDEXW(0xcd, I, int, 1)
         EX(0xcf, iret)
         IDEXW(0xd0, gp2_1_E, gp2, 1)
-        IDEX(0xd1, gp2_1_E, gp2)
+        IDEX(0xd1,  gp2_1_E, gp2)
         IDEXW(0xd2, gp2_cl2E, gp2, 1)
-        IDEX(0xd3, gp2_cl2E, gp2)
+        IDEX(0xd3,  gp2_cl2E, gp2)
         EX(0xd6, nemu_trap)
         IDEXW(0xe4, in_I2a, in, 1)
-        IDEX(0xe5, in_I2a, in)
+        IDEX(0xe5,  in_I2a, in)
         IDEXW(0xe6, out_a2I, out, 1)
         IDEX(0xe7,  out_a2I, out)
         IDEX(0xe8,  J, call)

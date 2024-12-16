@@ -289,24 +289,6 @@ static inline def_DHelper(a2O) {
   decode_op_O(s, id_dest, false);
 }
 
-/*
- *static inline def_DopHelper(I) {
- *    [> pc here is pointing to the immediate <]
- *    word_t imm = instr_fetch(&s->seq_pc, op->width);
- *    operand_imm(s, op, load_val, imm, op->width);
- *}
- */
-/*
- *static inline def_DopHelper(SI) {
- *    assert(op->width == 1 || op->width == 4);
- *
- *    word_t imm = instr_fetch(&s->seq_pc, op->width);
- *    if (op->width == 1 && ((imm >> 7) & 1))
- *        imm = imm | 0xffffff00;
- *    operand_imm(s, op, load_val, imm, op->width);
- *}
- */
-
 static inline def_DHelper(J) {
     decode_op_SI(s, id_dest, false);
     // the target address can be computed in the decode stage.
