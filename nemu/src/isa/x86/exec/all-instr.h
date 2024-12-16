@@ -1,7 +1,7 @@
 #include "../local-include/rtl.h"       // IWYU pragma: keep
 #include "../local-include/decode.h"    // IWYU pragma: keep
 
-#include "control.h"    // jcc jmp call ret
+#include "control.h"    // jcc jmp jmp_rm call ret
 #include "arith.h"      // cmp add sub inc dec neg mul div
 #include "data-mov.h"   // lea mov push pop leave cltd cwtl
 #include "system.h"     // in out int iret lidt mov_r2cr mov_cr2r
