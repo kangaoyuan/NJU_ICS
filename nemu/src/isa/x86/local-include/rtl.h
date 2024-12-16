@@ -70,7 +70,7 @@ static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
     // Overflow ocuurs in sbutraction is similar to addition when two numbers with the same sign produce a result with a different sign, here is a tricky to do.
     *t0 = ~*src2;
     *dest = ((*src1 >> (width * 8 - 1) & 1) == (*t0 >> (width * 8 - 1) & 1) &&
-             (*src1 >> (width * 8 - 1) & 1) == (*res >> (width * 8 - 1) & 1));
+             (*src1 >> (width * 8 - 1) & 1) != (*res >> (width * 8 - 1) & 1));
 }
 
 static inline def_rtl(is_sub_carry, rtlreg_t* dest,
@@ -84,7 +84,7 @@ static inline def_rtl(is_add_overflow, rtlreg_t* dest,
     // dest <- is_overflow(src1 + src2)
     // Overflow ocuurs in addition when two numbers with the same sign produce a result with a different sign.
     *dest = ((*src1 >> (width * 8 - 1) & 1) == (*src2 >> (width * 8 - 1) & 1) &&
-             (*src1 >> (width * 8 - 1) & 1) == (*res >> (width * 8 - 1) & 1));
+             (*src1 >> (width * 8 - 1) & 1) != (*res >> (width * 8 - 1) & 1));
 }
 
 static inline def_rtl(is_add_carry, rtlreg_t* dest,
