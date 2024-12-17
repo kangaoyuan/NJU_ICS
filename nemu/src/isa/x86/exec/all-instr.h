@@ -3,7 +3,7 @@
 
 #include "control.h"    // jcc jmp jmp_rm call ret
 #include "arith.h"      // cmp add sub inc dec neg mul div
-#include "data-mov.h"   // lea mov push pop leave cltd cwtl
+#include "data-mov.h"   // lea mov push pop leave cltd cwtl xchg
 #include "system.h"     // in out int iret lidt mov_r2cr mov_cr2r
 #include "logic.h"      // test setcc and or xor not shl sar bsr shld shrd
 

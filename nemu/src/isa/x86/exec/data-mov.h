@@ -122,3 +122,9 @@ static inline def_EHelper(movsl) {
     }
     print_asm_template1(movl);
 }
+
+static inline def_EHelper(xchg) {
+    //rtl_mv(s, s0, ddest);
+    operand_write(s, id_dest, dsrc1);
+    operand_write(s, id_src1, ddest);
+}

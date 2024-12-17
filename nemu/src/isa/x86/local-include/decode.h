@@ -321,6 +321,7 @@ static inline def_DHelper(out_a2dx) {
     operand_reg(s, id_dest, true, R_DX, 2);
 }
 
+// Operand <- retl_reg
 static inline void operand_write(DecodeExecState* s, Operand* op,
                                  rtlreg_t* src) {
     if (op->type == OP_TYPE_REG) {
