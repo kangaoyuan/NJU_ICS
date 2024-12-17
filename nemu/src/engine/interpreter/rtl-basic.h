@@ -34,6 +34,7 @@ def_rtl_compute_reg_imm(sar)
 // Can you find here seem lack somthing, or not?
 
 
+// relationship operation
 static inline def_rtl(setrelop, uint32_t relop, rtlreg_t *dest,
     const rtlreg_t *src1, const rtlreg_t *src2) {
     *dest = interpret_relop(relop, *src1, *src2);
@@ -44,8 +45,8 @@ static inline def_rtl(setrelopi, uint32_t relop, rtlreg_t *dest,
     *dest = interpret_relop(relop, *src1, imm);
 }
 
-// mul/div
 
+// compute
 def_rtl_compute_reg(mul_lo)
 def_rtl_compute_reg(mul_hi)
 def_rtl_compute_reg(imul_lo)

@@ -41,20 +41,34 @@ static inline def_rtl(sr, int r, const rtlreg_t* src1, int width) {
     }
 }
 
+/*
+ *static inline def_rtl(lm, rtlreg_t* dest, const rtlreg_t* addr,
+ *                      word_t offset, int len) {
+ *    *dest = vaddr_read(*addr + offset, len);
+ *}
+ *
+ *static inline def_rtl(sm, const rtlreg_t* addr, word_t offset,
+ *                      const rtlreg_t* src1, int len) {
+ *    vaddr_write(*addr + offset, *src1, len);
+ *}
+ */
 static inline def_rtl(push, const rtlreg_t* src1) {
     // esp <- esp - 4
     // M[esp] <- src1
+    // Below two implements difference is the src1 and ddest whether
+    // will be &cpu.esp so the limit whether is correct.
     
     /*
      *if (ddest == &cpu.esp) {
      *    // Keep the original val, the root is the src and dst are identical
-     *    rtl_sm(s, &cpu.esp-1, 0, src1, 4); 
+     *    rtl_sm(s, &cpu.esp, -4, src1, 4); 
      *    rtl_subi(s, &cpu.esp, &cpu.esp, 4);
      *} else {
      *    rtl_subi(s, &cpu.esp, &cpu.esp, 4);
      *    rtl_sm(s, &cpu.esp, 0, src1, 4);
      *}
      */
+    // More conservative
     rtl_mv(s, t0, src1);
     rtl_subi(s, &cpu.esp, &cpu.esp, 4);
     rtl_sm(s, &cpu.esp, 0, t0, 4);
@@ -65,8 +79,8 @@ static inline def_rtl(pop, rtlreg_t* dest) {
     // esp <- esp + 4
     // TODO();
     // Attention! pop is not the simple inverse of push.
-        rtl_lm(s, dest, &cpu.esp, 0, 4);
-        rtl_addi(s, &cpu.esp, &cpu.esp, 4);
+    rtl_lm(s, dest, &cpu.esp, 0, 4);
+    rtl_addi(s, &cpu.esp, &cpu.esp, 4);
 }
 
 static inline def_rtl(is_sub_overflow, rtlreg_t* dest,
