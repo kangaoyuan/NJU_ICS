@@ -3,13 +3,13 @@
 #include <common.h>
 #include "syscall.h"
 
-int fs_open(const char *pathname, int flags, int mode);
+int    fs_open(const char *pathname, int flags, int mode);
 size_t fs_read(int fd, void *buf, size_t len);
 size_t fs_write(int fd, const void *buf, size_t len);
 size_t fs_lseek(int fd, size_t offset, int whence);
-int fs_close(int fd);
-void naive_uload(PCB *pcb, const char *filename);
-int sys_gettimeofday(struct timeval* tv, struct timezone* tz);
+int    fs_close(int fd);
+void   naive_uload(PCB *pcb, const char *filename);
+int    sys_gettimeofday(struct timeval* tv, struct timezone* tz);
 int sys_execve(const char* filename,char * const argv[],char* const envp[]);
 
 void do_syscall(Context* c) {
@@ -21,7 +21,9 @@ void do_syscall(Context* c) {
 
     switch (a[0]) {
     case SYS_exit:
-        halt(a[1]);
+        //halt(a[1]);
+        sys_execve("/bin/menu", NULL, NULL);
+        //sys_execve("/bin/nterm", NULL, NULL);
         break;
     case SYS_yield:
         yield();
