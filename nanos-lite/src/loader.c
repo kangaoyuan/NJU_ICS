@@ -72,8 +72,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     return elf_header.e_entry;
 }
 
-void naive_uload(PCB *pcb, const char *filename) {
-    uintptr_t entry = loader(pcb, filename);
+void naive_uload(PCB *pcb, const char *file_name) {
+    uintptr_t entry = loader(pcb, file_name);
     Log("Jump to entry = %p", entry);
     ((void (*)())entry)();
     printf("Can I reach the end of naive_uload\n");
@@ -86,9 +86,11 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
     pcb->cp = kcontext(kstack, entry, arg);
 }
 
-void context_uload(PCB *pcb, void (*entry)(void *), void *arg){
+void context_uload(PCB *pcb, const char *file_name){
     Area kstack;
     kstack.start = pcb->stack;
     kstack.end = kstack.start + sizeof(pcb->stack);
-    pcb->cp = kcontext(kstack, entry, arg);
+    void *entry = (void*)loader(pcb, file_name);
+    pcb->cp = ucontext(NULL, kstack, entry);
+    pcb->cp->GPRx = (uintptr_t)heap.end;
 }
