@@ -36,9 +36,9 @@ ISA        = $(word 1,$(ARCH_SPLIT))
 PLATFORM   = $(word 2,$(ARCH_SPLIT))
 
 ## Check if there is something to build
-ifeq ($(flavor SRCS), undefined)
-  $(error Nothing to build)
-endif
+#ifeq ($(flavor SRCS), undefined)
+#  $(error Nothing to build)
+#endif
 
 ### Checks end here
 endif
