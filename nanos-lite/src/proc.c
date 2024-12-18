@@ -46,21 +46,20 @@ void hello_fun(void *arg) {
 }
 
 void init_proc() {
-    /*switch_boot_pcb();*/
-
     Log("Initializing processes...");
 
     // load program here
     /*const char file_name[] = "/bin/exectuable_file";*/
     /*naive_uload(NULL, file_name);*/
     //naive_uload(NULL, "/bin/nterm");
-    context_kload(&pcb[0], hello_fun, NULL);
+    context_kload(&pcb[0], hello_fun, (void*)1);
+    context_kload(&pcb[1], hello_fun, (void*)2);
     switch_boot_pcb();
 }
 
 Context* schedule(Context *prev) {
     current->cp = prev;
-    current = &pcb[0];
+    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
     return current->cp;
 }
