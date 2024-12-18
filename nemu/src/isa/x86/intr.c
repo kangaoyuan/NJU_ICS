@@ -24,5 +24,4 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
 }
 
 void query_intr(DecodeExecState *s) {
-  TODO();
 }

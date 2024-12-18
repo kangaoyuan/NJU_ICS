@@ -79,3 +79,9 @@ void naive_uload(PCB *pcb, const char *filename) {
     printf("Can I reach the end of naive_uload\n");
 }
 
+void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
+    Area kstack;
+    kstack.start = pcb->stack;
+    kstack.end = kstack.start + sizeof(pcb->stack);
+    pcb->cp = kcontext(kstack, entry, arg);
+}
