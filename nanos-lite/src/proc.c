@@ -52,6 +52,7 @@ void init_proc() {
     /*const char file_name[] = "/bin/exectuable_file";*/
     /*naive_uload(NULL, file_name);*/
     //naive_uload(NULL, "/bin/nterm");
+    //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
     context_kload(&pcb[1], hello_fun, (void*)2);
     switch_boot_pcb();

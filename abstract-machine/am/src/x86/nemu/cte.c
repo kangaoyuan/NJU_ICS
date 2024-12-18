@@ -67,7 +67,7 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
     return true;
 }
 
-// Create a context at the end of stack.
+// Create a context at the end of kernel stack.
 Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
     Context* kcontext = kstack.end - sizeof(Context) - 2*sizeof(uintptr_t);
     *(uintptr_t*)(kstack.end - sizeof(uintptr_t)) = (uintptr_t)arg;
