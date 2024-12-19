@@ -27,7 +27,7 @@
 
 void naive_uload(PCB *pcb, const char *filename);
 void context_kload(PCB *pcb, void (*entry)(void *), void *arg);
-void context_uload(PCB *pcb, const char* file_name);
+void context_uload(PCB *pcb, const char* file_name, char* const argv[], char* const envp[]);
 
 PCB *current = NULL;
 static PCB pcb_boot = {};
@@ -56,7 +56,9 @@ void init_proc() {
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
     //context_kload(&pcb[1], hello_fun, (void*)2);
-    context_uload(&pcb[1], "/bin/pal");
+    char * const argv[] = {"/bin/pal", "--skip", NULL};
+    char * const envp[] = {NULL};
+    context_uload(&pcb[1], "/bin/pal", argv, envp);
     switch_boot_pcb();
 }
 

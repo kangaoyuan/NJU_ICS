@@ -29,7 +29,8 @@ size_t invalid_read(void* buf[[maybe_unused]], size_t offset __attribute__((unus
     return 0;
 }
 
-size_t invalid_write(const void* buf, size_t offset, size_t len) {
+size_t invalid_write(const void* buf, size_t offset[[maybe_unused]], size_t len __attribute__((unused))) {
+    (void)buf;
     panic("should not reach here");
     return 0;
 }

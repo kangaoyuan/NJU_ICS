@@ -21,15 +21,16 @@
 # define Elf_Phdr Elf32_Phdr
 #endif
 
-int fs_open(const char *pathname, int flags, int mode);
+int    fs_open(const char *pathname, int flags, int mode);
 size_t fs_read(int fd, void *buf, size_t len);
 size_t fs_write(int fd, const void *buf, size_t len);
 size_t fs_lseek(int fd, size_t offset, int whence);
-int fs_close(int fd);
+int    fs_close(int fd);
 size_t ramdisk_read(void* buf, size_t offset, size_t len);
 
 static uintptr_t loader(PCB *pcb, const char *filename) {
     //TODO();
+    (void)pcb;
     int fd = fs_open(filename, 0, 0);
 
     // Get Ehdr.
@@ -60,7 +61,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             // for Mem, from p_vaddr to p_vaddr + p_memsz.
             //rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);
             rv = fs_read(fd, (void *)p.p_vaddr, p.p_memsz);
-            assert(rv == p.p_memsz);
+            assert((size_t)rv == p.p_memsz);
             // for ELF file, from p_offset to p_offset + p_filesz.
             memset((void*)(p.p_vaddr + p.p_filesz), 0,
                    p.p_memsz - p.p_filesz);
@@ -86,14 +87,52 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
     pcb->cp = kcontext(kstack, entry, arg);
 }
 
-void context_uload(PCB *pcb, const char *file_name){
+uint32_t create_stack(char * const *argv, char * const envp[]){
+    uint32_t argc = 0, envc = 0, size_argv = 0, size_envp = 0;
+
+    while(argv[argc]){
+        size_argv += strlen(argv[argc++]) + 1;
+    }
+
+    while(envp[envc]){
+        size_envp += strlen(envp[envc++]) + 1;
+    }
+
+    uint32_t size = size_argv + size_envp + (argc + envc + 4) * sizeof(uintptr_t);
+    size = size - size % sizeof(uintptr_t);
+    
+    void* argc_start = heap.end - size;
+    void* str_start = argc_start + (3 + argc + envc)* sizeof(uintptr_t);
+
+    memset(argc_start, 0, size);
+    *(uint32_t*)argc_start = argc;
+
+    uintptr_t* argv_start = (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t));
+    for(uint32_t i = 0; i < argc; ++i){
+        memcpy(str_start, argv[i], strlen(argv[i])); 
+        argv_start[i] = (uintptr_t)str_start;
+        str_start += strlen(argv[i]) + 1;
+    }
+    argv_start[argc] = (uintptr_t)NULL;
+
+    uintptr_t* envp_start = (uintptr_t*)((uint8_t*)argc_start + (argc + 2) * sizeof(uint32_t));
+    for(uint32_t i = 0; i < envc; ++i){
+        memcpy(str_start, envp[i], strlen(envp[i])); 
+        envp_start[i] = (uintptr_t)str_start;
+        str_start += strlen(envp[i]) + 1;
+    }
+    envp_start[envc] = (uintptr_t)NULL;
+
+    return size;
+}
+
+
+void context_uload(PCB *pcb, const char *file_name, char * const *argv, char * const envp[]){
     Area kstack;
     AddrSpace* as = &pcb->as;
     kstack.start = pcb->stack;
     kstack.end = kstack.start + sizeof(pcb->stack);
     void *entry = (void*)loader(pcb, file_name);
-    printf("before creating context\n");
     pcb->cp = ucontext(as, kstack, entry);
-    printf("after creating context\n");
-    pcb->cp->GPRx = (uintptr_t)heap.end;
+    pcb->cp->GPRx = (uintptr_t)heap.end - create_stack(argv, envp);
 }
