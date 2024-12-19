@@ -52,7 +52,7 @@ void init_proc() {
     // load program here
 
     /*const char file_name[] = "/bin/exectuable_file";*/
-    naive_uload(NULL, "/bin/menu");
+    naive_uload(NULL, "/bin/pal");
     
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
