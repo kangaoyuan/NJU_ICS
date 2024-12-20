@@ -3,7 +3,10 @@
 static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
+    printf("inside new_page, %d\n", pf);
+    printf("nr_page == %d, PGSIZE == %d\n", nr_page, PGSIZE);
     pf += nr_page * PGSIZE;
+    printf("inside new_page, %d\n", pf);
     return pf;
 }
 
