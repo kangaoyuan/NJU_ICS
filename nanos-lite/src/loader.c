@@ -90,14 +90,16 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
 void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
     uint32_t argc = 0, envc = 0, size_argv = 0, size_envp = 0;
 
-    if(!argv)
-    while(argv[argc]){
-        size_argv += strlen(argv[argc++]) + 1;
+    if(argv){
+        while (argv[argc]) {
+            size_argv += strlen(argv[argc++]) + 1;
+        }
     }
 
-    if(!envp)
-    while(envp[envc]){
-        size_envp += strlen(envp[envc++]) + 1;
+    if(envp){
+        while (envp[envc]) {
+            size_envp += strlen(envp[envc++]) + 1;
+        }
     }
 
     uint32_t size = size_argv + size_envp + (argc + envc + 4) * sizeof(uintptr_t);
