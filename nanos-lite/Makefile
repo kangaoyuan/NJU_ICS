@@ -1,6 +1,7 @@
 HAS_NAVY = 1
 RAMDISK_FILE = build/ramdisk.img
 
+# This is the config including ARCH from cmd for AM to build the image(elf) to run
 NAME = nanos-lite
 SRCS = $(shell find -L ./src/ -name "*.c" -o -name "*.cpp" -o -name "*.S")
 include $(AM_HOME)/Makefile
@@ -11,8 +12,10 @@ else
 INC_PATH += include $(NAVY_HOME)/libs/libc/include
 endif
 
+
 ./src/resources.S: $(RAMDISK_FILE)
 	@touch $@
+
 
 ifeq ($(HAS_NAVY),)
 files = $(RAMDISK_FILE) src/files.h src/syscall.h
@@ -31,4 +34,5 @@ update:
 	@ln -sf $(NAVY_HOME)/libs/libos/src/syscall.h src/syscall.h
 
 .PHONY: update
-endif
+
+endif # For HAS_NAVY var
