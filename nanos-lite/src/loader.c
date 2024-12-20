@@ -133,7 +133,7 @@ void context_uload(PCB *pcb, const char *file_name, char * const *argv, char * c
     void *entry = (void*)loader(pcb, file_name);
     pcb->cp = ucontext(as, kstack, entry);
     void* user_stack = new_page(8);
-    printf("user_stack == %x\n", user_stack);
+    printf("user_stack == %d\n", user_stack);
     pcb->cp->GPRx = (uintptr_t)user_stack - create_stack(argv, envp);
     //pcb->cp->GPRx = (uintptr_t)heap.end - create_stack(argv, envp);
 }
