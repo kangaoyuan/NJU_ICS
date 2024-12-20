@@ -20,7 +20,7 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
     yield();
     #endif
     const char* p = (const char*)buf;
-    for (int i = 0; i < len; ++i, ++p)
+    for (uint32_t i = 0; i < len; ++i, ++p)
         putch(*p);
     return len;
 }
@@ -74,7 +74,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
     return len;
 }
 
-int sys_gettimeofday(struct timeval* tv, struct timezone* tz){
+int sys_gettimeofday(struct timeval* tv, struct timezone* tz[[maybe_unused]]){
     uint64_t us = io_read(AM_TIMER_UPTIME).us;
     assert(tv);
     tv->tv_sec = us / 1000000;
@@ -83,7 +83,8 @@ int sys_gettimeofday(struct timeval* tv, struct timezone* tz){
     return 0;
 }
 
-void init_device() {
-  Log("Initializing devices...");
-  ioe_init();
+void init_device()
+{
+    Log("Initializing devices...");
+    ioe_init();
 }
