@@ -126,13 +126,13 @@ uint32_t create_stack(char * const *argv, char * const envp[]){
     return size;
 }
 
-
 void context_uload(PCB *pcb, const char *file_name, char * const *argv, char * const envp[]){
-    Area kstack;
     AddrSpace* as = &pcb->as;
-    kstack.start = pcb->stack;
-    kstack.end = kstack.start + sizeof(pcb->stack);
+    Area kstack = {.start = pcb->stack,
+                   .end = pcb->stack + sizeof(pcb->stack)};
     void *entry = (void*)loader(pcb, file_name);
     pcb->cp = ucontext(as, kstack, entry);
-    pcb->cp->GPRx = (uintptr_t)heap.end - create_stack(argv, envp);
+    void* user_stack = new_page(8);
+    pcb->cp->GPRx = (uintptr_t)user_stack - create_stack(argv, envp);
+    //pcb->cp->GPRx = (uintptr_t)heap.end - create_stack(argv, envp);
 }

@@ -37,13 +37,15 @@ void switch_boot_pcb() {
     current = &pcb_boot;
 }
 
-void hello_fun(void *arg) {
-  int j = 1;
-  while (1) {
-    Log("Hello World from Nanos-lite with arg '%p' for the %dth time!", (uintptr_t)arg, j);
-    j++;
-    yield();
-  }
+void hello_fun(void* arg)
+{
+    int j = 1;
+    while (1) {
+        Log("Hello World from Nanos-lite with arg '%p' for the %dth time!",
+            (uintptr_t)arg, j);
+        j++;
+        yield();
+    }
 }
 
 void init_proc() {
@@ -52,14 +54,20 @@ void init_proc() {
     // load program here
 
     /*const char file_name[] = "/bin/exectuable_file";*/
-    naive_uload(NULL, "/bin/pal");
+    // Attention here, if you do 4.1, below code maybe invalid.
+    //naive_uload(NULL, "/bin/pal");
     
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
     //context_kload(&pcb[1], hello_fun, (void*)2);
-    char * const argv[] = {"/bin/pal", "--skip", NULL};
-    char * const envp[] = {NULL};
-    context_uload(&pcb[1], "/bin/pal", argv, envp);
+    /*
+     *char * const argv[] = {"/bin/pal", "--skip", NULL};
+     *char * const envp[] = {NULL};
+     */
+    char * const argv[] = {"/bin/exec-test", NULL};
+    char * const empty[] = {NULL};
+    //context_uload(&pcb[1], "/bin/pal", argv, envp);
+    context_uload(&pcb[1], "/bin/exec-test", argv, empty);
     switch_boot_pcb();
 }
 
