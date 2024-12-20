@@ -64,10 +64,10 @@ void init_proc() {
      *char * const argv[] = {"/bin/pal", "--skip", NULL};
      *char * const envp[] = {NULL};
      */
-    char * const argv[] = {"/bin/exec-test", NULL};
+    char * const argv[] = {"/bin/menu", NULL};
     char * const empty[] = {NULL};
     //context_uload(&pcb[1], "/bin/pal", argv, envp);
-    context_uload(&pcb[1], "/bin/exec-test", argv, empty);
+    context_uload(&pcb[1], "/bin/menu", argv, empty);
     switch_boot_pcb();
 }
 

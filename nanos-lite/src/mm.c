@@ -3,10 +3,7 @@
 static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
-    printf("inside new_page, %x\n", pf);
-    printf("nr_page == %d, PGSIZE == %x\n", nr_page, PGSIZE);
     pf += nr_page * PGSIZE;
-    printf("inside new_page, %x\n", pf);
     return pf;
 }
 
@@ -17,11 +14,12 @@ static void* pg_alloc(int n) {
 #endif
 
 void free_page(void *p) {
+    (void)p;
   panic("not implement yet");
 }
 
 /* The brk() system call handler. */
-int mm_brk(uintptr_t brk) {
+int mm_brk(uintptr_t brk __attribute__((unused))) {
   return 0;
 }
 

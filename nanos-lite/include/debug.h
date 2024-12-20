@@ -1,7 +1,9 @@
 #ifndef __DEBUG_H__
 #define __DEBUG_H__
 
-#include <common.h>
+#include <am.h>
+#include <klib.h>
+#include <klib-macros.h>
 
 #define Log(format, ...) \
   printf("\33[1;35m[%s,%d,%s] " format "\33[0m\n", \
