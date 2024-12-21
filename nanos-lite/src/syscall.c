@@ -59,15 +59,24 @@ void do_syscall(Context* c) {
          break;
     case SYS_execve:
          // no rv for execve
-         sys_execve((const char*)a[1], (char** const)a[2], (char** const)a[3]);
+         sys_execve((const char*)a[1], (char* const*)a[2], (char* const*)a[3]);
          break;
     default:
         panic("Unhandled syscall ID = %d", a[0]);
     }
 }
 
-int sys_execve(const char* file_name,char * const argv[],char* const envp[]){
+int sys_execve(const char* file_name,char* const argv[],char* const envp[]){
+    printf("Inside SYS_execve, argv == %x, envp == %x\n", argv, envp);
     //naive_uload(NULL, file_name);
+    printf("file_name == %s\n", file_name);
+    for(int i = 0; argv[i]; i++){
+        printf("argv[%d] == %s\n", i, argv[i]);
+    }
+    for(int i = 0; envp[i]; i++){
+        printf("envp[%d] == %s\n", i, envp[i]);
+    }
+    printf("Inside SYS_execve, Here we can access envp\n");
     context_uload(current, file_name, argv, envp);
     switch_boot_pcb();
     yield();

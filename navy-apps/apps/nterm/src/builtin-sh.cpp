@@ -23,7 +23,9 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char* cmd) {
-    static char exec[128] = {0};
+    printf("builtin_sh, sh_handle_cmd, cmd == %s\n", cmd);
+    //static char exec[128] = {0};
+    char* exec = (char*)malloc(128);
 
     if(!cmd)
         return;
@@ -31,6 +33,7 @@ static void sh_handle_cmd(const char* cmd) {
     if(!strncmp(cmd, "echo", 4)){
         sh_printf("%s", cmd+5);
     } else {
+        memset(exec, 0, 128);
         strcpy(exec, cmd);
         exec[strlen(exec)-1] = '\0';
 
@@ -40,7 +43,13 @@ static void sh_handle_cmd(const char* cmd) {
             argv[argc++] = token;
             token = strtok(NULL, " ");
         }
+
         argv[argc] = NULL;
+        for(int i = 0; i < argc; ++i){
+            printf("argv[%d] == %s\n", i, argv[i]); 
+        }
+
+        setenv("PATH", "/bin:/usr/bin", 0);
         execvp(argv[0], argv);
     }
 }
@@ -49,7 +58,6 @@ void builtin_sh_run() {
     sh_banner();
     sh_prompt();
 
-    setenv("PATH", "/bin:/usr/bin", 0);
     while (1) {
         SDL_Event ev;
         if (SDL_PollEvent(&ev)) {

@@ -3,6 +3,8 @@
 static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
+    printf("inside the new_page, pf == %x\n", pf);
+    printf("inside the new_page, heap.start == %x\n", heap.start);
     pf += nr_page * PGSIZE;
     return pf;
 }
