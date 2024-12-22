@@ -165,5 +165,5 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
      *pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
      */
 
-    pcb->cp->GPRx = (uintptr_t)heap.end;
+     pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);
 }

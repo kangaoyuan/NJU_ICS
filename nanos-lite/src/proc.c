@@ -59,14 +59,13 @@ void init_proc() {
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
     //context_kload(&pcb[1], hello_fun, (void*)2);
-    /*
-     *char * const argv[] = {"/bin/pal", "--skip", NULL};
-     *char * const envp[] = {NULL};
-     */
+    char * const argv[] = {"/bin/pal", "--skip", NULL};
+    char * const envp[] = {NULL};
     //char * const argv[] = {"/bin/menu", NULL};
     //char * const argv[] = {"/bin/nterm", NULL};
     //char * const empty[] = {NULL};
-    context_uload(&pcb[1], "/bin/pal", NULL, NULL);
+    //context_uload(&pcb[1], "/bin/pal", NULL, NULL);
+    context_uload(&pcb[1], "/bin/pal", argv, envp);
     //context_uload(&pcb[1], "/bin/menu", argv, empty);
     //context_uload(&pcb[1], "/bin/nterm", argv, empty);
     switch_boot_pcb();
