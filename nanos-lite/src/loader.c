@@ -124,8 +124,9 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
     for(uint32_t i = 0; i < argc; ++i){
         argv_start[i] = (uintptr_t)str_start;
         memcpy(str_start, argv[i], strlen(argv[i])); 
+        printf("Creat stack, str_start == %s\n", str_start);
         printf("Creat stack, argv + %d  == %p\n", i, argv_start + i);
-        printf("Creat stack, argv[%d]  == %x\n", argv_start[i]);
+        printf("Creat stack, argv[%d]  == %x\n", i, argv_start[i]);
         str_start += strlen(argv[i]) + 1;
     }
     argv_start[argc] = (uintptr_t)NULL;
@@ -139,7 +140,7 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         envp_start[i] = (uintptr_t)str_start;
         memcpy(str_start, envp[i], strlen(envp[i])); 
         printf("Creat stack, envp + %d == %p\n", i, envp_start + i);
-        printf("Creat stack, envp[%d]  == %x, %s\n", i, envp_start[i], envp_start[i]);
+        printf("Creat stack, envp[%d]  == %x\n", i, envp_start[i]);
         str_start += strlen(envp[i]) + 1;
     }
     envp_start[envc] = (uintptr_t)NULL;
