@@ -173,6 +173,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     void* stack_ptr = create_stack(user_stack, argv, envp);
 
     void *entry = (void*)loader(pcb, file_name);
+    printf("Inside context_uload to loader, entry == %p\n", entry);
     pcb->cp = ucontext(as, kstack, entry);
     pcb->cp->GPRx = (uintptr_t)stack_ptr;
 
