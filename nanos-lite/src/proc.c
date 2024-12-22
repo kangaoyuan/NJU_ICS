@@ -57,9 +57,9 @@ void init_proc() {
     // Attention here, if you do 4.1, below code maybe invalid.
     //naive_uload(NULL, "/bin/pal");
     
-    context_kload(&pcb[0], hello_fun, NULL);
-    //context_kload(&pcb[0], hello_fun, (void*)1);
-    //context_kload(&pcb[1], hello_fun, (void*)2);
+    //context_kload(&pcb[0], hello_fun, NULL);
+    context_kload(&pcb[0], hello_fun, (void*)1);
+    context_kload(&pcb[1], hello_fun, (void*)2);
     /*
      *char * const argv[] = {"/bin/pal", "--skip", NULL};
      *char * const envp[] = {NULL};
@@ -75,8 +75,8 @@ void init_proc() {
 
 Context* schedule(Context *prev) {
     current->cp = prev;
-    current = &pcb[0];
-    //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+    //current = &pcb[0];
+    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
     return current->cp;
 }
