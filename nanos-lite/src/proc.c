@@ -66,14 +66,14 @@ void init_proc() {
      *context_uload(&pcb[1], "/bin/pal", argv, envp);
      */
 
-    //char * const argv[] = {"/bin/menu", NULL};
+    char * const argv[] = {"/bin/menu", NULL};
     //char * const argv[] = {"/bin/nterm", NULL};
-    char * const argv[] = {"/bin/exec-test", NULL};
+    //char * const argv[] = {"/bin/exec-test", NULL};
     char * const empty[] = {NULL};
     //context_uload(&pcb[1], "/bin/pal", NULL, NULL);
-    //context_uload(&pcb[1], "/bin/menu", argv, empty);
+    context_uload(&pcb[1], "/bin/menu", argv, empty);
     //context_uload(&pcb[1], "/bin/nterm", argv, empty);
-    context_uload(&pcb[1], "/bin/exec-test", argv, empty);
+    //context_uload(&pcb[1], "/bin/exec-test", argv, empty);
     switch_boot_pcb();
 }
 
