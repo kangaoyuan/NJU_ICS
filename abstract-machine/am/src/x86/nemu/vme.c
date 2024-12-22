@@ -68,7 +68,8 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 // The kstack is the same as the kernel thread to allocate Context.
 Context* ucontext(AddrSpace *as, Area kstack, void *entry) {
     (void)as;
-    Context* ucontext = kstack.end - sizeof(Context);
+    Context* ucontext = (Context*)kstack.end - 1;
+    //Context* ucontext = kstack.end - sizeof(Context);
     *ucontext = (Context){.cr3 = NULL,
                  .eip = (uintptr_t)entry,
                  .cs  = 0x8,

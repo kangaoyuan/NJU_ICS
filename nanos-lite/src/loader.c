@@ -105,11 +105,11 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         }
     }
 
-    uint32_t size = size_argv + size_envp + (argc + envc + 4) * sizeof(uintptr_t);
+    uint32_t size = sizeof(uint32_t) + (argc + envc + 3) * sizeof(uintptr_t) + size_argv + size_envp;
     size = size - size % sizeof(uintptr_t);
     
     void* argc_start = stack_top - size;
-    void* str_start = argc_start + (3 + argc + envc)* sizeof(uintptr_t);
+    void* str_start = argc_start + (3 + argc + envc) * sizeof(uintptr_t);
 
 
     memset(argc_start, 0, size);
@@ -136,12 +136,16 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
 
 static char* const* argv_;
 static char* const* envp_;
-void show_param(){
-    for(int i = 0; argv_[i]; i++){
-        printf("argv[%d] == %s\n", i, argv_[i]);
+void show_param() {
+    if (argv_) {
+        for (int i = 0; argv_[i]; i++) {
+            printf("argv[%d] == %s\n", i, argv_[i]);
+        }
     }
-    for(int i = 0; envp_[i]; i++){
-        printf("envp[%d] == %s\n", i, envp_[i]);
+    if (envp_) {
+        for (int i = 0; envp_[i]; i++) {
+            printf("envp[%d] == %s\n", i, envp_[i]);
+        }
     }
 }
 void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
@@ -152,13 +156,14 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     Area kstack = {.start = pcb->stack,
                    .end = pcb->stack + sizeof(pcb->stack)};
 
-    show_param();
     void *entry = (void*)loader(pcb, file_name);
     pcb->cp = ucontext(as, kstack, entry);
 
-    void* user_stack = new_page(8);
-    printf("user_stack == %x\n", user_stack);
-    pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
+    /*
+     *void* user_stack = new_page(8);
+     *printf("user_stack == %x\n", user_stack);
+     *pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
+     */
 
-    //pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);
+    pcb->cp->GPRx = (uintptr_t)heap.end;
 }
