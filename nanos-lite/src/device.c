@@ -83,8 +83,7 @@ int sys_gettimeofday(struct timeval* tv, struct timezone* tz[[maybe_unused]]){
     return 0;
 }
 
-void init_device()
-{
+void init_device(){
     Log("Initializing devices...");
     ioe_init();
 }
