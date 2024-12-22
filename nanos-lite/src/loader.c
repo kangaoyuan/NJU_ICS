@@ -70,7 +70,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 #endif
         }
     }
-    show_param();
+    //show_param();
 
     fs_close(fd);
     return elf_header.e_entry;
