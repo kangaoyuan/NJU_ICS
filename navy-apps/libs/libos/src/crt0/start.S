@@ -5,6 +5,7 @@ _start:
 
   movq $0, %rbp
   movq %rax, %rsp
+  // movq %rax, %rsp for the user stack.
   // (rsp + 8) should be multiple of 16 when
   // control is transfered to the function entry point.
   // See amd64 ABI manual for more details
@@ -24,6 +25,8 @@ _start:
   movl $0, %ebp
   movl %eax, %esp
   push %eax
+  //movl %eax, %esp
+  //push %eax
   call call_main
 
 #elif defined(__ISA_MIPS32__)
