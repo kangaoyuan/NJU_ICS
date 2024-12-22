@@ -18,13 +18,12 @@ endif
 
 
 ifeq ($(HAS_NAVY),)
-files = $(RAMDISK_FILE) src/files.h src/syscall.h
-# create an empty file if it does not exist
-$(foreach f,$(files),$(if $(wildcard $f),, $(shell touch $f)))
+	files = $(RAMDISK_FILE) src/files.h src/syscall.h
+	# create an empty file if it does not exist
+	$(foreach f,$(files),$(if $(wildcard $f),, $(shell touch $f)))
 else
-
 ifeq ($(wildcard $(NAVY_HOME)/libs/libos/src/syscall.h),)
-  $(error $$NAVY_HOME must be a Navy-apps repo)
+  	$(error $$NAVY_HOME must be a Navy-apps repo)
 endif
 
 update:
@@ -34,5 +33,4 @@ update:
 	@ln -sf $(NAVY_HOME)/libs/libos/src/syscall.h src/syscall.h
 
 .PHONY: update
-
 endif # For HAS_NAVY var

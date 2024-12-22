@@ -58,7 +58,6 @@ void do_syscall(Context* c) {
          c->GPRx = sys_gettimeofday((struct timeval *)a[1],(struct timezone *)a[2]);
          break;
     case SYS_execve:
-         // no rv for execve
          sys_execve((const char*)a[1], (char* const*)a[2], (char* const*)a[3]);
          break;
     default:
@@ -67,8 +66,8 @@ void do_syscall(Context* c) {
 }
 
 int sys_execve(const char* file_name,char* const argv[],char* const envp[]){
-    printf("Inside SYS_execve, argv == %x, envp == %x\n", argv, envp);
     //naive_uload(NULL, file_name);
+    printf("Inside SYS_execve, argv == %x, envp == %x\n", argv, envp);
     printf("file_name == %s\n", file_name);
     for(int i = 0; argv[i]; i++){
         printf("argv[%d] == %s\n", i, argv[i]);

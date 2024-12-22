@@ -57,25 +57,26 @@ void init_proc() {
     // Attention here, if you do 4.1, below code maybe invalid.
     //naive_uload(NULL, "/bin/pal");
     
-    //context_kload(&pcb[0], hello_fun, NULL);
-    context_kload(&pcb[0], hello_fun, (void*)1);
+    context_kload(&pcb[0], hello_fun, NULL);
+    //context_kload(&pcb[0], hello_fun, (void*)1);
     //context_kload(&pcb[1], hello_fun, (void*)2);
     /*
      *char * const argv[] = {"/bin/pal", "--skip", NULL};
      *char * const envp[] = {NULL};
      */
     //char * const argv[] = {"/bin/menu", NULL};
-    char * const argv[] = {"/bin/nterm", NULL};
-    char * const empty[] = {NULL};
+    //char * const argv[] = {"/bin/nterm", NULL};
+    //char * const empty[] = {NULL};
     //context_uload(&pcb[1], "/bin/pal", argv, envp);
     //context_uload(&pcb[1], "/bin/menu", argv, empty);
-    context_uload(&pcb[1], "/bin/nterm", argv, empty);
+    //context_uload(&pcb[1], "/bin/nterm", argv, empty);
     switch_boot_pcb();
 }
 
 Context* schedule(Context *prev) {
     current->cp = prev;
-    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+    current = &pcb[0];
+    //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
     return current->cp;
 }

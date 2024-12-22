@@ -1,3 +1,4 @@
+# .data section including ramdisk content and symbols.
 .section .data
 .global ramdisk_start, ramdisk_end
 ramdisk_start:

@@ -23,7 +23,6 @@ static void sh_prompt() {
 }
 
 static void sh_handle_cmd(const char* cmd) {
-    printf("builtin_sh, sh_handle_cmd, cmd == %s\n", cmd);
     //static char exec[128] = {0};
     char* exec = (char*)malloc(128);
 
@@ -45,9 +44,6 @@ static void sh_handle_cmd(const char* cmd) {
         }
 
         argv[argc] = NULL;
-        for(int i = 0; i < argc; ++i){
-            printf("argv[%d] == %s\n", i, argv[i]); 
-        }
 
         setenv("PATH", "/bin:/usr/bin", 0);
         execvp(argv[0], argv);

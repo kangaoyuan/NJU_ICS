@@ -28,6 +28,7 @@ size_t fs_lseek(int fd, size_t offset, int whence);
 int    fs_close(int fd);
 size_t ramdisk_read(void* buf, size_t offset, size_t len);
 
+void show_param();
 static uintptr_t loader(PCB *pcb, const char *filename) {
     //TODO();
     (void)pcb;
@@ -54,6 +55,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
     for (int i = 0; i < elf_header.e_phnum; i++) {
         Elf_Phdr p = pro_header[i];
+
         if (p.p_type == PT_LOAD) {
             fs_lseek(fd, p.p_offset, 0);
 #ifdef HAV_VME
@@ -68,6 +70,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 #endif
         }
     }
+    show_param();
 
     fs_close(fd);
     return elf_header.e_entry;
@@ -77,7 +80,6 @@ void naive_uload(PCB *pcb, const char *file_name) {
     uintptr_t entry = loader(pcb, file_name);
     Log("Jump to entry = %p", entry);
     ((void (*)())entry)();
-    printf("Can I reach the end of naive_uload\n");
 }
 
 void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
@@ -89,7 +91,6 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
 
 void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
     uint32_t argc = 0, envc = 0, size_argv = 0, size_envp = 0;
-    printf("Inside create_stack, stack_top == %x, argv == %x, envp == %x\n", stack_top, argv, envp);
 
     if(argv){
         while (argv[argc]) {
@@ -97,10 +98,6 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         }
     }
     
-    printf("before envp, it seems can't read envp\n");
-    for(int i = 0; envp[i]; ++i){
-         printf("Inside create_stack, envp[i] == %s", envp[i]);
-    }
 
     if(envp){
         while (envp[envc]) {
@@ -114,11 +111,9 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
     void* argc_start = stack_top - size;
     void* str_start = argc_start + (3 + argc + envc)* sizeof(uintptr_t);
 
-    printf("Inside create_stack, firstly count size\n");
 
     memset(argc_start, 0, size);
     *(uint32_t*)argc_start = argc;
-    printf("Inside create_stack, writing the argc\n");
 
     uintptr_t* argv_start = (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t));
     for(uint32_t i = 0; i < argc; ++i){
@@ -127,7 +122,6 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         str_start += strlen(argv[i]) + 1;
     }
     argv_start[argc] = (uintptr_t)NULL;
-    printf("Inside create_stack, writing the argv\n");
 
     uintptr_t* envp_start = (uintptr_t*)((uint8_t*)argc_start + (argc + 2) * sizeof(uint32_t));
     for(uint32_t i = 0; i < envc; ++i){
@@ -136,48 +130,35 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         str_start += strlen(envp[i]) + 1;
     }
     envp_start[envc] = (uintptr_t)NULL;
-    printf("Inside create_stack, writing the envp\n");
 
     return argc_start;
 }
 
+static char* const* argv_;
+static char* const* envp_;
+void show_param(){
+    for(int i = 0; argv_[i]; i++){
+        printf("argv[%d] == %s\n", i, argv_[i]);
+    }
+    for(int i = 0; envp_[i]; i++){
+        printf("envp[%d] == %s\n", i, envp_[i]);
+    }
+}
 void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
+    argv_ = argv, envp_ = envp;
+    printf("Inside context_uload, argv == %x, envp == %x\n", argv, envp);
+
     AddrSpace* as = &pcb->as;
     Area kstack = {.start = pcb->stack,
                    .end = pcb->stack + sizeof(pcb->stack)};
-    printf("Inside context_uload, argv == %x, envp == %x\n", argv, envp);
-    for(int i = 0; argv[i]; i++){
-        printf("argv[%d] == %s\n", i, argv[i]);
-    }
-    for(int i = 0; envp[i]; i++){
-        printf("envp[%d] == %s\n", i, envp[i]);
-    }
+
+    show_param();
     void *entry = (void*)loader(pcb, file_name);
-    printf("Inside context_uload, argv == %x, envp == %x\n", argv, envp);
-    for(int i = 0; argv[i]; i++){
-        printf("argv[%d] == %s\n", i, argv[i]);
-    }
-    for(int i = 0; envp[i]; i++){
-        printf("envp[%d] == %s\n", i, envp[i]);
-    }
     pcb->cp = ucontext(as, kstack, entry);
-    printf("Inside context_uload, argv == %x, envp == %x\n", argv, envp);
-    for(int i = 0; argv[i]; i++){
-        printf("argv[%d] == %s\n", i, argv[i]);
-    }
-    for(int i = 0; envp[i]; i++){
-        printf("envp[%d] == %s\n", i, envp[i]);
-    }
+
     void* user_stack = new_page(8);
-    printf("Inside context_uload, argv == %x, envp == %x\n", argv, envp);
-    for(int i = 0; argv[i]; i++){
-        printf("argv[%d] == %s\n", i, argv[i]);
-    }
-    for(int i = 0; envp[i]; i++){
-        printf("envp[%d] == %s\n", i, envp[i]);
-    }
     printf("user_stack == %x\n", user_stack);
     pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
-    printf("end of context_uload\n");
+
     //pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);
 }
