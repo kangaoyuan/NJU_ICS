@@ -105,31 +105,46 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         }
     }
 
-    uint32_t size = sizeof(uint32_t) + (argc + envc + 3) * sizeof(uintptr_t) + size_argv + size_envp;
-    size = size - size % sizeof(uintptr_t);
+    uint32_t size = sizeof(uint32_t) + (argc + envc + 4) * sizeof(uintptr_t) + size_argv + size_envp;
+    size = size - size % (2 * sizeof(uintptr_t));
     
     void* argc_start = stack_top - size;
-    void* str_start = argc_start + (3 + argc + envc) * sizeof(uintptr_t);
+    void* str_start = argc_start +  sizeof(uint32_t) + (argc + envc + 2) * sizeof(uintptr_t);
+    printf("Creat stack, argc_start == %x\n", argc_start);
+    printf("Creat stack, str_start == %x\n", str_start);
 
 
     memset(argc_start, 0, size);
     *(uint32_t*)argc_start = argc;
+    printf("Creat stack, argc_start == %x, %d\n", argc_start, *(uint32_t*)argc_start);
 
     uintptr_t* argv_start = (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t));
+    printf("Creat stack, argv_start  == %p\n", argv_start);
+    printf("Creat stack, argv_start + 1  == %p\n", argv_start + 1);
     for(uint32_t i = 0; i < argc; ++i){
-        memcpy(str_start, argv[i], strlen(argv[i])); 
         argv_start[i] = (uintptr_t)str_start;
+        memcpy(str_start, argv[i], strlen(argv[i])); 
+        printf("Creat stack, argv + %d  == %p\n", i, argv_start + i);
+        printf("Creat stack, argv[%d]  == %x, %s\n", argv_start[i], argv_start[i]);
         str_start += strlen(argv[i]) + 1;
     }
     argv_start[argc] = (uintptr_t)NULL;
+    printf("Creat stack, argv_start + argc  == %p\n", argv_start + argc);
+    printf("Creat stack, argv[%d]  == %x, %s\n", argv_start[argc], argv_start[argc]);
 
-    uintptr_t* envp_start = (uintptr_t*)((uint8_t*)argc_start + (argc + 2) * sizeof(uint32_t));
+    uintptr_t* envp_start = (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t) + (argc+1) * sizeof(uintptr_t));
+    printf("Creat stack, envp_start  == %p\n", envp_start);
+    printf("Creat stack, envp_start + 1  == %p\n", envp_start + 1);
     for(uint32_t i = 0; i < envc; ++i){
-        memcpy(str_start, envp[i], strlen(envp[i])); 
         envp_start[i] = (uintptr_t)str_start;
+        memcpy(str_start, envp[i], strlen(envp[i])); 
+        printf("Creat stack, envp + %d == %p\n", i, envp_start + i);
+        printf("Creat stack, envp[%d]  == %x, %s\n", i, envp_start[i], envp_start[i]);
         str_start += strlen(envp[i]) + 1;
     }
     envp_start[envc] = (uintptr_t)NULL;
+    printf("Creat stack, envp_start + envc  == %p\n", envp_start + envc);
+    printf("Creat stack, envp[%d]  == %x, %s\n", envp_start[envc], envp_start[envc]);
 
     return argc_start;
 }
