@@ -125,6 +125,7 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
         argv_start[i] = (uintptr_t)str_start;
         memcpy(str_start, argv[i], strlen(argv[i])); 
         printf("Creat stack, str_start == %s\n", str_start);
+        printf("Creat stack, str_start == %s\n", argv_start[i]);
         printf("Creat stack, argv + %d  == %p\n", i, argv_start + i);
         printf("Creat stack, argv[%d]  == %x\n", i, argv_start[i]);
         str_start += strlen(argv[i]) + 1;
