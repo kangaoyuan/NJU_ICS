@@ -151,6 +151,18 @@ void show_param() {
 void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
     argv_ = argv, envp_ = envp;
     printf("Inside context_uload, argv == %x, envp == %x\n", argv, envp);
+    printf("file_name == %s\n", file_name);
+    if (argv) {
+        for (int i = 0; argv[i]; i++) {
+            printf("argv[%d] == %s\n", i, argv[i]);
+        }
+    }
+    if (envp) {
+        for (int i = 0; envp[i]; i++) {
+            printf("envp[%d] == %s\n", i, envp[i]);
+        }
+    }
+    printf("Inside context_uload, Here we can access envp\n");
 
     AddrSpace* as = &pcb->as;
     Area kstack = {.start = pcb->stack,
@@ -159,11 +171,9 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     void *entry = (void*)loader(pcb, file_name);
     pcb->cp = ucontext(as, kstack, entry);
 
-    /*
-     *void* user_stack = new_page(8);
-     *printf("user_stack == %x\n", user_stack);
-     *pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
-     */
+    void* user_stack = new_page(8);
+    printf("user_stack == %x\n", user_stack);
+    pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
 
-     pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);
+     //pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);
 }

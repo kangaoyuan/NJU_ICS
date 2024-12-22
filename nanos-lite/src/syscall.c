@@ -69,15 +69,15 @@ int sys_execve(const char* file_name,char* const argv[],char* const envp[]){
     //naive_uload(NULL, file_name);
     printf("Inside SYS_execve, argv == %x, envp == %x\n", argv, envp);
     printf("file_name == %s\n", file_name);
-    if(argv){
-    for(int i = 0; argv[i]; i++){
-        printf("argv[%d] == %s\n", i, argv[i]);
+    if (argv) {
+        for (int i = 0; argv[i]; i++) {
+            printf("argv[%d] == %s\n", i, argv[i]);
+        }
     }
-    }
-    if(envp){
-    for(int i = 0; envp[i]; i++){
-        printf("envp[%d] == %s\n", i, envp[i]);
-    }
+    if (envp) {
+        for (int i = 0; envp[i]; i++) {
+            printf("envp[%d] == %s\n", i, envp[i]);
+        }
     }
     printf("Inside SYS_execve, Here we can access envp\n");
     context_uload(current, file_name, argv, envp);
