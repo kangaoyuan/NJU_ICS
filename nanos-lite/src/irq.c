@@ -9,7 +9,7 @@ static Context* do_event(Event e, Context* c) {
         do_syscall(c);
         break;
     case EVENT_YIELD:
-        printf("In nanos, Goal Yield\n");
+        //printf("In nanos, Goal Yield\n");
         c = schedule(c);
         break;
     case EVENT_IRQ_TIMER:

@@ -1,7 +1,7 @@
-#include <sys/time.h>
 #include <proc.h>
 #include <common.h>
 #include "syscall.h"
+#include <sys/time.h>
 
 int    fs_open(const char *pathname, int flags, int mode);
 size_t fs_read(int fd, void *buf, size_t len);
@@ -42,7 +42,7 @@ void do_syscall(Context* c) {
         c->GPRx = 0;
         break;
     case SYS_open:
-        // The same argument meaning to the previous fs_ function. 
+        // The same argument meaning to fs_ function. 
         c->GPRx = fs_open((void*)a[1], a[2], a[3]);
         break;
     case SYS_read:
@@ -55,11 +55,11 @@ void do_syscall(Context* c) {
         c->GPRx = fs_close(a[1]);
         break;
     case SYS_gettimeofday:
-         c->GPRx = sys_gettimeofday((struct timeval *)a[1],(struct timezone *)a[2]);
-         break;
+        c->GPRx = sys_gettimeofday((struct timeval *)a[1],(struct timezone *)a[2]);
+        break;
     case SYS_execve:
-         sys_execve((const char*)a[1], (char* const*)a[2], (char* const*)a[3]);
-         break;
+        sys_execve((const char*)a[1], (char* const*)a[2], (char* const*)a[3]);
+        break;
     default:
         panic("Unhandled syscall ID = %d", a[0]);
     }
@@ -67,19 +67,6 @@ void do_syscall(Context* c) {
 
 int sys_execve(const char* file_name,char* const argv[],char* const envp[]){
     //naive_uload(NULL, file_name);
-    printf("Inside SYS_execve, argv == %x, envp == %x\n", argv, envp);
-    printf("file_name == %s\n", file_name);
-    if (argv) {
-        for (int i = 0; argv[i]; i++) {
-            printf("argv[%d] == %s\n", i, argv[i]);
-        }
-    }
-    if (envp) {
-        for (int i = 0; envp[i]; i++) {
-            printf("envp[%d] == %s\n", i, envp[i]);
-        }
-    }
-    printf("Inside SYS_execve, Here we can access envp\n");
     context_uload(current, file_name, argv, envp);
     switch_boot_pcb();
     yield();

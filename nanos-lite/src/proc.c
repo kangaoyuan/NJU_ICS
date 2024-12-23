@@ -77,10 +77,19 @@ void init_proc() {
     switch_boot_pcb();
 }
 
+static int sche_cnt = 0;
 Context* schedule(Context *prev) {
     current->cp = prev;
     //current = &pcb[0];
-    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+    //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+    
+    if(sche_cnt % 0x8964 == 0){
+        sche_cnt = 1;
+        current = &pcb[0]; 
+    } else {
+        sche_cnt++;
+        current = &pcb[1]; 
+    }
 
     return current->cp;
 }

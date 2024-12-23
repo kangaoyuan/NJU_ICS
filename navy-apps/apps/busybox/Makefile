@@ -19,6 +19,7 @@ LDFLAGS := $(addprefix -Wl$(comma), $(LDFLAGS))
 export LDFLAGS
 export LINKAGE
 endif
+CFLAGS += -Wno-implicit-function-declaration -Wno-int-conversion
 
 export CFLAGS
 export CROSS_COMPILE
