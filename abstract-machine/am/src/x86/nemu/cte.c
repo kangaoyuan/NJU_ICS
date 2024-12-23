@@ -80,7 +80,7 @@ Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
 
 void yield() {
     // EVENT_YIELD
-    printf("In AM, Got yield\n");
+    //printf("In AM, Got yield\n");
     asm volatile("int $0x81");
 }
 
