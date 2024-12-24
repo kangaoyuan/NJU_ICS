@@ -2,106 +2,132 @@
 #include <memory/vaddr.h>
 #include <memory/paddr.h>
 
-#define CR0_PG         0x80000000
+#define PT_P 0x1
 
-paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len) {
-    uint32_t off_page = vaddr & 0xfff;
-    uint32_t off_dir = (uint32_t)vaddr >> 22;
-    uint32_t off_pte = ((uint32_t)vaddr & 0x003ff000) >> 12;
-
-    paddr_t dir = cpu.CR3;
-    paddr_t pte = paddr_read(dir + off_dir * 4, 4);
-    if ((pte & 1) == 0) {
-        printf("1 error: %08x\n", pte);
-        return MEM_RET_FAIL;
-    } else {
-        paddr_t pagebase = paddr_read((pte & 0xfffff000) + off_pte * 4, 4);
-
-        if ((pagebase & 1) == 0)
-            return MEM_RET_FAIL;
-        else
-            return ((pagebase & 0xfffff000) + off_page);
-    }
-
-    return MEM_RET_FAIL;
-}
-
-/*
- *int isa_vaddr_check(vaddr_t vaddr, int type, int len){
- *   int vm_open = ((cpu.cr0 & CR0_PG)!=0);
- *  if (vm_open) {
- *    return MEM_RET_NEED_TRANSLATE;
- *  }
- *else{
- *  return MEM_RET_OK;
- *}
- *}
- */
-
-
-
-word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type) {
-  paddr_t paddr = isa_mmu_translate(vaddr,type,len);
-  if(paddr == MEM_RET_FAIL){
-    printf("vaddr mmu read %x :fail\n",vaddr);
-   // printf("cr0 :%x  cr3: %x\n",cpu.cr0,cpu.cr3);
-    assert(0);
-  }
-  else{
-    paddr_t limit = ((vaddr /PAGE_SIZE)+1)*PAGE_SIZE;
-    if(vaddr+ len > limit){
-      //printf("vaddr mmu read %x :cross_page\n",vaddr);
-      word_t res1 = 0;
-      word_t res2 = 0;
-      int len_in = limit - vaddr;
-      int len_over = vaddr+ len - limit;
-      uint32_t paddr_in = isa_mmu_translate(vaddr,MEM_TYPE_READ,len_in);
-      res1 = paddr_read(paddr_in,len_in);
-        /*
-         *for(int i = 0; i < len_in; ++i){
-         *    res1 = (res1 << 8) + paddr_read(paddr_in, 1);
-         *}
-         */
-      uint32_t paddr_over = isa_mmu_translate(vaddr+len_in,MEM_TYPE_READ,len_over);
-      res2 = paddr_read(paddr_over,len_over);
-        /*
-         *for(int i = 0; i < len_over; ++i){
-         *    res2 = (res2 << 8) + paddr_read(paddr_over, 1);
-         *}
-         */
-
-      //printf("cross page handled\n");
-      return (res2<<(len_in*8))| res1;
-      //assert(0);
-    }
-  }
-  return paddr_read(paddr, len);
-}
-
-
-void vaddr_mmu_write(vaddr_t vaddr, word_t data, int len)
+paddr_t page_table_walk(vaddr_t vaddr)
 {
-  paddr_t paddr = isa_mmu_translate(vaddr, MEM_TYPE_WRITE, len);
-  if (paddr == MEM_RET_FAIL) {
-    printf("vaddr mmu write %x:fail   pc %x\n",vaddr,cpu.pc);
+  uint32_t va_dir_idx = (vaddr >> 22) & 0x3ff;
+  uint32_t va_page_table_idx = (vaddr >> 12) & 0x3ff;
+  uint32_t offset = vaddr & 0xfff;
+  uint32_t page_dir_base = cpu.CR3;
+  uint32_t page_table_entry = paddr_read(page_dir_base + 4 * va_dir_idx, 4);
+  assert((page_table_entry & 0x1) == 0x1);
+  uint32_t page_table_value = paddr_read((page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
+  assert((page_table_value & 0x1) == 0x1);
+  paddr_t paddr = (page_table_value & (~0xfff)) | offset;
+  return paddr;
+}
+
+paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
+{
+  paddr_t paddr = page_table_walk(vaddr);
+  uint32_t offset = vaddr&0xfff;
+  uint32_t partial = offset + len - PAGE_SIZE;
+  uint32_t low=0,high =0;
+  if(len - partial == 3)
+  {
+    low = paddr_read(paddr,4)&0xffffff;
+  }
+  else low = paddr_read(paddr,len - partial);
+  if(partial == 3)
+  {
+    high = paddr_read(page_table_walk((vaddr&(~0xfff)) + PAGE_SIZE),4)&0xffffff;
+  }
+  else high = paddr_read(page_table_walk((vaddr&(~0xfff)) + PAGE_SIZE),partial);
+  //printf("pc = %x:offset = %d base = %x :cross read = %x partial = %d, high = %x, low = %x\n",cpu.pc,offset,cpu.CR3,((high << 8*(len-partial))|low),partial,high,low);
+  /* assert(len - partial != 3&&partial != 3);
+  low = paddr_read(paddr,len - partial);
+  high = paddr_read(page_table_walk((vaddr&0xfff) + PAGE_SIZE),partial); */
+  //printf("cross read %x\n",((high << 8*(len-partial))|low));
+  return ((high << 8*(len-partial))|low);
+}
+
+word_t vaddr_mmu_read(vaddr_t addr, int len, int type)
+{
+  paddr_t pg_base = isa_mmu_translate(addr,type,len);
+  if(pg_base == MEM_RET_OK) {
+    paddr_t paddr = page_table_walk(addr);
+    //assert(addr == paddr);
+    //word_t ret = paddr_read(paddr,len);
+    //if(len == 4&& (ret&0x80000) == 0x80000 && (ret&0xbfff0000)!=0xbfff0000) printf("read %x %x\n",addr,ret);
+    return paddr_read(paddr,len);
+  } else if(pg_base == MEM_RET_CROSS_PAGE){
+    //printf("before %d %x\n",len,addr);
+    return vaddr_read_cross_page(addr,type,len);
+  } else {
+    printf("Read: pc = 0x%x opcode %x:return MEM_RET_FAIL, Present is 0:pdx = %x ptx = %x vaddr = %x\n",cpu.pc,vaddr_read(cpu.pc,1),0x3ff&(addr>>22),0x3ff&(addr>>12),addr);
     assert(0);
   }
-  else{
-    paddr_t limit = ((vaddr /PAGE_SIZE)+1)*PAGE_SIZE;
-    if(vaddr+ len > limit){
-      //printf("vaddr mmu write %x:cross_page\n",vaddr);
-
-      int len_in = limit - vaddr;
-      int len_over = vaddr+ len - limit;
-      uint32_t paddr_in = isa_mmu_translate(vaddr,MEM_TYPE_READ,len_in);
-       uint32_t paddr_over = isa_mmu_translate(vaddr+len_in,MEM_TYPE_READ,len_over);
-        paddr_write(paddr_in,data,len_in);
-        paddr_write(paddr_over,data>>(len_in*8),len_over);
-      }
-  }
-
-  paddr_write(paddr, data, len);
 }
+
+void vaddr_write_cross_page(vaddr_t vaddr ,word_t data,int len)
+{
+  uint8_t a[4] = {data&0xff,(data>>8)&0xff,(data>>16)&0xff,(data>>24)&0xff};
+  for(int i = 0;i < len;i ++)
+  {
+    vaddr_write(page_table_walk(vaddr+i),a[i],1);
+    printf("%x",a[i]);
+  }
+  printf("\n");
+}
+
+
+void vaddr_mmu_write(vaddr_t addr, word_t data, int len)
+{
+  paddr_t pg_base = isa_mmu_translate(addr,MEM_TYPE_WRITE,len);
+  if(pg_base == MEM_RET_OK) {
+    paddr_t paddr = page_table_walk(addr);
+    //assert(paddr == addr);
+    /*
+    word_t ret = data;
+    if(len == 4&& (ret&0x80000) == 0x80000 && (ret&0xbfff0000)!=0xbfff0000 && addr == cpu.esp)
+      printf("write addr %x data %x pc %x\n",addr,ret,cpu.pc); */
+    paddr_write(paddr,data,len);
+  } else if(pg_base == MEM_RET_CROSS_PAGE){
+    //assert(0);
+    printf("data cross write = %x len %d addr %x\n",data,len,addr);
+    vaddr_write_cross_page(addr,data,len);
+    assert(0);
+  } else {
+    printf("Write pc = 0x%x opcode %x:return MEM_RET_FAIL, Present is 0:pdx = %x ptx = %x vaddr = %x\n",cpu.pc,vaddr_read(cpu.pc,1),0x3ff&(addr>>22),0x3ff&(addr>>12),addr);
+    printf("%x esp %x next %x\n",vaddr_read(cpu.pc+1,4),cpu.esp,vaddr_read(cpu.pc+5,4));
+    assert(0);//ioe_init crash     check ioe map  read cross may be wrong
+  }
+}
+
+
+paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len)
+{
+  uint32_t va_dir_idx = ((uint32_t)vaddr >> 22) & 0x3ff;
+  uint32_t va_page_table_idx = ((uint32_t)vaddr >> 12) & 0x3ff;
+  uint32_t offset = vaddr & 0xfff;
+  uint32_t page_dir_base = cpu.CR3&(~0xfff);
+  uint32_t page_table_entry = paddr_read(page_dir_base + 4 * va_dir_idx, 4);
+  if ((page_table_entry & PT_P) == 0)
+  {
+    printf("MMU pte fail:pte = %x pdx = %x base = %x\n",page_table_entry,va_dir_idx,cpu.CR3);
+    return MEM_RET_FAIL;
+  }
+  else
+  {
+    uint32_t page_table_value = paddr_read((page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
+    if ((page_table_value & PT_P) == 0)
+    {
+      printf("MMU:page table value: %x PTE:%x base = %x pc = %x\n",page_table_value,page_table_entry&(~0xfff),cpu.CR3,cpu.pc);
+      return MEM_RET_FAIL;
+    }
+    else
+    {
+      if (offset + len > PAGE_SIZE)
+      {
+        //printf("%d %d\n",len,offset);
+        return MEM_RET_CROSS_PAGE;
+      }
+      else return MEM_RET_OK;
+    }
+  }
+}
+
 /*
  *paddr_t isa_mmu_translate(vaddr_t vaddr, int type [[maybe_unused]],
  *                          int len __attribute__((unused))){
