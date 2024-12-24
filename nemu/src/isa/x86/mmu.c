@@ -56,15 +56,19 @@ word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type) {
       int len_in = limit - vaddr;
       int len_over = vaddr+ len - limit;
       uint32_t paddr_in = isa_mmu_translate(vaddr,MEM_TYPE_READ,len_in);
-      //res1 = paddr_read(paddr_in,len_in);
-        for(int i = 0; i < len_in; ++i){
-            res1 = (res1 << 8) + paddr_read(paddr_in, 1);
-        }
+      res1 = paddr_read(paddr_in,len_in);
+        /*
+         *for(int i = 0; i < len_in; ++i){
+         *    res1 = (res1 << 8) + paddr_read(paddr_in, 1);
+         *}
+         */
       uint32_t paddr_over = isa_mmu_translate(vaddr+len_in,MEM_TYPE_READ,len_over);
-      //res2 = paddr_read(paddr_over,len_over);
-        for(int i = 0; i < len_over; ++i){
-            res2 = (res2 << 8) + paddr_read(paddr_over, 1);
-        }
+      res2 = paddr_read(paddr_over,len_over);
+        /*
+         *for(int i = 0; i < len_over; ++i){
+         *    res2 = (res2 << 8) + paddr_read(paddr_over, 1);
+         *}
+         */
 
       //printf("cross page handled\n");
       return (res2<<(len_in*8))| res1;
