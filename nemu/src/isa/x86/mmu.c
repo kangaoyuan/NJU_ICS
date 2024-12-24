@@ -10,13 +10,38 @@ paddr_t page_table_walk(vaddr_t vaddr){
 
     uint32_t pde = paddr_read(cpu.CR3 + 4 * va_pd, 4);
     assert(pde & 0x1);
-    uint32_t pte = paddr_read((pde & (~0xfff)) + 4 * va_pg, 4);
-    assert((pte & 0x1) == 0x1);
+    uint32_t pte = paddr_read((pde & ~PAGE_MASK) + 4 * va_pg, 4);
+    assert(pte & 0x1);
     return (pte & ~PAGE_MASK) | (vaddr & PAGE_MASK);
 }
 
-paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
-{
+paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len){
+    uint32_t va_pd = (vaddr >> 22);
+    uint32_t va_pg = (vaddr >> 12) & ((1 << 10) - 1);
+
+    uint32_t pde = paddr_read(cpu.CR3 + 4 * va_pd, 4);
+    if ((pde & PT_P) == 0) {
+        printf("MMU pte fail:pte = %x pdx = %x base = %x\n",
+               pde, va_pd, cpu.CR3);
+        return MEM_RET_FAIL;
+    }
+
+    uint32_t pte = paddr_read((pde & (~0xfff)) + 4 * va_pg, 4);
+    if ((pte & PT_P) == 0) {
+        printf("MMU:page table value: %x PTE:%x base = %x pc = %x\n", pde,
+               pte & (~0xfff), cpu.CR3, cpu.pc);
+        return MEM_RET_FAIL;
+    }
+
+    // Below is crucial
+    if ((vaddr & PAGE_MASK) + len > PAGE_SIZE) {
+        // printf("%d %d\n",len,offset);
+        return MEM_RET_CROSS_PAGE;
+    } else
+        return MEM_RET_OK;
+}
+
+paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len){
   paddr_t paddr = page_table_walk(vaddr);
   uint32_t offset = vaddr&0xfff;
   uint32_t partial = offset + len - PAGE_SIZE;
@@ -39,8 +64,7 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
   return ((high << 8*(len-partial))|low);
 }
 
-word_t vaddr_mmu_read(vaddr_t addr, int len, int type)
-{
+word_t vaddr_mmu_read(vaddr_t addr, int len, int type){
   paddr_t pg_base = isa_mmu_translate(addr,type,len);
   if(pg_base == MEM_RET_OK) {
     paddr_t paddr = page_table_walk(addr);
@@ -93,37 +117,6 @@ void vaddr_mmu_write(vaddr_t addr, word_t data, int len)
 }
 
 
-paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len)
-{
-  uint32_t va_dir_idx = ((uint32_t)vaddr >> 22) & 0x3ff;
-  uint32_t va_page_table_idx = ((uint32_t)vaddr >> 12) & 0x3ff;
-  uint32_t offset = vaddr & 0xfff;
-  uint32_t page_dir_base = cpu.CR3&(~0xfff);
-  uint32_t page_table_entry = paddr_read(page_dir_base + 4 * va_dir_idx, 4);
-  if ((page_table_entry & PT_P) == 0)
-  {
-    printf("MMU pte fail:pte = %x pdx = %x base = %x\n",page_table_entry,va_dir_idx,cpu.CR3);
-    return MEM_RET_FAIL;
-  }
-  else
-  {
-    uint32_t page_table_value = paddr_read((page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
-    if ((page_table_value & PT_P) == 0)
-    {
-      printf("MMU:page table value: %x PTE:%x base = %x pc = %x\n",page_table_value,page_table_entry&(~0xfff),cpu.CR3,cpu.pc);
-      return MEM_RET_FAIL;
-    }
-    else
-    {
-      if (offset + len > PAGE_SIZE)
-      {
-        //printf("%d %d\n",len,offset);
-        return MEM_RET_CROSS_PAGE;
-      }
-      else return MEM_RET_OK;
-    }
-  }
-}
 
 /*
  *paddr_t isa_mmu_translate(vaddr_t vaddr, int type [[maybe_unused]],
