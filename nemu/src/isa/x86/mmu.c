@@ -60,26 +60,21 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr, int type __attribute__((unused)), i
 
     paddr_t  paddr = page_table_walk(vaddr);
     for(uint32_t i = 0; i < len - partial; ++i){
-        low = (low << 8) + paddr_read(paddr+i, 1); 
+        low += paddr_read(paddr + i, 1) << (i * 8); 
     }
 
     paddr = page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE);
-    /*
-     *if (partial == 3) {
-     *    high = paddr_read(paddr, 4) & 0xffffff;
-     *} else {
-     *    high = paddr_read(paddr, partial);
-     *}
-     */
-    for(uint32_t i = 0; i < partial; ++i){
-        high = (high << 8) + paddr_read(paddr+i, 1); 
+    if (partial == 3) {
+        high = paddr_read(paddr, 4) & 0xffffff;
+    } else {
+        high = paddr_read(paddr, partial);
     }
-
     /*
      *for(uint32_t i = 0; i < partial; ++i){
-     *    high = (high << 8) + paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE)+i, 1); 
+     *    high = (high << 8) + paddr_read(paddr+i, 1); 
      *}
      */
+
 
     return ((high << 8 * (len - partial)) | low);
 
