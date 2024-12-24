@@ -24,9 +24,12 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
             map(&kas, va, va, 0);
         }
     }
+    printf("Inside vme_init, cpu.CR3 == %x\n", kas.ptr);
 
     set_cr3(kas.ptr);
+    printf("Inside vme_init, cpu.CR3 == %x\n", kas.ptr);
     set_cr0(get_cr0() | CR0_PG);
+    printf("Inside vme_init, cpu.CR3 == %x\n", kas.ptr);
     vme_enable = 1;
 
     return true;
