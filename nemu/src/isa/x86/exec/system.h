@@ -22,17 +22,33 @@ static inline def_EHelper(lidt) {
     print_asm_template1(lidt);
 }
 
+// CR related instructions.
 static inline def_EHelper(mov_r2cr) {
-  TODO();
-  print_asm("movl %%%s,%%cr%d", reg_name(id_src1->reg, 4), id_dest->reg);
+    switch(id_dest->reg){
+    case 0:
+        cpu.CR0 = *dsrc1;
+        break;
+    case 3: 
+        cpu.CR3 = *dsrc1;
+        break;
+    }
+    print_asm("movl %%%s,%%cr%d", reg_name(id_src1->reg, 4), id_dest->reg);
 }
 
 static inline def_EHelper(mov_cr2r) {
-  TODO();
-  print_asm("movl %%cr%d,%%%s", id_src1->reg, reg_name(id_dest->reg, 4));
+    switch(id_src1->reg){
+    case 0:
+        *s0 = cpu.CR0; 
+        break;
+    case 3:
+        *s0 = cpu.CR3; 
+        break;
+    }
+    operand_write(s, id_dest, s0);
+    print_asm("movl %%cr%d,%%%s", id_src1->reg, reg_name(id_dest->reg, 4));
 
 #ifndef __DIFF_REF_NEMU__
-  difftest_skip_ref();
+    difftest_skip_ref();
 #endif
 }
 
