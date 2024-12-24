@@ -60,23 +60,30 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     (void)prot;
     assert(as && as->ptr);
 
-    printf("as->ptr %x need be the cpu.cr3\n", as->ptr);
-    printf("map vaddr %x to translate in map()\n", va);
     uint32_t* pg_dir = as->ptr;
     uint32_t va_dir = (uint32_t)va >> 22;
     uint32_t va_pg = (uint32_t)va >> 12 & ((1 << 10) - 1);
     uint32_t pa_pg = (uint32_t)pa >> 12;
     uint32_t* pg_tbl = &pg_dir[va_dir];
 
-    assert((*pg_tbl & 1) == 0);
     if((*pg_tbl & 1) == 0) {
         *pg_tbl = (uint32_t)pgalloc_usr(PGSIZE) | 1;
+    } else {
+        printf("map vaddr %x to translate in map()\n", va);
+        printf("as->ptr %x need be the cpu.cr3\n", as->ptr);
+        printf("va_dir == %x\n", va_dir);
+        assert(0); 
     }
 
     uint32_t* pg_pte = (uint32_t*)(*pg_tbl & ~((1 << 12) - 1)); 
     assert((pg_pte[va_pg] & 1) == 0);
     if((pg_pte[va_pg] & 1) == 0) {
         pg_pte[va_pg] = pa_pg << 12 | 1;
+    } else {
+        printf("map vaddr %x to translate in map()\n", va);
+        printf("pg_pte %x need be the cpu.cr3\n", pg_pte);
+        printf("va_pg == %x\n", va_pg);
+        assert(0); 
     }
 }
 
