@@ -22,9 +22,15 @@ word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type){
     if(vaddr + len > page_end){
         int pre_len = page_end - vaddr; 
         int next_len = len - pre_len; 
-        word_t pre_res = paddr_read(paddr, pre_len);
+        word_t pre_res = 0;
+        for(int i = 0; i < pre_len; ++i){
+            pre_res = (pre_res << 8) + paddr_read(paddr, 1);
+        }
         paddr_t next_paddr = isa_mmu_translate(vaddr+pre_len, type, next_len);
-        word_t next_res = paddr_read(next_paddr, next_len);
+        word_t next_res = 0;
+        for(int i = 0; i < next_len; ++i){
+            next_res = (next_res << 8) + paddr_read(next_paddr, 1);
+        }
         return (next_res << (pre_len*8)) | pre_res;
     }
 
