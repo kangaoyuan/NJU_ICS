@@ -67,7 +67,7 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr, int type __attribute__((unused)), i
     if (partial == 3) {
         high = paddr_read(paddr, 4) & 0xffffff;
     } else {
-        high = paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE), partial);
+        high = paddr_read(paddr, partial);
     }
 
     /*
