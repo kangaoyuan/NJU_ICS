@@ -22,7 +22,9 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
 {
        vaddr_t page_end = (vaddr/PAGE_SIZE + 1)*PAGE_SIZE;
         int pre_len = page_end - vaddr; 
+        assert(pre_len >= 0 && pre_len <= 4);
         int next_len = len - pre_len; 
+        assert(next_len >= 0 && next_len <= 4);
        paddr_t paddr = page_table_walk(vaddr);
         word_t pre_res = 0;
         for(int i = 0; i < pre_len; ++i){
