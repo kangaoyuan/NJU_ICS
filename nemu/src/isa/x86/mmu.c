@@ -49,17 +49,18 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr, int type __attribute__((unused)), i
     uint32_t partial = offset + len - PAGE_SIZE;
     assert(partial > 0);
     uint32_t low = 0, high = 0;
-    if (len - partial == 3) {
-        low = paddr_read(paddr, 4) & 0xffffff;
-    } else {
-        low = paddr_read(paddr, len - partial);
-    }
 
     /*
-     *for(uint32_t i = 0; i < len - partial; ++i){
-     *    low = (low << 8) + paddr_read(paddr+i, 1); 
+     *if (len - partial == 3) {
+     *    low = paddr_read(paddr, 4) & 0xffffff;
+     *} else {
+     *    low = paddr_read(paddr, len - partial);
      *}
      */
+
+    for(uint32_t i = 0; i < len - partial; ++i){
+        low = (low << 8) + paddr_read(paddr+i, 1); 
+    }
 
     if (partial == 3) {
         high = paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE), 4) & 0xffffff;
