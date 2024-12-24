@@ -44,13 +44,13 @@ paddr_t page_table_walk(vaddr_t vaddr) {
  */
 
 paddr_t vaddr_read_cross_page(vaddr_t vaddr, int type __attribute__((unused)), int len) {
-    paddr_t  paddr = page_table_walk(vaddr);
     uint32_t offset = vaddr & 0xfff;
     uint32_t partial = offset + len - PAGE_SIZE;
     assert(partial > 0);
     uint32_t low = 0, high = 0;
 
     /*
+     *paddr_t  paddr = page_table_walk(vaddr);
      *if (len - partial == 3) {
      *    low = paddr_read(paddr, 4) & 0xffffff;
      *} else {
@@ -58,6 +58,7 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr, int type __attribute__((unused)), i
      *}
      */
 
+    paddr_t  paddr = page_table_walk(vaddr);
     for(uint32_t i = 0; i < len - partial; ++i){
         low = (low << 8) + paddr_read(paddr+i, 1); 
     }
