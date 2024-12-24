@@ -64,21 +64,38 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len){
   return ((high << 8*(len-partial))|low);
 }
 
-word_t vaddr_mmu_read(vaddr_t addr, int len, int type){
-  paddr_t pg_base = isa_mmu_translate(addr,type,len);
-  if(pg_base == MEM_RET_OK) {
-    paddr_t paddr = page_table_walk(addr);
-    assert(addr == paddr);
-    //word_t ret = paddr_read(paddr,len);
-    //if(len == 4&& (ret&0x80000) == 0x80000 && (ret&0xbfff0000)!=0xbfff0000) printf("read %x %x\n",addr,ret);
-    return paddr_read(paddr,len);
-  } else if(pg_base == MEM_RET_CROSS_PAGE){
-    //printf("before %d %x\n",len,addr);
-    return vaddr_read_cross_page(addr,type,len);
-  } else {
-    printf("Read: pc = 0x%x opcode %x:return MEM_RET_FAIL, Present is 0:pdx = %x ptx = %x vaddr = %x\n",cpu.pc,vaddr_read(cpu.pc,1),0x3ff&(addr>>22),0x3ff&(addr>>12),addr);
-    assert(0);
-  }
+word_t vaddr_mmu_read(vaddr_t addr, int len, int type) {
+    if ((addr & PAGE_MASK) + len > PAGE_SIZE) {
+        // printf("%d %d\n",len,offset);
+        return vaddr_read_cross_page(addr, type, len);
+    } else {
+        paddr_t paddr = page_table_walk(addr);
+        assert(addr == paddr);
+        // word_t ret = paddr_read(paddr,len);
+        // if(len == 4&& (ret&0x80000) == 0x80000 &&
+        // (ret&0xbfff0000)!=0xbfff0000) printf("read %x %x\n",addr,ret);
+        return paddr_read(paddr, len);
+    }
+    /*
+     *paddr_t pg_base = isa_mmu_translate(addr, type, len);
+     *if (pg_base == MEM_RET_OK) {
+     *    paddr_t paddr = page_table_walk(addr);
+     *    assert(addr == paddr);
+     *    // word_t ret = paddr_read(paddr,len);
+     *    // if(len == 4&& (ret&0x80000) == 0x80000 &&
+     *    // (ret&0xbfff0000)!=0xbfff0000) printf("read %x %x\n",addr,ret);
+     *    return paddr_read(paddr, len);
+     *} else if (pg_base == MEM_RET_CROSS_PAGE) {
+     *    // printf("before %d %x\n",len,addr);
+     *    return vaddr_read_cross_page(addr, type, len);
+     *} else {
+     *    printf("Read: pc = 0x%x opcode %x:return MEM_RET_FAIL, Present is "
+     *           "0:pdx = %x ptx = %x vaddr = %x\n",
+     *           cpu.pc, vaddr_read(cpu.pc, 1), 0x3ff & (addr >> 22),
+     *           0x3ff & (addr >> 12), addr);
+     *    assert(0);
+     *}
+     */
 }
 
 void vaddr_write_cross_page(vaddr_t vaddr ,word_t data,int len)
