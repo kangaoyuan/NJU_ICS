@@ -7,6 +7,9 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int type[[maybe_unused]], int len __att
     uint32_t  va_pg = vaddr >> 12 & ((1 << 10) - 1);
 
     uint32_t  pte = paddr_read(cpu.CR3 + va_dir * 4, 4);
+    if(!(pte & 1)){
+        printf("error to tanslate: vaddr: %x\n", vaddr); 
+    }
     assert(pte & 1);
     pte = pte & ~(PAGE_MASK);
     uint32_t  pa_pg = paddr_read(pte + va_pg * 4, 4);
