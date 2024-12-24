@@ -37,15 +37,15 @@ size_t invalid_write(const void* buf, size_t offset[[maybe_unused]], size_t len 
 
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
-    [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write},
-    [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
-    [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
+    [FD_STDIN] = {"stdin", 0, 0, invalid_read, invalid_write, 0},
+    [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write, 0},
+    [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write, 0},
     // Keyboard
-    [FD_EVENTS] = {"/dev/events", 0, 0, events_read, invalid_write},
+    [FD_EVENTS] = {"/dev/events", 0, 0, events_read, invalid_write, 0},
     // GPUconfig
-    [FD_DISPINFO] = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
+    [FD_DISPINFO] = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write, 0},
     // FrameBuffer
-    [FD_FB] = {"/dev/fb", -1, 0, invalid_read, fb_write},
+    [FD_FB] = {"/dev/fb", -1, 0, invalid_read, fb_write, 0},
 #include "files.h"
 };
 
@@ -67,6 +67,12 @@ int fs_open(const char* pathname, int flags, int mode) {
             break;
         }
     }
+    if(i == FILE_NUM){
+        //fprintf(stderr, "fs_open can't open %s file", pathname);
+        Log("fs_open() can't open %s file", pathname);
+        return -1;
+    }
+    // Below is good for debug, Above is good for logic judgement.
     assert(i != FILE_NUM);
     return fd;
 }

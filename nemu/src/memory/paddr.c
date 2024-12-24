@@ -22,7 +22,7 @@ void init_mem() {
     // pmem is the name of array, so essentially it's the constant value.
     // the forced cast indicates the essence of pointer (address + type).
     uint32_t* p = (uint32_t*)pmem;
-    for (int i = 0; i < PMEM_SIZE / sizeof(p[0]); i++) {
+    for (uint32_t i = 0; i < PMEM_SIZE / sizeof(p[0]); i++) {
         p[i] = rand();
     }
 #endif
@@ -61,13 +61,17 @@ static inline void pmem_write(paddr_t addr, word_t data, int len) {
 /* Memory accessing interfaces */
 
 inline word_t paddr_read(paddr_t addr, int len) {
-  if (in_pmem(addr)) return pmem_read(addr, len);
-  else return map_read(addr, len, fetch_mmio_map(addr));
+    if (in_pmem(addr))
+        return pmem_read(addr, len);
+    else
+        return map_read(addr, len, fetch_mmio_map(addr));
 }
 
 inline void paddr_write(paddr_t addr, word_t data, int len) {
-  if (in_pmem(addr)) pmem_write(addr, data, len);
-  else map_write(addr, data, len, fetch_mmio_map(addr));
+    if (in_pmem(addr))
+        pmem_write(addr, data, len);
+    else
+        map_write(addr, data, len, fetch_mmio_map(addr));
 }
 
 word_t vaddr_mmu_read(vaddr_t addr, int len, int type);
@@ -78,18 +82,26 @@ void vaddr_mmu_write(vaddr_t addr, word_t data, int len);
 word_t concat(vaddr_ifetch, bytes) (vaddr_t addr) { \
   int ret = isa_vaddr_check(addr, MEM_TYPE_IFETCH, bytes); \
   if (ret == MEM_RET_OK) return paddr_read(addr, bytes); \
+  else if (ret == MEM_RET_NEED_TRANSLATE) return vaddr_mmu_read(addr, bytes, MEM_TYPE_IFETCH);\
   return 0; \
 } \
 word_t concat(vaddr_read, bytes) (vaddr_t addr) { \
   int ret = isa_vaddr_check(addr, MEM_TYPE_READ, bytes); \
   if (ret == MEM_RET_OK) return paddr_read(addr, bytes); \
+  else if (ret == MEM_RET_NEED_TRANSLATE) return vaddr_mmu_read(addr, bytes, MEM_TYPE_READ);\
   return 0; \
 } \
 void concat(vaddr_write, bytes) (vaddr_t addr, word_t data) { \
   int ret = isa_vaddr_check(addr, MEM_TYPE_WRITE, bytes); \
   if (ret == MEM_RET_OK) paddr_write(addr, data, bytes); \
+  else if (ret == MEM_RET_NEED_TRANSLATE) return vaddr_mmu_write(addr, data, bytes);\
 }
 
+
+/*
+ * Firstly, isa_vaddr_check() to check the vaddr status whether need to tansalate,
+ * Secondly use vaddr_mmu_read/vaddr_mmu_write() to do the actual address translation.
+ * */
 
 def_vaddr_template(1)
 def_vaddr_template(2)

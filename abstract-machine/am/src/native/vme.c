@@ -28,10 +28,10 @@ static void* (*pgalloc)(int) = NULL;
 static void (*pgfree)(void *) = NULL;
 
 bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
-  pgalloc = pgalloc_f;
-  pgfree = pgfree_f;
-  vme_enable = 1;
-  return true;
+    pgalloc = pgalloc_f;
+    pgfree = pgfree_f;
+    vme_enable = 1;
+    return true;
 }
 
 void protect(AddrSpace *as) {

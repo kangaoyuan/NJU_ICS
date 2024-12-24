@@ -34,10 +34,10 @@
 #define VGACTL_ADDR     (DEVICE_BASE + 0x0000100)
 #define AUDIO_ADDR      (DEVICE_BASE + 0x0000200)
 #define DISK_ADDR       (DEVICE_BASE + 0x0000300)
-//#define FB_ADDR         (MMIO_BASE   + 0x1000000)
 #define FB_ADDR         (MMIO_BASE   + 0x0000000)
-//#define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x1200000)
+//#define FB_ADDR         (MMIO_BASE   + 0x1000000)
 #define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x0800000)
+//#define AUDIO_SBUF_ADDR (MMIO_BASE   + 0x1200000)
 
 /* _pmem_start and _entry_offset are defined in LDFLAGS */
 extern char _pmem_start;
@@ -46,7 +46,8 @@ extern char _pmem_start;
 #define NEMU_PADDR_SPACE \
   RANGE(&_pmem_start, PMEM_END), \
   RANGE(FB_ADDR, FB_ADDR + 0x200000), \
-  RANGE(MMIO_BASE, MMIO_BASE + 0x1000) /* serial, rtc, screen, keyboard */
+  RANGE(0xa1000000, 0xa1000000 + 0x1000) /* serial, rtc, screen, keyboard */
+  //RANGE(MMIO_BASE, MMIO_BASE + 0x1000) // serial, rtc, screen, keyboard 
 
 typedef uintptr_t PTE;
 

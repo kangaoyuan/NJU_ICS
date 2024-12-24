@@ -14,7 +14,7 @@
 
 // Memory area for [@start, @end)
 typedef struct {
-  void *start, *end;
+    void *start, *end;
 } Area;
 
 // Arch-dependent processor context
@@ -38,9 +38,9 @@ typedef struct {
 // A protected address space with user memory @area
 // and arch-dependent @ptr
 typedef struct {
-  int pgsize;
-  Area area;
-  void *ptr;
+    int   pgsize;
+    Area  area;
+    void* ptr;
 } AddrSpace;
 
 #ifdef __cplusplus

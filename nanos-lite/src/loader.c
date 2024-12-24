@@ -154,7 +154,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     Area kstack = {.start = pcb->stack,
                    .end = pcb->stack + sizeof(pcb->stack)};
 
-    void* user_stack = new_page(8);
+    void* user_stack = new_page(8) + 8 * PGSIZE;
     //printf("user_stack == %x\n", user_stack);
     void* stack_ptr = create_stack(user_stack, argv, envp);
 
@@ -164,7 +164,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     pcb->cp->GPRx = (uintptr_t)stack_ptr;
 
     /*
-     *void* user_stack = new_page(8);
+     *void* user_stack = new_page(8) + 8 * PGSIZE;
      *printf("user_stack == %x\n", user_stack);
      *pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
      */

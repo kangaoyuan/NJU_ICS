@@ -58,7 +58,7 @@ void do_syscall(Context* c) {
         c->GPRx = sys_gettimeofday((struct timeval *)a[1],(struct timezone *)a[2]);
         break;
     case SYS_execve:
-        sys_execve((const char*)a[1], (char* const*)a[2], (char* const*)a[3]);
+        c->GPRx = sys_execve((const char*)a[1], (char* const*)a[2], (char* const*)a[3]);
         break;
     default:
         panic("Unhandled syscall ID = %d", a[0]);
@@ -67,6 +67,9 @@ void do_syscall(Context* c) {
 
 int sys_execve(const char* file_name,char* const argv[],char* const envp[]){
     //naive_uload(NULL, file_name);
+    if (fs_open(file_name, 0, 0) == -1)
+        return -2;
+
     context_uload(current, file_name, argv, envp);
     switch_boot_pcb();
     yield();
