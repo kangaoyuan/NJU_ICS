@@ -20,26 +20,43 @@ paddr_t page_table_walk(vaddr_t vaddr)
 
 paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
 {
-  paddr_t paddr = page_table_walk(vaddr);
-  uint32_t offset = vaddr&0xfff;
-  uint32_t partial = offset + len - PAGE_SIZE;
-  uint32_t low=0,high =0;
-  if(len - partial == 3)
-  {
-    low = paddr_read(paddr,4)&0xffffff;
-  }
-  else low = paddr_read(paddr,len - partial);
-  if(partial == 3)
-  {
-    high = paddr_read(page_table_walk((vaddr&(~0xfff)) + PAGE_SIZE),4)&0xffffff;
-  }
-  else high = paddr_read(page_table_walk((vaddr&(~0xfff)) + PAGE_SIZE),partial);
+       vaddr_t page_end = (vaddr/PAGE_SIZE + 1)*PAGE_SIZE;
+        int pre_len = page_end - vaddr; 
+        int next_len = len - pre_len; 
+       paddr_t paddr = page_table_walk(vaddr);
+        word_t pre_res = 0;
+        for(int i = 0; i < pre_len; ++i){
+            pre_res = (pre_res << 8) + paddr_read(paddr, 1);
+        }
+        paddr_t next_paddr = page_table_walk(vaddr+pre_len);
+        word_t next_res = 0;
+        for(int i = 0; i < next_len; ++i){
+            next_res = (next_res << 8) + paddr_read(next_paddr, 1);
+        }
+        return (next_res << (pre_len*8)) | pre_res;
+ 
+  /*
+   *paddr_t paddr = page_table_walk(vaddr);
+   *uint32_t offset = vaddr&0xfff;
+   *uint32_t partial = offset + len - PAGE_SIZE;
+   *uint32_t low=0,high =0;
+   *if(len - partial == 3)
+   *{
+   *  low = paddr_read(paddr,4)&0xffffff;
+   *}
+   *else low = paddr_read(paddr,len - partial);
+   *if(partial == 3)
+   *{
+   *  high = paddr_read(page_table_walk((vaddr&(~0xfff)) + PAGE_SIZE),4)&0xffffff;
+   *}
+   *else high = paddr_read(page_table_walk((vaddr&(~0xfff)) + PAGE_SIZE),partial);
+   */
   //printf("pc = %x:offset = %d base = %x :cross read = %x partial = %d, high = %x, low = %x\n",cpu.pc,offset,cpu.CR3,((high << 8*(len-partial))|low),partial,high,low);
   /* assert(len - partial != 3&&partial != 3);
   low = paddr_read(paddr,len - partial);
   high = paddr_read(page_table_walk((vaddr&0xfff) + PAGE_SIZE),partial); */
   //printf("cross read %x\n",((high << 8*(len-partial))|low));
-  return ((high << 8*(len-partial))|low);
+  //return ((high << 8*(len-partial))|low);
 }
 
 word_t vaddr_mmu_read(vaddr_t addr, int len, int type)
@@ -47,7 +64,7 @@ word_t vaddr_mmu_read(vaddr_t addr, int len, int type)
   paddr_t pg_base = isa_mmu_translate(addr,type,len);
   if(pg_base == MEM_RET_OK) {
     paddr_t paddr = page_table_walk(addr);
-    //assert(addr == paddr);
+    assert(addr == paddr);
     //word_t ret = paddr_read(paddr,len);
     //if(len == 4&& (ret&0x80000) == 0x80000 && (ret&0xbfff0000)!=0xbfff0000) printf("read %x %x\n",addr,ret);
     return paddr_read(paddr,len);
@@ -77,7 +94,7 @@ void vaddr_mmu_write(vaddr_t addr, word_t data, int len)
   paddr_t pg_base = isa_mmu_translate(addr,MEM_TYPE_WRITE,len);
   if(pg_base == MEM_RET_OK) {
     paddr_t paddr = page_table_walk(addr);
-    //assert(paddr == addr);
+    assert(paddr == addr);
     /*
     word_t ret = data;
     if(len == 4&& (ret&0x80000) == 0x80000 && (ret&0xbfff0000)!=0xbfff0000 && addr == cpu.esp)
@@ -152,7 +169,6 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len)
  *
  *    paddr_t page_end = (vaddr/PAGE_SIZE + 1)*PAGE_SIZE;
  *    if(vaddr + len > page_end){
- *        printf("vaddr_mmu_read across, vaddr == %x page_end == %x\n", vaddr, page_end);
  *        int pre_len = page_end - vaddr; 
  *        int next_len = len - pre_len; 
  *        paddr_t paddr = isa_mmu_translate(vaddr, type, pre_len);
