@@ -18,7 +18,7 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int type[[maybe_unused]], int len __att
 }
 
 word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type){
-    printf("vaddr == %x\n", vaddr);
+    printf("vaddr_mmu_read, vaddr == %x\n", vaddr);
     paddr_t paddr = isa_mmu_translate(vaddr, type, len);
     assert(vaddr == paddr);
 
@@ -42,7 +42,7 @@ word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type){
 }
 
 void vaddr_mmu_write(vaddr_t vaddr, word_t data, int len){
-    printf("vaddr == %x\n", vaddr);
+    printf("vaddr_mmu_write, vaddr == %x\n", vaddr);
     paddr_t paddr = isa_mmu_translate(vaddr, MEM_TYPE_WRITE, len);
     assert(vaddr == paddr);
 
