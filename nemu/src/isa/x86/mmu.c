@@ -24,6 +24,7 @@ word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type){
 
     paddr_t page_end = (vaddr/PAGE_SIZE + 1)*PAGE_SIZE;
     if(vaddr + len > page_end){
+        printf("vaddr_mmu_read across, vaddr == %x page_end == %x\n", vaddr, page_end);
         int pre_len = page_end - vaddr; 
         int next_len = len - pre_len; 
         word_t pre_res = 0;

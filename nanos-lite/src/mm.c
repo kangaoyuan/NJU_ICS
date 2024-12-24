@@ -4,6 +4,7 @@ static void *pf = NULL;
 
 void* new_page(size_t nr_page) {
     void* rc = pf;
+    // Here we use some compiler-specific for void*
     pf += nr_page * PGSIZE;
     // There is a little difference to the manual.
     return rc;
