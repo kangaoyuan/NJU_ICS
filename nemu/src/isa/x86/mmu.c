@@ -62,18 +62,18 @@ paddr_t vaddr_read_cross_page(vaddr_t vaddr, int type __attribute__((unused)), i
         low = (low << 8) + paddr_read(paddr+i, 1); 
     }
 
+    if (partial == 3) {
+        high = paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE), 4) & 0xffffff;
+    } else {
+        high = paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE), partial);
+    }
+
     /*
-     *if (partial == 3) {
-     *    high = paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE), 4) & 0xffffff;
-     *} else {
-     *    high = paddr_read(page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE), partial);
+     *paddr = page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE);
+     *for(uint32_t i = 0; i < partial; ++i){
+     *    high = (high << 8) + paddr_read(paddr+i, 1); 
      *}
      */
-
-    paddr = page_table_walk((vaddr & (~0xfff)) + PAGE_SIZE);
-    for(uint32_t i = 0; i < partial; ++i){
-        high = (high << 8) + paddr_read(paddr+i, 1); 
-    }
     // printf("pc = %x:offset = %d base = %x :cross read = %x partial = %d,
     // high = %x, low = %x\n",cpu.pc,offset,cpu.CR3,((high <<
     // 8*(len-partial))|low),partial,high,low);
