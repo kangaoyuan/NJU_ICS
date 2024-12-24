@@ -92,31 +92,38 @@ void vaddr_write_cross_page(vaddr_t vaddr ,word_t data,int len)
   printf("\n");
 }
 
-
-void vaddr_mmu_write(vaddr_t addr, word_t data, int len)
-{
-  paddr_t pg_base = isa_mmu_translate(addr,MEM_TYPE_WRITE,len);
-  if(pg_base == MEM_RET_OK) {
-    paddr_t paddr = page_table_walk(addr);
-    assert(paddr == addr);
+void vaddr_mmu_write(vaddr_t addr, word_t data, int len){
+/*
+ *    paddr_t pg_base = isa_mmu_translate(addr, MEM_TYPE_WRITE, len);
+ *
+ *    if (pg_base == MEM_RET_OK) {
+ */
+        paddr_t paddr = page_table_walk(addr);
+        assert(paddr == addr);
+        /*
+        word_t ret = data;
+        if(len == 4&& (ret&0x80000) == 0x80000 &&
+        (ret&0xbfff0000)!=0xbfff0000 && addr == cpu.esp) printf("write addr
+        %x data %x pc %x\n",addr,ret,cpu.pc); */
+        paddr_write(paddr, data, len);
     /*
-    word_t ret = data;
-    if(len == 4&& (ret&0x80000) == 0x80000 && (ret&0xbfff0000)!=0xbfff0000 && addr == cpu.esp)
-      printf("write addr %x data %x pc %x\n",addr,ret,cpu.pc); */
-    paddr_write(paddr,data,len);
-  } else if(pg_base == MEM_RET_CROSS_PAGE){
-    //assert(0);
-    printf("data cross write = %x len %d addr %x\n",data,len,addr);
-    vaddr_write_cross_page(addr,data,len);
-    assert(0);
-  } else {
-    printf("Write pc = 0x%x opcode %x:return MEM_RET_FAIL, Present is 0:pdx = %x ptx = %x vaddr = %x\n",cpu.pc,vaddr_read(cpu.pc,1),0x3ff&(addr>>22),0x3ff&(addr>>12),addr);
-    printf("%x esp %x next %x\n",vaddr_read(cpu.pc+1,4),cpu.esp,vaddr_read(cpu.pc+5,4));
-    assert(0);//ioe_init crash     check ioe map  read cross may be wrong
-  }
+     *} else if (pg_base == MEM_RET_CROSS_PAGE) {
+     *    // assert(0);
+     *    printf("data cross write = %x len %d addr %x\n", data, len, addr);
+     *    vaddr_write_cross_page(addr, data, len);
+     *    assert(0);
+     *} else {
+     *    printf("Write pc = 0x%x opcode %x:return MEM_RET_FAIL, Present is "
+     *           "0:pdx = %x ptx = %x vaddr = %x\n",
+     *           cpu.pc, vaddr_read(cpu.pc, 1), 0x3ff & (addr >> 22),
+     *           0x3ff & (addr >> 12), addr);
+     *    printf("%x esp %x next %x\n", vaddr_read(cpu.pc + 1, 4), cpu.esp,
+     *           vaddr_read(cpu.pc + 5, 4));
+     *    assert(0);  // ioe_init crash     check ioe map  read cross may be
+     *                // wrong
+     *}
+     */
 }
-
-
 
 /*
  *paddr_t isa_mmu_translate(vaddr_t vaddr, int type [[maybe_unused]],
