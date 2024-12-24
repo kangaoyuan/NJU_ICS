@@ -28,7 +28,6 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
 
     set_cr3(kas.ptr);
     set_cr0(get_cr0() | CR0_PG);
-    printf("set cr right?\n");
     vme_enable = 1;
 
     return true;
