@@ -2,20 +2,55 @@
 #include <memory/vaddr.h>
 #include <memory/paddr.h>
 
-paddr_t isa_mmu_translate(vaddr_t vaddr, int type[[maybe_unused]], int len __attribute__((unused))) {
-    uint32_t  va_dir = vaddr >> 22;
-    uint32_t  va_pg = vaddr >> 12 & ((1 << 10) - 1);
-
-    uint32_t  pte = paddr_read(cpu.CR3 + va_dir * 4, 4);
-    if(!(pte & 1)){
-        printf("error to tanslate: vaddr: %x\n", vaddr); 
+#define PT_P 1
+paddr_t isa_mmu_translate(vaddr_t vaddr, int type, int len)
+{
+  uint32_t va_dir_idx = ((uint32_t)vaddr >> 22) & 0x3ff;
+  uint32_t va_page_table_idx = ((uint32_t)vaddr >> 12) & 0x3ff;
+  uint32_t offset = vaddr & 0xfff;
+  uint32_t page_dir_base = cpu.CR3&(~0xfff);
+  uint32_t page_table_entry = paddr_read(page_dir_base + 4 * va_dir_idx, 4);
+  if ((page_table_entry & PT_P) == 0)
+  {
+    printf("MMU pte fail:pte = %x pdx = %x base = %x\n",page_table_entry,va_dir_idx,cpu.CR3);
+    return MEM_RET_FAIL;
+  }
+  else
+  {
+    uint32_t page_table_value = paddr_read((page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
+    if ((page_table_value & PT_P) == 0) 
+    {
+      printf("MMU:page table value: %x PTE:%x base = %x pc = %x\n",page_table_value,page_table_entry&(~0xfff),cpu.CR3,cpu.pc);
+      return MEM_RET_FAIL;
     }
-    assert(pte & 1);
-    pte = pte & ~(PAGE_MASK);
-    uint32_t  pa_pg = paddr_read(pte + va_pg * 4, 4);
-    assert(pa_pg & 1);
-    return (pa_pg & ~(PAGE_MASK)) + (vaddr & (PAGE_MASK));
+    else
+    {
+      if (offset + len > PAGE_SIZE)
+      {
+        //printf("%d %d\n",len,offset);
+        return MEM_RET_CROSS_PAGE;
+      }
+      else return MEM_RET_OK;
+    }
+  }
 }
+
+/*
+ *paddr_t isa_mmu_translate(vaddr_t vaddr, int type[[maybe_unused]], int len __attribute__((unused))) {
+ *    uint32_t  va_dir = vaddr >> 22;
+ *    uint32_t  va_pg = vaddr >> 12 & ((1 << 10) - 1);
+ *
+ *    uint32_t  pte = paddr_read(cpu.CR3 + va_dir * 4, 4);
+ *    if(!(pte & 1)){
+ *        printf("error to tanslate: vaddr: %x\n", vaddr); 
+ *    }
+ *    assert(pte & 1);
+ *    pte = pte & ~(PAGE_MASK);
+ *    uint32_t  pa_pg = paddr_read(pte + va_pg * 4, 4);
+ *    assert(pa_pg & 1);
+ *    return (pa_pg & ~(PAGE_MASK)) + (vaddr & (PAGE_MASK));
+ *}
+ */
 
 word_t vaddr_mmu_read(vaddr_t vaddr, int len, int type){
     printf("vaddr_mmu_read, vaddr == %x\n", vaddr);
