@@ -20,25 +20,6 @@ paddr_t page_table_walk(vaddr_t vaddr)
 
 paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
 {
-       /*
-        *vaddr_t page_end = (vaddr/PAGE_SIZE + 1)*PAGE_SIZE;
-        * int pre_len = page_end - vaddr; 
-        * assert(pre_len >= 0 && pre_len <= 4);
-        * int next_len = len - pre_len; 
-        * assert(next_len >= 0 && next_len <= 4);
-        *paddr_t paddr = page_table_walk(vaddr);
-        * word_t pre_res = 0;
-        * for(int i = 0; i < pre_len; ++i){
-        *     pre_res = (pre_res << 8) + paddr_read(paddr, 1);
-        * }
-        * paddr_t next_paddr = page_table_walk(vaddr+pre_len);
-        * word_t next_res = 0;
-        * for(int i = 0; i < next_len; ++i){
-        *     next_res = (next_res << 8) + paddr_read(next_paddr, 1);
-        * }
-        * return (next_res << (pre_len*8)) | pre_res;
-        */
- 
   paddr_t paddr = page_table_walk(vaddr);
   uint32_t offset = vaddr&0xfff;
   uint32_t partial = offset + len - PAGE_SIZE;
