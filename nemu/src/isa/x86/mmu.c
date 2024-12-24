@@ -4,18 +4,17 @@
 
 #define PT_P 0x1
 
-paddr_t page_table_walk(vaddr_t vaddr)
-{
-  uint32_t va_dir_idx = (vaddr >> 22) & 0x3ff;
-  uint32_t va_page_table_idx = (vaddr >> 12) & 0x3ff;
-  uint32_t offset = vaddr & 0xfff;
-  uint32_t page_dir_base = cpu.CR3;
-  uint32_t page_table_entry = paddr_read(page_dir_base + 4 * va_dir_idx, 4);
-  assert((page_table_entry & 0x1) == 0x1);
-  uint32_t page_table_value = paddr_read((page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
-  assert((page_table_value & 0x1) == 0x1);
-  paddr_t paddr = (page_table_value & (~0xfff)) | offset;
-  return paddr;
+paddr_t page_table_walk(vaddr_t vaddr){
+    uint32_t va_dir_idx = (vaddr >> 22);
+    uint32_t va_page_table_idx = (vaddr >> 12) & ((1 << 10) - 1);
+
+    uint32_t page_table_entry = paddr_read(cpu.CR3 + 4 * va_dir_idx, 4);
+    assert(page_table_entry & 0x1);
+    uint32_t page_table_value = paddr_read(
+        (page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
+    assert((page_table_value & 0x1) == 0x1);
+    paddr_t paddr = (page_table_value & ~PAGE_MASK) | (vaddr & PAGE_MASK);
+    return paddr;
 }
 
 paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
