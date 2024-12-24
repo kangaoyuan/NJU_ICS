@@ -5,16 +5,14 @@
 #define PT_P 0x1
 
 paddr_t page_table_walk(vaddr_t vaddr){
-    uint32_t va_dir_idx = (vaddr >> 22);
-    uint32_t va_page_table_idx = (vaddr >> 12) & ((1 << 10) - 1);
+    uint32_t va_pd = (vaddr >> 22);
+    uint32_t va_pg = (vaddr >> 12) & ((1 << 10) - 1);
 
-    uint32_t page_table_entry = paddr_read(cpu.CR3 + 4 * va_dir_idx, 4);
-    assert(page_table_entry & 0x1);
-    uint32_t page_table_value = paddr_read(
-        (page_table_entry & (~0xfff)) + 4 * va_page_table_idx, 4);
-    assert((page_table_value & 0x1) == 0x1);
-    paddr_t paddr = (page_table_value & ~PAGE_MASK) | (vaddr & PAGE_MASK);
-    return paddr;
+    uint32_t pde = paddr_read(cpu.CR3 + 4 * va_pd, 4);
+    assert(pde & 0x1);
+    uint32_t pte = paddr_read((pde & (~0xfff)) + 4 * va_pg, 4);
+    assert((pte & 0x1) == 0x1);
+    return (pte & ~PAGE_MASK) | (vaddr & PAGE_MASK);
 }
 
 paddr_t vaddr_read_cross_page(vaddr_t vaddr ,int type,int len)
