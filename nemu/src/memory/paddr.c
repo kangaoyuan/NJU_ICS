@@ -41,6 +41,7 @@ static inline word_t pmem_read(paddr_t addr, int len) {
 #ifdef ISA64
     case 8: return *(uint64_t *)p;
 #endif
+    printf("pmem_read len == %d\n", len);
     default: assert(0);
   }
 }
