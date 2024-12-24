@@ -68,23 +68,15 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 
     if((*pg_tbl & 1) == 0) {
         *pg_tbl = (uint32_t)pgalloc_usr(PGSIZE) | 1;
-    } else {
-        printf("map vaddr %x to translate in map()\n", va);
-        printf("as->ptr %x need be the cpu.cr3\n", as->ptr);
-        printf("va_dir == %x\n", va_dir);
-        assert(0); 
-    }
+    } 
+    assert(*pg_tbl & 1); 
 
     uint32_t* pg_pte = (uint32_t*)(*pg_tbl & ~((1 << 12) - 1)); 
     assert((pg_pte[va_pg] & 1) == 0);
     if((pg_pte[va_pg] & 1) == 0) {
         pg_pte[va_pg] = pa_pg << 12 | 1;
-    } else {
-        printf("map vaddr %x to translate in map()\n", va);
-        printf("pg_pte %x need be the cpu.cr3\n", pg_pte);
-        printf("va_pg == %x\n", va_pg);
-        assert(0); 
-    }
+    } 
+    assert(pg_pte[va_pg] & 1);
 }
 
 // Create a context with a independent address space.
