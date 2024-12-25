@@ -1,3 +1,4 @@
+#include <proc.h>
 #include <memory.h>
 
 static void *pf = NULL;
@@ -25,7 +26,37 @@ void free_page(void *p) {
 }
 
 /* The brk() system call handler. */
-int mm_brk(uintptr_t brk __attribute__((unused))) {
+// if brk exceed current->max_brk, we allocate new_page()
+void map(AddrSpace* as, void* va, void* pa, int prot);
+int mm_brk(uintptr_t brk) {
+    if(brk > current->max_brk){
+
+        uintptr_t vaddr = current->max_brk;
+        uintptr_t vaddr_beg = vaddr & ~((1 << 10) - 1);
+        uintptr_t vaddr_end = vaddr_beg + PGSIZE;
+        uint32_t len = (vaddr_end - vaddr) <= (brk - vaddr) ? 
+                        vaddr_end - vaddr : brk - vaddr;
+
+        if (len < PGSIZE) {
+            vaddr += len;
+        } else if (len == PGSIZE) {
+            assert(vaddr && ((1 << 10) -1) == 0);
+        } else {
+            assert(0);
+        }
+
+        while(vaddr < brk) {
+            void* paddr = new_page(1);
+            len = (vaddr_end - vaddr) <= (brk - vaddr) ? 
+                        vaddr_end - vaddr : brk - vaddr;
+            map(&current->as, (void*)vaddr_beg, paddr, 0x7);
+            vaddr += len;
+            vaddr_beg = vaddr & ~((1 << 10) - 1);
+            vaddr_end = vaddr_beg + PGSIZE;
+        } 
+
+        current->max_brk = brk;
+    }
     return 0;
 }
 

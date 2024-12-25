@@ -94,6 +94,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
                 vaddr += read_cnt;
             }
             assert(vaddr == mem_vaddr);
+            pcb->max_brk = (uintptr_t)vaddr;
 #else
             // for Mem, from p_vaddr to p_vaddr + p_memsz.
             //rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);

@@ -9,6 +9,7 @@ size_t fs_write(int fd, const void *buf, size_t len);
 size_t fs_lseek(int fd, size_t offset, int whence);
 int    fs_close(int fd);
 void   switch_boot_pcb();
+int    mm_brk(uintptr_t brk);
 void   naive_uload(PCB *pcb, const char *filename);
 void   context_uload(PCB *pcb, const char *file_name, char * const *argv, char * const envp[]);
 int    sys_gettimeofday(struct timeval* tv, struct timezone* tz);
@@ -39,7 +40,7 @@ void do_syscall(Context* c) {
         break;
     }
     case SYS_brk:
-        c->GPRx = 0;
+        c->GPRx = mm_brk(a[1]);
         break;
     case SYS_open:
         // The same argument meaning to fs_ function. 
