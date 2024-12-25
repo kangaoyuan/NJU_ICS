@@ -1,15 +1,21 @@
 #include <proc.h>
 
 /*
- *struct Context {
+ *typedef struct{
  *    void*     cr3;
  *    uintptr_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
  *    uintptr_t irq;
  *    uintptr_t eip, cs, eflags;
- *};
+ *} Context;
  */
 /*
- *# stack size is 32K
+ *typedef struct {
+ *    int   pgsize;
+ *    Area  area;
+ *    void* ptr;
+ *} AddrSpace;
+ */
+/*
  *#define STACK_SIZE (8 * PGSIZE)
  *
  *typedef union {
@@ -53,24 +59,28 @@ void init_proc() {
     // load program here
 
     /*const char file_name[] = "/bin/exectuable_file";*/
-    // Attention here, if you do 4.1, below code maybe invalid.
+    // Attention here, if you do after 4.1, below function maybe invalid.
     //naive_uload(NULL, "/bin/pal");
     
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
     //context_kload(&pcb[1], hello_fun, (void*)2);
     
-    char * const argv[] = {"/bin/pal", "--skip", NULL};
-    char * const envp[] = {NULL};
-    context_uload(&pcb[1], "/bin/pal", argv, envp);
+    /*
+     *char * const argv[] = {"/bin/pal", "--skip", NULL};
+     *char * const envp[] = {NULL};
+     *context_uload(&pcb[1], "/bin/pal", argv, envp);
+     */
 
     //char * const argv[] = {"/bin/menu", NULL};
     //char * const argv[] = {"/bin/nterm", NULL};
+    char * const argv[] = {"/bin/dummy", NULL};
     //char * const argv[] = {"/bin/exec-test", NULL};
-    //char * const empty[] = {NULL};
+    char * const empty[] = {NULL};
     //context_uload(&pcb[1], "/bin/pal", NULL, NULL);
     //context_uload(&pcb[1], "/bin/menu", argv, empty);
     //context_uload(&pcb[1], "/bin/nterm", argv, empty);
+    context_uload(&pcb[1], "/bin/dummy", argv, empty);
     //context_uload(&pcb[1], "/bin/exec-test", argv, empty);
     switch_boot_pcb();
 }

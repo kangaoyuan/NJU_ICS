@@ -24,20 +24,21 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
             map(&kas, va, va, 0);
         }
     }
-    printf("Inside vme_init, cpu.CR3 == %x\n", kas.ptr);
 
     set_cr3(kas.ptr);
     set_cr0(get_cr0() | CR0_PG);
     vme_enable = 1;
+    printf("Inside vme_init, cpu.CR3 == %x\n", kas.ptr);
 
     return true;
 }
 
+// For each user process to create AddrSpace.
 void protect(AddrSpace* as) {
     PTE* updir = (PTE*)(pgalloc_usr(PGSIZE));
     as->ptr = updir;
-    as->area = USER_SPACE;
     as->pgsize = PGSIZE;
+    as->area = USER_SPACE;
     // map kernel space
     memcpy(updir, kas.ptr, PGSIZE);
 }
@@ -82,12 +83,22 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
 // Create a context with a independent address space.
 // The kstack is the same as the kernel thread to allocate Context.
 Context* ucontext(AddrSpace *as, Area kstack, void *entry) {
-    (void)as;
     Context* ucontext = (Context*)kstack.end - 1;
     //Context* ucontext = kstack.end - sizeof(Context);
-    *ucontext = (Context){.cr3 = NULL,
-                 .eip = (uintptr_t)entry,
-                 .cs  = 0x8,
-                 .eflags = 0x200};
+    *ucontext = (Context){
+        .cr3 = as->ptr, 
+        .eip = (uintptr_t)entry, 
+        .cs = 0x8, 
+        .eflags = 0x200 
+    };
     return ucontext;
 }
+/*
+ *struct Context {
+ *    // TODO: fix the order of these members to match trap.S
+ *    void*     cr3;
+ *    uintptr_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
+ *    uintptr_t irq;
+ *    uintptr_t eip, cs, eflags;
+ *};
+ */
