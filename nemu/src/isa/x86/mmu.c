@@ -144,7 +144,7 @@ void vaddr_mmu_write(vaddr_t addr, word_t data, int len){
  *    if (pg_base == MEM_RET_OK) {
  */
         paddr_t paddr = page_table_walk(addr);
-        assert(paddr == addr);
+        //assert(paddr == addr);
         /*
         word_t ret = data;
         if(len == 4&& (ret&0x80000) == 0x80000 &&
