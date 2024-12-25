@@ -34,7 +34,6 @@ size_t ramdisk_read(void* buf, size_t offset, size_t len);
 void show_param();
 static uintptr_t loader(PCB *pcb, const char *filename) {
     //TODO();
-    (void)pcb;
     int fd = fs_open(filename, 0, 0);
 
     // Get Ehdr.
@@ -194,15 +193,16 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     
     void* user_stack = new_page(8) + 8 * PGSIZE;
     //printf("Inside context_uload, user_stack == %x\n", user_stack);
-    void* stack_ptr = create_stack(user_stack, argv, envp);
     for(int i = 8; i > 0; --i){
         map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
     }
+    void* stack_ptr = create_stack(user_stack, argv, envp);
 
     void *entry = (void*)loader(pcb, file_name);
     //printf("Inside context_uload to loader, entry == %p\n", entry);
     pcb->cp = ucontext(&pcb->as, kstack, entry);
-    pcb->cp->GPRx = (uintptr_t)stack_ptr;
+    //pcb->cp->GPRx = (uintptr_t)stack_ptr;
+    pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
 
     /*
      *void* user_stack = new_page(8) + 8 * PGSIZE;

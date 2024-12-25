@@ -25,7 +25,7 @@ size_t serial_write(const void *buf, size_t offset, size_t len) {
     return len;
 }
 
-size_t events_read(void *buf, size_t offset, size_t len) {
+size_t events_read(void *buf, size_t offset __attribute__((unused)), size_t len) {
     #ifndef HAS_TIMER_IRQ
     yield();
     #endif
@@ -43,7 +43,7 @@ size_t events_read(void *buf, size_t offset, size_t len) {
     return strlen(buf);
 }
 
-size_t dispinfo_read(void *buf, size_t offset, size_t len) {
+size_t dispinfo_read(void *buf, size_t offset[[maybe_unused]], size_t len) {
     AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
     int width = info.width;
     int height = info.height;
@@ -59,8 +59,8 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
     yield();
     #endif
     AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
-    int width = info.width;
-    int height = info.height;
+    size_t width = info.width;
+    size_t height = info.height;
     assert(offset <= width * height * 4);
 
     int x = (offset/4) % width;
@@ -77,7 +77,7 @@ size_t fb_write(const void *buf, size_t offset, size_t len) {
 int sys_gettimeofday(struct timeval* tv, struct timezone* tz[[maybe_unused]]){
     uint64_t us = io_read(AM_TIMER_UPTIME).us;
     assert(tv);
-    tv->tv_sec = us / 1000000;
+    tv->tv_sec =  us / 1000000;
     tv->tv_usec = us % 1000000;
     //tv->tv_usec = us - us / 1000000 * 1000000;
     return 0;
