@@ -9,6 +9,9 @@ paddr_t page_table_walk(vaddr_t vaddr) {
     uint32_t va_pg = (vaddr >> 12) & ((1 << 10) - 1);
 
     uint32_t pde = paddr_read(cpu.CR3 + 4 * va_pd, 4);
+    if(!(pde & 0x1)){
+        printf("error! page_table_walk, vaddr == %x\n", vaddr); 
+    }
     assert(pde & 0x1);
     uint32_t pte = paddr_read((pde & ~PAGE_MASK) + 4 * va_pg, 4);
     assert(pte & 0x1);
