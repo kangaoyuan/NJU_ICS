@@ -96,7 +96,7 @@ word_t vaddr_mmu_read(vaddr_t addr, int len, int type) {
         return vaddr_read_cross_page(addr, type, len);
     } else {
         paddr_t paddr = page_table_walk(addr);
-        assert(addr == paddr);
+        // assert(addr == paddr);
         // word_t ret = paddr_read(paddr,len);
         // if(len == 4&& (ret&0x80000) == 0x80000 &&
         // (ret&0xbfff0000)!=0xbfff0000) printf("read %x %x\n",addr,ret);
