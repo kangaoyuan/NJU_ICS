@@ -32,7 +32,7 @@ int mm_brk(uintptr_t brk) {
     if(brk > current->max_brk){
 
         uintptr_t vaddr = current->max_brk;
-        uintptr_t vaddr_beg = vaddr & ~((1 << 10) - 1);
+        uintptr_t vaddr_beg = vaddr & ~((1 << 12) - 1);
         uintptr_t vaddr_end = vaddr_beg + PGSIZE;
         uint32_t len = (vaddr_end - vaddr) <= (brk - vaddr) ? 
                         vaddr_end - vaddr : brk - vaddr;
@@ -40,19 +40,19 @@ int mm_brk(uintptr_t brk) {
         if (len < PGSIZE) {
             vaddr += len;
         } else if (len == PGSIZE) {
-            assert(vaddr && ((1 << 10) -1) == 0);
+            assert(vaddr && ((1 << 12) -1) == 0);
         } else {
             assert(0);
         }
 
         while(vaddr < brk) {
             void* paddr = new_page(1);
+            vaddr_beg = vaddr & ~((1 << 12) - 1);
+            vaddr_end = vaddr_beg + PGSIZE;
             len = (vaddr_end - vaddr) <= (brk - vaddr) ? 
                         vaddr_end - vaddr : brk - vaddr;
             map(&current->as, (void*)vaddr_beg, paddr, 0x7);
             vaddr += len;
-            vaddr_beg = vaddr & ~((1 << 10) - 1);
-            vaddr_end = vaddr_beg + PGSIZE;
         } 
 
         current->max_brk = brk;

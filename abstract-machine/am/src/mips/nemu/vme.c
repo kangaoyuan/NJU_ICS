@@ -8,11 +8,11 @@ static void (*pgfree_usr)(void*) = NULL;
 static int vme_enable = 0;
 static PTE *cur_pdir = NULL;
 
-bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
-  pgalloc_usr = pgalloc_f;
-  pgfree_usr = pgfree_f;
-  vme_enable = 1;
-  return true;
+bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)){
+    pgalloc_usr = pgalloc_f;
+    pgfree_usr = pgfree_f;
+    vme_enable = 1;
+    return true;
 }
 
 void protect(AddrSpace *as) {
