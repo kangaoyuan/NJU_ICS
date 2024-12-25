@@ -182,27 +182,28 @@ void show_param() {
         }
     }
 }
-void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
-    protect(&pcb->as);
 
-    argv_ = argv, envp_ = envp;
-    Area kstack = {.start = pcb->stack,
-                   .end = pcb->stack + sizeof(pcb->stack)};
+/*void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){*/
+    /*protect(&pcb->as);*/
 
-    // Below sequence is so important for the overwritting problem.
+    /*argv_ = argv, envp_ = envp;*/
+    /*Area kstack = {.start = pcb->stack,*/
+                   /*.end = pcb->stack + sizeof(pcb->stack)};*/
+
+    /*// Below sequence is so important for the overwritting problem.*/
     
-    void* user_stack = new_page(8) + 8 * PGSIZE;
-    //printf("Inside context_uload, user_stack == %x\n", user_stack);
-    for(int i = 8; i > 0; --i){
-        map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
-    }
-    void* stack_ptr = create_stack(user_stack, argv, envp);
+    /*void* user_stack = new_page(8) + 8 * PGSIZE;*/
+    /*//printf("Inside context_uload, user_stack == %x\n", user_stack);*/
+    /*for(int i = 8; i > 0; --i){*/
+        /*map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);*/
+    /*}*/
+    /*void* stack_ptr = create_stack(user_stack, argv, envp);*/
 
-    void *entry = (void*)loader(pcb, file_name);
-    //printf("Inside context_uload to loader, entry == %p\n", entry);
-    pcb->cp = ucontext(&pcb->as, kstack, entry);
-    //pcb->cp->GPRx = (uintptr_t)stack_ptr;
-    pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
+    /*void *entry = (void*)loader(pcb, file_name);*/
+    /*//printf("Inside context_uload to loader, entry == %p\n", entry);*/
+    /*pcb->cp = ucontext(&pcb->as, kstack, entry);*/
+    /*//pcb->cp->GPRx = (uintptr_t)stack_ptr;*/
+    /*pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));*/
 
     /*
      *void* user_stack = new_page(8) + 8 * PGSIZE;
@@ -210,5 +211,62 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
      *pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
      */
 
-     //pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);
+     /*//pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);*/
+/*}*/
+
+void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
+{
+  protect(&pcb->as);
+  void *start = new_page(8);
+  void *end = start + 8 * PGSIZE;
+  for (int i = 1; i <= 8; i++)
+  {
+    map(&pcb->as, pcb->as.area.end - i * PGSIZE, end - i * PGSIZE, 0x7);
+  }
+  Area ustack = {start, end};
+
+  uintptr_t entry = loader(pcb, filename);
+
+  int size = 0, size_argv = 0, size_envp = 0, argc = 0, envc = 0;
+  while (argv[argc] != NULL)
+  {
+    size_argv += strlen(argv[argc]) + 1;
+    argc++;
+  }
+  while (envp[envc] != NULL)
+  {
+    size_envp += strlen(envp[envc]) + 1;
+    envc++;
+  }
+  size = size_envp + size_argv + sizeof(uintptr_t) * (argc + 4 + envc);
+  size = size - size % sizeof(uintptr_t);
+  void *ret = pcb->as.area.end - size;
+  void *args_start = ustack.end - size;
+  void *str_start = args_start + sizeof(uintptr_t) * (argc + 3 + envc);
+
+  memset(args_start, 0, ustack.end - args_start);
+  *(uintptr_t *)args_start = argc;
+  for (int i = 0; i < argc; i++)
+  {
+    memcpy(str_start, argv[i], strlen(argv[i]));
+    *(uintptr_t *)(args_start + sizeof(uintptr_t) * (i + 1)) = (uintptr_t)str_start;
+    str_start += strlen(argv[i]) + 1;
+  }
+  *(uintptr_t *)(args_start + sizeof(uintptr_t) * (1 + argc)) = 0;
+  for (int i = 0; i < envc; i++)
+  {
+    memcpy(str_start, envp[i], strlen(envp[i]));
+    *(uintptr_t *)(args_start + sizeof(uintptr_t) * (argc + 2 + i)) = (uintptr_t)str_start;
+    str_start += strlen(envp[i]) + 1;
+  }
+  *(uintptr_t *)(args_start + sizeof(uintptr_t) * (argc + 2 + envc)) = 0;
+
+  Area stack = {pcb->stack, pcb->stack + STACK_SIZE};
+  pcb->cp = ucontext(&pcb->as, stack, (void *)entry);
+  pcb->cp->GPRx = (uintptr_t)ret;
+  /* uintptr_t entry = loader(pcb, filename);
+  Area stack = {pcb->stack,pcb->stack + STACK_SIZE};
+  pcb->cp = ucontext(&pcb->as,stack,(void*)entry);
+  pcb->cp->GPRx = (uintptr_t)heap.end; */
+  //while (1);
 }
