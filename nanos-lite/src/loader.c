@@ -69,10 +69,10 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             
             while(vaddr < file_vaddr){
                 paddr = new_page(1);
-                void* vaddr_beg = (void*)((uint32_t)vaddr & ~(0xfff));
-                void* vaddr_end = (void*)((uint32_t)vaddr & ~(0xfff)) + PGSIZE;
+                void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
+                void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
                 map(&pcb->as, vaddr_beg, paddr, 0x7);
-                uint32_t vaddr_off = (uint32_t)vaddr & (0xfff);
+                uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
                 uint32_t read_cnt = (vaddr_end  - vaddr) <= (file_vaddr - vaddr) ?
                 (vaddr_end  - vaddr) : (file_vaddr - vaddr);
                 fs_read(fd, paddr + vaddr_off, read_cnt);
@@ -81,9 +81,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             assert(vaddr == file_vaddr);
 
             while(vaddr < mem_vaddr){
-                uint32_t vaddr_off = (uint32_t)vaddr & (0xfff);
-                void* vaddr_beg = (void*)((uint32_t)vaddr & ~(0xfff));
-                void* vaddr_end = (void*)((uint32_t)vaddr & ~(0xfff)) + PGSIZE;
+                uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
+                void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
+                void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
                 if(vaddr_off == 0){
                     paddr = new_page(1); 
                     map(&pcb->as, vaddr_beg, paddr, 0x7);
