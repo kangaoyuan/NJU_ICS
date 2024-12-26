@@ -19,10 +19,11 @@ void __am_switch(Context *c);
 void __am_get_cur_as(Context *c);
 
 // called from above exception/interpret routine(int instruction entry point) 
-// to do the work registered from OS by user_handler function.
+// to do the work registered from OS by user_handler function, and then return the context.
 Context* __am_irq_handle(Context* c) {
     // Save current as to the context
     __am_get_cur_as(c);
+
     if (user_handler) {
         Event ev = {0};
         // Construct event to the user_handler registered by OS from Context.
@@ -45,9 +46,9 @@ Context* __am_irq_handle(Context* c) {
         c = user_handler(ev, c);
         assert(c != NULL);
     }
+
     // Restore the as from the context
     __am_switch(c);
-
     return c;
 }
 
@@ -98,8 +99,5 @@ bool ienabled() {
 }
 
 void iset(bool enable) {
-    if(enable)
-        sti();
-    else
-        cli();
+    (void)enable;
 }
