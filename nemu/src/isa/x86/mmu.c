@@ -14,6 +14,9 @@ paddr_t page_table_walk(vaddr_t vaddr) {
     }
     assert(pde & 0x1);
     uint32_t pte = paddr_read((pde & ~PAGE_MASK) + 4 * va_pg, 4);
+    if(!(pte & 0x1)){
+        printf("error! page_table_walk, vaddr == %x\n", vaddr); 
+    }
     assert(pte & 0x1);
     return (pte & ~PAGE_MASK) | (vaddr & PAGE_MASK);
 }
