@@ -2,8 +2,8 @@
 #include <elf.h>
 #include <fs.h>
 
-#define PAGE_SIZE         4096
-#define PAGE_MASK         (PAGE_SIZE - 1)
+#define PAGE_SIZE 4096
+#define PAGE_MASK (PAGE_SIZE - 1)
 
 #define EM_386		 3	/* Intel 80386 */
 #define EM_X86_64	62	/* AMD x86-64 architecture */
@@ -32,6 +32,7 @@ int    fs_close(int fd);
 size_t ramdisk_read(void* buf, size_t offset, size_t len);
 
 void show_param();
+
 static uintptr_t loader(PCB *pcb, const char *filename) {
     //TODO();
     int fd = fs_open(filename, 0, 0);
@@ -95,6 +96,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             assert(vaddr == mem_vaddr);
             pcb->max_brk = (uintptr_t)vaddr;
 #else
+            (void)pcb;
             // for Mem, from p_vaddr to p_vaddr + p_memsz.
             //rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);
             rv = fs_read(fd, (void *)p.p_vaddr, p.p_filesz);
@@ -124,43 +126,48 @@ void context_kload(PCB *pcb, void (*entry)(void *), void *arg){
     pcb->cp = kcontext(kstack, entry, arg);
 }
 
-void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
+void* create_stack(void* stack_top, char* const* argv, char* const envp[]) {
     uint32_t argc = 0, envc = 0, size_argv = 0, size_envp = 0;
 
-    if(argv){
+    if (argv) {
         while (argv[argc]) {
             size_argv += strlen(argv[argc++]) + 1;
         }
     }
-    
 
-    if(envp){
+    if (envp) {
         while (envp[envc]) {
             size_envp += strlen(envp[envc++]) + 1;
         }
     }
 
-    uint32_t size = sizeof(uint32_t) + (argc + envc + 4) * sizeof(uintptr_t) + size_argv + size_envp;
+    uint32_t size = sizeof(uint32_t) +
+                    (argc + envc + 4) * sizeof(uintptr_t) + size_argv +
+                    size_envp;
     size = size - size % (2 * sizeof(uintptr_t));
-    
+
     void* argc_start = stack_top - size;
-    void* str_start = argc_start +  sizeof(uint32_t) + (argc + envc + 2) * sizeof(uintptr_t);
+    void* str_start = argc_start + sizeof(uint32_t) +
+                      (argc + envc + 2) * sizeof(uintptr_t);
 
     memset(argc_start, 0, size);
     *(uint32_t*)argc_start = argc;
 
-    uintptr_t* argv_start = (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t));
-    for(uint32_t i = 0; i < argc; ++i){
+    uintptr_t* argv_start =
+        (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t));
+    for (uint32_t i = 0; i < argc; ++i) {
         argv_start[i] = (uintptr_t)str_start;
-        memcpy(str_start, argv[i], strlen(argv[i])); 
+        memcpy(str_start, argv[i], strlen(argv[i]));
         str_start += strlen(argv[i]) + 1;
     }
     argv_start[argc] = (uintptr_t)NULL;
 
-    uintptr_t* envp_start = (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t) + (argc+1) * sizeof(uintptr_t));
-    for(uint32_t i = 0; i < envc; ++i){
+    uintptr_t* envp_start =
+        (uintptr_t*)((uint8_t*)argc_start + sizeof(uint32_t) +
+                     (argc + 1) * sizeof(uintptr_t));
+    for (uint32_t i = 0; i < envc; ++i) {
         envp_start[i] = (uintptr_t)str_start;
-        memcpy(str_start, envp[i], strlen(envp[i])); 
+        memcpy(str_start, envp[i], strlen(envp[i]));
         str_start += strlen(envp[i]) + 1;
     }
     envp_start[envc] = (uintptr_t)NULL;
@@ -168,105 +175,28 @@ void* create_stack(void* stack_top, char * const *argv, char * const envp[]){
     return argc_start;
 }
 
-static char* const* argv_;
-static char* const* envp_;
-void show_param() {
-    if (argv_) {
-        for (int i = 0; argv_[i]; i++) {
-            printf("argv[%d] == %s\n", i, argv_[i]);
-        }
-    }
-    if (envp_) {
-        for (int i = 0; envp_[i]; i++) {
-            printf("envp[%d] == %s\n", i, envp_[i]);
-        }
-    }
-}
-
-/*void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){*/
-    /*protect(&pcb->as);*/
-
-    /*argv_ = argv, envp_ = envp;*/
-    /*Area kstack = {.start = pcb->stack,*/
-                   /*.end = pcb->stack + sizeof(pcb->stack)};*/
-
-    /*// Below sequence is so important for the overwritting problem.*/
-    
-    /*void* user_stack = new_page(8) + 8 * PGSIZE;*/
-    /*//printf("Inside context_uload, user_stack == %x\n", user_stack);*/
-    /*for(int i = 8; i > 0; --i){*/
-        /*map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);*/
-    /*}*/
-    /*void* stack_ptr = create_stack(user_stack, argv, envp);*/
-
-    /*void *entry = (void*)loader(pcb, file_name);*/
-    /*//printf("Inside context_uload to loader, entry == %p\n", entry);*/
-    /*pcb->cp = ucontext(&pcb->as, kstack, entry);*/
-    /*//pcb->cp->GPRx = (uintptr_t)stack_ptr;*/
-    /*pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));*/
-
+void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
     /*
-     *void* user_stack = new_page(8) + 8 * PGSIZE;
-     *printf("user_stack == %x\n", user_stack);
-     *pcb->cp->GPRx = (uintptr_t)create_stack(user_stack, argv, envp);
+     *protect(&pcb->as);
      */
 
-     /*//pcb->cp->GPRx = (uintptr_t)create_stack(heap.end, argv, envp);*/
-/*}*/
+    Area kstack = {.start = pcb->stack,
+                   .end = pcb->stack + sizeof(pcb->stack)};
 
-void context_uload(PCB *pcb, const char *filename, char *const argv[], char *const envp[])
-{
-  protect(&pcb->as);
-  void *start = new_page(8);
-  void *end = start + 8 * PGSIZE;
-  for (int i = 1; i <= 8; i++)
-  {
-    map(&pcb->as, pcb->as.area.end - i * PGSIZE, end - i * PGSIZE, 0x7);
-  }
-  Area ustack = {start, end};
+    // Below sequence for creating stack and loader
+    // is so important for the overwritting problem.
+    /*
+     *void* user_stack = new_page(8) + 8 * PGSIZE;
+     *printf("Inside context_uload, user_stack == %x\n", user_stack);
+     *for(int i = 8; i > 0; --i){
+     *    map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
+     *}
+     *void* stack_ptr = create_stack(user_stack, argv, envp);
+     */
+    void* stack_ptr = create_stack(heap.end, argv, envp);
 
-  uintptr_t entry = loader(pcb, filename);
-
-  int size = 0, size_argv = 0, size_envp = 0, argc = 0, envc = 0;
-  while (argv[argc] != NULL)
-  {
-    size_argv += strlen(argv[argc]) + 1;
-    argc++;
-  }
-  while (envp[envc] != NULL)
-  {
-    size_envp += strlen(envp[envc]) + 1;
-    envc++;
-  }
-  size = size_envp + size_argv + sizeof(uintptr_t) * (argc + 4 + envc);
-  size = size - size % sizeof(uintptr_t);
-  void *ret = pcb->as.area.end - size;
-  void *args_start = ustack.end - size;
-  void *str_start = args_start + sizeof(uintptr_t) * (argc + 3 + envc);
-
-  memset(args_start, 0, ustack.end - args_start);
-  *(uintptr_t *)args_start = argc;
-  for (int i = 0; i < argc; i++)
-  {
-    memcpy(str_start, argv[i], strlen(argv[i]));
-    *(uintptr_t *)(args_start + sizeof(uintptr_t) * (i + 1)) = (uintptr_t)str_start;
-    str_start += strlen(argv[i]) + 1;
-  }
-  *(uintptr_t *)(args_start + sizeof(uintptr_t) * (1 + argc)) = 0;
-  for (int i = 0; i < envc; i++)
-  {
-    memcpy(str_start, envp[i], strlen(envp[i]));
-    *(uintptr_t *)(args_start + sizeof(uintptr_t) * (argc + 2 + i)) = (uintptr_t)str_start;
-    str_start += strlen(envp[i]) + 1;
-  }
-  *(uintptr_t *)(args_start + sizeof(uintptr_t) * (argc + 2 + envc)) = 0;
-
-  Area stack = {pcb->stack, pcb->stack + STACK_SIZE};
-  pcb->cp = ucontext(&pcb->as, stack, (void *)entry);
-  pcb->cp->GPRx = (uintptr_t)ret;
-  /* uintptr_t entry = loader(pcb, filename);
-  Area stack = {pcb->stack,pcb->stack + STACK_SIZE};
-  pcb->cp = ucontext(&pcb->as,stack,(void*)entry);
-  pcb->cp->GPRx = (uintptr_t)heap.end; */
-  //while (1);
+    void *entry = (void*)loader(pcb, file_name);
+    pcb->cp = ucontext(&pcb->as, kstack, entry);
+    pcb->cp->GPRx = (uintptr_t)stack_ptr;
+    //pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
 }
