@@ -193,7 +193,12 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
      *}
      *void* stack_ptr = create_stack(user_stack, argv, envp);
      */
-    void* stack_ptr = create_stack(heap.end, argv, envp);
+
+    /*
+     *void* stack_ptr = create_stack(heap.end, argv, envp);
+     */
+    void* user_stack = new_page(8) + 8 * PGSIZE;
+    void* stack_ptr = create_stack(user_stack, argv, envp);
 
     void *entry = (void*)loader(pcb, file_name);
     pcb->cp = ucontext(&pcb->as, kstack, entry);
