@@ -64,11 +64,13 @@ void init_proc() {
     
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
-    //context_kload(&pcb[1], hello_fun, (void*)2);
+    context_kload(&pcb[1], hello_fun, (void*)2);
     
-    char * const argv[] = {"/bin/pal", "--skip", NULL};
-    char * const envp[] = {NULL};
-    context_uload(&pcb[1], "/bin/pal", argv, envp);
+    /*
+     *char * const argv[] = {"/bin/pal", "--skip", NULL};
+     *char * const envp[] = {NULL};
+     *context_uload(&pcb[1], "/bin/pal", argv, envp);
+     */
 
     //char * const argv[] = {"/bin/menu", NULL};
     //char * const argv[] = {"/bin/nterm", NULL};
@@ -83,19 +85,22 @@ void init_proc() {
     switch_boot_pcb();
 }
 
-static int sche_cnt = 0;
+//static int sche_cnt = 0;
 Context* schedule(Context *prev) {
     current->cp = prev;
+
     //current = &pcb[0];
-    //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
-    
-    if(sche_cnt % 0x8964 == 0){
-        sche_cnt = 1;
-        current = &pcb[0]; 
-    } else {
-        sche_cnt++;
-        current = &pcb[1]; 
-    }
+    current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
+
+    /*
+     *if(sche_cnt % 0x8964 == 0){
+     *    sche_cnt = 1;
+     *    current = &pcb[0]; 
+     *} else {
+     *    sche_cnt++;
+     *    current = &pcb[1]; 
+     *}
+     */
 
     return current->cp;
 }
