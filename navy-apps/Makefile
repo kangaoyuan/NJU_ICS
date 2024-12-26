@@ -171,10 +171,7 @@ $(CLEAN_ALL):
 APPS = nslider bird pal menu nterm busybox
 TESTS = dummy hello exec-test
 
-fsimg: $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
-	ifeq ($(VME), 1)
-		-@rm -f $(NAVY_HOME)/fsimg/bin/*
-	endif
+fsimg: clean-all $(addprefix apps/, $(APPS)) $(addprefix tests/, $(TESTS))
 	-for t in $^; do $(MAKE) -s -C $(NAVY_HOME)/$$t install; done
 
 RAMDISK = build/ramdisk.img
