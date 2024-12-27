@@ -61,44 +61,43 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
 
         if (p.p_type == PT_LOAD) {
             fs_lseek(fd, p.p_offset, SEEK_SET);
-/*
- *#ifdef HAS_VME
- *            // Below content should apply with config to navy
- *            void* vaddr = (void*)(p.p_vaddr), *paddr = 0;
- *            void* file_vaddr = (void*)(p.p_vaddr + p.p_filesz);
- *            void* mem_vaddr = (void*)(p.p_vaddr + p.p_memsz);
- *            
- *            while(vaddr < file_vaddr){
- *                paddr = new_page(1);
- *                void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
- *                void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
- *                printf("vaddr %x -> paddr %x\n", vaddr_beg, paddr);
- *                map(&pcb->as, vaddr_beg, paddr, 0x7);
- *                uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
- *                uint32_t read_cnt = (vaddr_end  - vaddr) <= (file_vaddr - vaddr) ?
- *                (vaddr_end  - vaddr) : (file_vaddr - vaddr);
- *                fs_read(fd, paddr + vaddr_off, read_cnt);
- *                vaddr += read_cnt;
- *            }
- *            assert(vaddr == file_vaddr);
- *
- *            while(vaddr < mem_vaddr){
- *                uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
- *                void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
- *                void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
- *                if(vaddr_off == 0){
- *                    paddr = new_page(1); 
- *                    map(&pcb->as, vaddr_beg, paddr, 0x7);
- *                }
- *                uint32_t read_cnt = (vaddr_end  - vaddr) <= (mem_vaddr - vaddr) ?
- *                (vaddr_end  - vaddr) : (mem_vaddr - vaddr);
- *                memset(paddr + vaddr_off, 0, read_cnt);
- *                vaddr += read_cnt;
- *            }
- *            assert(vaddr == mem_vaddr);
- *            pcb->max_brk = (uintptr_t)vaddr;
- *#else
- */
+#ifdef HAS_VME
+            // Below content should apply with config to navy
+            void* vaddr = (void*)(p.p_vaddr), *paddr = 0;
+            void* file_vaddr = (void*)(p.p_vaddr + p.p_filesz);
+            void* mem_vaddr = (void*)(p.p_vaddr + p.p_memsz);
+            
+            while(vaddr < file_vaddr){
+                paddr = new_page(1);
+                void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
+                void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
+                printf("vaddr %x -> paddr %x\n", vaddr_beg, paddr);
+                map(&pcb->as, vaddr_beg, paddr, 0x7);
+                uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
+                uint32_t read_cnt = (vaddr_end  - vaddr) <= (file_vaddr - vaddr) ?
+                (vaddr_end  - vaddr) : (file_vaddr - vaddr);
+                fs_read(fd, paddr + vaddr_off, read_cnt);
+                vaddr += read_cnt;
+            }
+            assert(vaddr == file_vaddr);
+
+            while(vaddr < mem_vaddr){
+                uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
+                void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
+                void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
+                if(vaddr_off == 0){
+                    paddr = new_page(1); 
+                    printf("vaddr %x -> paddr %x\n", vaddr_beg, paddr);
+                    map(&pcb->as, vaddr_beg, paddr, 0x7);
+                }
+                uint32_t read_cnt = (vaddr_end  - vaddr) <= (mem_vaddr - vaddr) ?
+                (vaddr_end  - vaddr) : (mem_vaddr - vaddr);
+                memset(paddr + vaddr_off, 0, read_cnt);
+                vaddr += read_cnt;
+            }
+            assert(vaddr == mem_vaddr);
+            pcb->max_brk = (uintptr_t)vaddr;
+#else
             (void)pcb;
             // for Mem, from p_vaddr to p_vaddr + p_memsz.
             //rv = ramdisk_read((void*)p.p_vaddr, p.p_offset, p.p_memsz);
@@ -107,10 +106,9 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
             // for ELF file, from p_offset to p_offset + p_filesz.
             memset((void*)(p.p_vaddr + p.p_filesz), 0,
                    p.p_memsz - p.p_filesz);
-//#endif
+#endif
         }
     }
-    //show_param();
 
     fs_close(fd);
     return elf_header.e_entry;
@@ -186,25 +184,26 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
 
     // Below sequence for creating stack and loader
     // is so important for the overwritting problem.
-    /*
-     *void* user_stack = new_page(8) + 8 * PGSIZE;
-     *printf("Inside context_uload, user_stack == %x\n", user_stack);
-     *for(int i = 8; i > 0; --i){
-     *    map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
-     *}
-     *void* stack_ptr = create_stack(user_stack, argv, envp);
-     */
+    void* user_stack = new_page(8) + 8 * PGSIZE;
+    printf("Inside context_uload, user_stack == %x\n", user_stack);
+    for(int i = 8; i > 0; --i){
+        map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
+    }
+    void* stack_ptr = create_stack(user_stack, argv, envp);
 
     /*
      *void* stack_ptr = create_stack(heap.end, argv, envp);
      */
-    void* user_stack = new_page(8) + 8 * PGSIZE;
-    void* stack_ptr = create_stack(user_stack, argv, envp);
+    /*
+     *void* user_stack = new_page(8) + 8 * PGSIZE;
+     *void* stack_ptr = create_stack(user_stack, argv, envp);
+     */
 
     printf("before loader, mapping the executable\n");
     void *entry = (void*)loader(pcb, file_name);
     printf("after loader, before creating context\n");
     pcb->cp = ucontext(&pcb->as, kstack, entry);
-    pcb->cp->GPRx = (uintptr_t)stack_ptr;
-    //pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
+    //pcb->cp->GPRx = (uintptr_t)stack_ptr;
+    // For the actual memory mapping.
+    pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
 }

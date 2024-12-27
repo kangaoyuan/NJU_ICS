@@ -49,7 +49,7 @@ word_t vaddr_mmu_read(vaddr_t addr, int len, int type) {
         return vaddr_read_cross_page(addr, type, len);
     } else {
         paddr_t paddr = isa_mmu_translate(addr, type, len);
-        assert(paddr == addr);
+        //assert(paddr == addr);
         return paddr_read(paddr, len);
     }
 }
@@ -67,7 +67,7 @@ void vaddr_mmu_write(vaddr_t addr, word_t data, int len){
         return vaddr_write_cross_page(addr, data, len);
     } else {
         paddr_t paddr = isa_mmu_translate(addr, MEM_TYPE_WRITE, len);
-        assert(paddr == addr);
+        //assert(paddr == addr);
         return paddr_write(paddr, data, len);
     }
 }
