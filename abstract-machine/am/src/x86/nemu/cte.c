@@ -48,9 +48,7 @@ Context* __am_irq_handle(Context* c) {
     }
 
     // Restore the as from the context
-    printf("maybe before error\n");
     __am_switch(c);
-    printf("You ! can see it or not\n");
     return c;
 }
 
