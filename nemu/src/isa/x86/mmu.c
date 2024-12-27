@@ -9,14 +9,14 @@ paddr_t isa_mmu_translate(vaddr_t vaddr, int type [[maybe_unused]],
 
     uint32_t pde = paddr_read(cpu.CR3 + va_dir * 4, 4);
     if (!(pde & 1)) {
-        printf("MMU pde fail: pde = %x dir_idx = %x base = %x\n", pde, va_dir, cpu.CR3);
+        printf("MMU vaddr == %x, pde fail: pde = %x dir_idx = %x base = %x\n", vaddr, pde, va_dir, cpu.CR3);
         assert(0);
     }
     pde = pde & ~(PAGE_MASK);
 
     uint32_t pte = paddr_read(pde + va_tbl * 4, 4);
     if (!(pte & 1)) {
-        printf("MMU pte fail: pte = %x tbl_idx = %x base = %x\n", pde, va_tbl, pde);
+        printf("MMU vaddr == %x, pte fail: pte = %x tbl_idx = %x base = %x\n", vaddr, pde, va_tbl, pde);
         assert(0);
     }
     return (pte & ~(PAGE_MASK)) + (vaddr & (PAGE_MASK));
