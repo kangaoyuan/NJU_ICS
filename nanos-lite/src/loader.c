@@ -71,7 +71,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
                 paddr = new_page(1);
                 void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
                 void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
-                printf("vaddr %x -> paddr %x\n", vaddr_beg, paddr);
                 map(&pcb->as, vaddr_beg, paddr, 0x7);
                 uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
                 uint32_t read_cnt = (vaddr_end  - vaddr) <= (file_vaddr - vaddr) ?
@@ -87,7 +86,6 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
                 void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
                 if(vaddr_off == 0){
                     paddr = new_page(1); 
-                    printf("vaddr %x -> paddr %x\n", vaddr_beg, paddr);
                     map(&pcb->as, vaddr_beg, paddr, 0x7);
                 }
                 uint32_t read_cnt = (vaddr_end  - vaddr) <= (mem_vaddr - vaddr) ?
@@ -199,9 +197,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
      *void* stack_ptr = create_stack(user_stack, argv, envp);
      */
 
-    printf("before loader, mapping the executable\n");
     void *entry = (void*)loader(pcb, file_name);
-    printf("after loader, before creating context\n");
     pcb->cp = ucontext(&pcb->as, kstack, entry);
     //pcb->cp->GPRx = (uintptr_t)stack_ptr;
     // For the actual memory mapping.
