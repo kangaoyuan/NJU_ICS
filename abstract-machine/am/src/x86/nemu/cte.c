@@ -22,7 +22,9 @@ void __am_get_cur_as(Context *c);
 // to do the work registered from OS by user_handler function, and then return the context.
 Context* __am_irq_handle(Context* c) {
     // Save current as to the context
+    printf("int handler, c->irq: %d, c->cr3: %x\n", c->irq, c->cr3);
     __am_get_cur_as(c);
+    printf("int handler, c->irq: %d, c->cr3: %x\n", c->irq, c->cr3);
 
     if (user_handler) {
         Event ev = {0};
@@ -44,6 +46,7 @@ Context* __am_irq_handle(Context* c) {
 
         // registered by OS.
         c = user_handler(ev, c);
+        printf("int handler, c->irq: %d, c->cr3: %x\n", c->irq, c->cr3);
         assert(c != NULL);
     }
 
