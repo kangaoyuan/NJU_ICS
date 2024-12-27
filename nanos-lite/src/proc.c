@@ -97,6 +97,7 @@ void init_proc() {
 static int sche_cnt = 0, size = 0, choose = -1;
 Context* schedule(Context *prev) {
     printf("\nIn schedule, save context to current == %x\n", current);
+    printf("In schedule, context(esp) == %x\n", prev);
     printf("In schedule, context->cr3 == %x\n", prev->cr3);
     printf("In schedule, context->esp == %x\n", prev->esp);
     printf("In schedule, context->eip == %x\n", prev->eip);
@@ -110,6 +111,7 @@ Context* schedule(Context *prev) {
         sche_cnt = 1;
         current = &pcb[0]; 
         printf("Now, shedule: cnt == %x, current to pcb[%d]\n", sche_cnt, choose);
+        printf("In schedule, context(esp) == %x\n", current->cp);
         printf("In schedule to pcb[0], current->cp.cr3 == %x\n", current->cp->cr3);
         printf("In schedule to pcb[0], current->cp.esp == %x\n", current->cp->esp);
         printf("In schedule to pcb[0], current->cp.eip == %x\n\n", current->cp->eip);
@@ -118,6 +120,7 @@ Context* schedule(Context *prev) {
         sche_cnt++;
         current = &pcb[1]; 
         printf("Now, shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
+        printf("In schedule, context(esp) == %x\n", current->cp);
         printf("In schedule to pcb[1], current->cp.cr3 == %x\n", current->cp->cr3);
         printf("In schedule to pcb[1], current->cp.esp == %x\n", current->cp->esp);
         printf("In schedule to pcb[1], current->cp.eip == %x\n\n", current->cp->eip);
