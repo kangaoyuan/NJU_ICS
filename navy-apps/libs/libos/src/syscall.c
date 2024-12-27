@@ -73,42 +73,27 @@ int _write(int fd, void* buf, size_t count) {
     return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
-/*
- *void* _sbrk(intptr_t increment) {
- *    extern char _end;
- *    static char* proc_brk = 0;
- *    // Here, you can find an intersting tricky.
- *    if(!proc_brk)
- *        // Attention here, we need the & address-of operator to do.
- *        proc_brk = &_end;
- *
- *    intptr_t pre_brk = (intptr_t)proc_brk;
- *    intptr_t req_brk = (intptr_t)proc_brk + increment;
- *    // Attention for the argument passed to the system call.
- *    if((char *)req_brk < &_end){
- *        return (void*)-1; 
- *    }
- *    if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
- *        proc_brk += increment;
- *        return (void*)pre_brk;
- *    } else {
- *        return (void*)-1;
- *    }
- *}
- */
-extern char _end;
-static void* program_break = &_end;
+void* _sbrk(intptr_t increment) {
+    extern char _end;
+    static char* proc_brk = 0;
+    // Here, you can find an intersting tricky.
+    if(!proc_brk)
+        // Attention here, we need the & address-of operator to do.
+        proc_brk = &_end;
 
-void *_sbrk(intptr_t increment) {
-  void* addr = program_break;
-  if(_syscall_(SYS_brk,(intptr_t)program_break+increment,0,0) == 0)
-  {
-    program_break = (void*)((intptr_t)program_break + increment);
-    return addr;
-  }
-  else return (void*)-1;
+    intptr_t pre_brk = (intptr_t)proc_brk;
+    intptr_t req_brk = (intptr_t)proc_brk + increment;
+    // Attention for the argument passed to the system call.
+    if((char *)req_brk < &_end){
+        return (void*)-1; 
+    }
+    if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
+        proc_brk += increment;
+        return (void*)pre_brk;
+    } else {
+        return (void*)-1;
+    }
 }
-
 
 int _read(int fd, void* buf, size_t count) {
     return _syscall_(SYS_read, fd, (intptr_t)buf, count);

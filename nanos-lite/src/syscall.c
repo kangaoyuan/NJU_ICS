@@ -40,8 +40,8 @@ void do_syscall(Context* c) {
         break;
     }
     case SYS_brk:
-        c->GPRx = 0;
-        //c->GPRx = mm_brk(a[1]);
+        //c->GPRx = 0;
+        c->GPRx = mm_brk(a[1]);
         break;
     case SYS_open:
         // The same argument meaning to fs_ function. 
