@@ -55,7 +55,9 @@ void hello_fun(void* arg){
 
 void init_proc() {
     Log("Initializing processes...");
-
+    printf("pcb_boot == %x\n", &pcb_boot);
+    printf("pcb[0] == %x\n", &pcb[0]);
+    printf("pcb[1] == %x\n", &pcb[1]);
     // load program here
 
     /*const char file_name[] = "/bin/exectuable_file";*/
@@ -64,11 +66,13 @@ void init_proc() {
     
     //context_kload(&pcb[0], hello_fun, NULL);
     context_kload(&pcb[0], hello_fun, (void*)1);
-    //context_kload(&pcb[1], hello_fun, (void*)2);
+    context_kload(&pcb[1], hello_fun, (void*)2);
     
-    char * const argv[] = {"/bin/pal", "--skip", NULL};
-    char * const envp[] = {NULL};
-    context_uload(&pcb[1], "/bin/pal", argv, envp);
+    /*
+     *char * const argv[] = {"/bin/pal", "--skip", NULL};
+     *char * const envp[] = {NULL};
+     *context_uload(&pcb[1], "/bin/pal", argv, envp);
+     */
 
     //char * const argv[] = {"/bin/menu", NULL};
     //char * const argv[] = {"/bin/nterm", NULL};
@@ -89,7 +93,7 @@ Context* schedule(Context *prev) {
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
-    if(sche_cnt % 0x64 == 0){
+    if(sche_cnt % 0x2 == 0){
         size++;
         choose = 0;
         sche_cnt = 1;
@@ -103,6 +107,9 @@ Context* schedule(Context *prev) {
         sche_cnt++;
         current = &pcb[1]; 
         printf("In schedule to pcb[1], current->cp.cr3 == %x\n", current->cp->cr3);
+        printf("In schedule to pcb[1], current->cp.eip == %x\n", current->cp->eip);
+        printf("In schedule to pcb[1], current->cp.esp == %x\n", current->cp->esp);
+        printf("In schedule to pcb[1], current->cp.eax == %x\n", current->cp->eax);
     }
 
     printf("shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
