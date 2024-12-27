@@ -112,7 +112,7 @@ Context* schedule(Context *prev) {
         printf("Now, shedule: cnt == %x, current to pcb[%d]\n", sche_cnt, choose);
         printf("In schedule to pcb[0], current->cp.cr3 == %x\n", current->cp->cr3);
         printf("In schedule to pcb[0], current->cp.esp == %x\n", current->cp->esp);
-        printf("In schedule to pcb[0], current->cp.eip == %x\n", current->cp->eip);
+        printf("In schedule to pcb[0], current->cp.eip == %x\n\n", current->cp->eip);
     } else {
         choose = 1;
         sche_cnt++;
