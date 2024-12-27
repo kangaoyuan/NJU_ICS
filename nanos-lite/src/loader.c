@@ -185,6 +185,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     void* user_stack = new_page(8) + 8 * PGSIZE;
     printf("Inside context_uload, user_stack == %x\n", user_stack);
     for(int i = 8; i > 0; --i){
+        printf("stack: CR3 == %x\n", pcb->as.ptr);
         printf("stack: %x -> %x\n", pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE);
         map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
     }
