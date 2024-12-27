@@ -87,6 +87,7 @@ void init_proc() {
 
 static int sche_cnt = 0, size = 0, choose = -1;
 Context* schedule(Context *prev) {
+    printf("In schedule, current == %x\n", current);
     current->cp = prev;
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
@@ -96,6 +97,7 @@ Context* schedule(Context *prev) {
         choose = 0;
         sche_cnt = 1;
         current = &pcb[0]; 
+        printf("shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
         printf("In schedule to pcb[0], current->cp.cr3 == %x\n", current->cp->cr3);
         printf("In schedule to pcb[0], current->cp.eip == %x\n", current->cp->eip);
         printf("In schedule to pcb[0], current->cp.esp == %x\n", current->cp->esp);
@@ -104,13 +106,13 @@ Context* schedule(Context *prev) {
         choose = 1;
         sche_cnt++;
         current = &pcb[1]; 
+        printf("shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
         printf("In schedule to pcb[1], current->cp.cr3 == %x\n", current->cp->cr3);
         printf("In schedule to pcb[1], current->cp.eip == %x\n", current->cp->eip);
         printf("In schedule to pcb[1], current->cp.esp == %x\n", current->cp->esp);
         printf("In schedule to pcb[1], current->cp.eax == %x\n", current->cp->eax);
     }
 
-    printf("shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
     if(size == 3)
         assert(0);
 
