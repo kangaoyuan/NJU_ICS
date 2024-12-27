@@ -71,6 +71,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
                 paddr = new_page(1);
                 void* vaddr_beg = (void*)((uintptr_t)vaddr & ~(0xfff));
                 void* vaddr_end = (void*)((uintptr_t)vaddr & ~(0xfff)) + PGSIZE;
+                printf("vaddr %x -> paddr %x\n", vaddr_beg, paddr);
                 map(&pcb->as, vaddr_beg, paddr, 0x7);
                 uint32_t vaddr_off = (uintptr_t)vaddr & (0xfff);
                 uint32_t read_cnt = (vaddr_end  - vaddr) <= (file_vaddr - vaddr) ?
@@ -198,7 +199,9 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     void* user_stack = new_page(8) + 8 * PGSIZE;
     void* stack_ptr = create_stack(user_stack, argv, envp);
 
+    printf("before loader, mapping the executable\n");
     void *entry = (void*)loader(pcb, file_name);
+    printf("after loader, before creating context\n");
     pcb->cp = ucontext(&pcb->as, kstack, entry);
     pcb->cp->GPRx = (uintptr_t)stack_ptr;
     //pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
