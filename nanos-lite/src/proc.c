@@ -89,7 +89,7 @@ Context* schedule(Context *prev) {
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
-    if(sche_cnt % 0x8964 == 0){
+    if(sche_cnt % 0x64 == 0){
         size++;
         choose = 0;
         sche_cnt = 1;
