@@ -176,9 +176,7 @@ void* create_stack(void* stack_top, char* const* argv, char* const envp[]) {
 }
 
 void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
-    /*
-     *protect(&pcb->as);
-     */
+    protect(&pcb->as);
 
     Area kstack = {.start = pcb->stack,
                    .end = pcb->stack + sizeof(pcb->stack)};
