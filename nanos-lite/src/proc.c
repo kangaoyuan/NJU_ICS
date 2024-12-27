@@ -99,6 +99,7 @@ Context* schedule(Context *prev) {
         choose = 1;
         sche_cnt++;
         current = &pcb[1]; 
+        printf("In schedule to pcb[1], current->cp.cr3 == %x\n", current->cp->cr3);
     }
 
     printf("shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);

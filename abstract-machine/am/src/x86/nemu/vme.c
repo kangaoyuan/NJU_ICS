@@ -36,6 +36,7 @@ bool vme_init(void* (*pgalloc_f)(int), void (*pgfree_f)(void*)) {
 // For each user process to create AddrSpace.
 void protect(AddrSpace* as) {
     PTE* updir = (PTE*)(pgalloc_usr(PGSIZE));
+    printf("For user process, address space is %x\n", updir);
     as->ptr = updir;
     as->pgsize = PGSIZE;
     as->area = USER_SPACE;
