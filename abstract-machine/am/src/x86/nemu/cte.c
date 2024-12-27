@@ -49,6 +49,7 @@ Context* __am_irq_handle(Context* c) {
 
     // Restore the as from the context
     __am_switch(c);
+    printf("return from int os handler\n");
     return c;
 }
 
