@@ -12,7 +12,7 @@ __am_asm_trap:
   pushl %esp
 # The rv of __am_irq_handle to esp
   call __am_irq_handle
-  addl $4, %esp
+  //addl $4, %esp
 
   movl %eax, %esp
 
