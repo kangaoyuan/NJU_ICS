@@ -7,7 +7,6 @@ void* new_page(size_t nr_page) {
     void* rc = pf;
     // Here we use some compiler-specific for void*
     pf += nr_page * PGSIZE;
-    // There is a little difference to the manual.
     return rc;
 }
 
@@ -15,7 +14,7 @@ void* new_page(size_t nr_page) {
 static void* pg_alloc(int n) {
     int cnt = (n + PGSIZE - 1) / PGSIZE;
     void* rc = new_page(cnt);
-    memset(rc, 0, n);
+    memset(rc, 0, cnt*PGSIZE);
     assert(!((uintptr_t)rc % PGSIZE));
     return rc;
 }

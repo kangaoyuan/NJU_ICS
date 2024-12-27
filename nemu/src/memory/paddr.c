@@ -99,8 +99,8 @@ void concat(vaddr_write, bytes) (vaddr_t addr, word_t data) { \
 
 
 /*
- * Firstly, isa_vaddr_check() to check the vaddr status whether need to tansalate,
- * Secondly use vaddr_mmu_read/vaddr_mmu_write() to do the actual address translation.
+ * Firstly, isa_vaddr_check() to check the vaddr status whether need to tansalate, Secondly,
+ * if so use vaddr_mmu_read/vaddr_mmu_write() to do the actual address translation.
  * */
 
 def_vaddr_template(1)
