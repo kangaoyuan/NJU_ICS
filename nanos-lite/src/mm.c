@@ -40,6 +40,7 @@ int mm_brk(uintptr_t brk) {
         if (len < PGSIZE) {
             vaddr += len;
         } else if (len == PGSIZE) {
+            printf("len == PGSIZE, vaddr == %x\n", vaddr);
             assert(vaddr && ((1 << 12) -1) == 0);
         } else {
             assert(0);
