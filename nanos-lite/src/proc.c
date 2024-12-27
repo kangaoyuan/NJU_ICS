@@ -83,7 +83,7 @@ void init_proc() {
     switch_boot_pcb();
 }
 
-static int sche_cnt = 0, size = 0;
+static int sche_cnt = 0, size = 0, choose = -1;
 Context* schedule(Context *prev) {
     current->cp = prev;
 
@@ -91,14 +91,17 @@ Context* schedule(Context *prev) {
 
     if(sche_cnt % 0x8964 == 0){
         size++;
+        choose = 0;
         sche_cnt = 1;
         current = &pcb[0]; 
         printf("In schedule to pcb[0], current->cp.cr3 == %x\n", current->cp->cr3);
     } else {
+        choose = 1;
         sche_cnt++;
         current = &pcb[1]; 
     }
 
+    printf("shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
     if(size == 3)
         assert(0);
 
