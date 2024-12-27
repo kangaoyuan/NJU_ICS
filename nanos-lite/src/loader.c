@@ -175,10 +175,8 @@ void* create_stack(void* stack_top, char* const* argv, char* const envp[]) {
 }
 
 void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* const envp[]){
+    // Copy kernel mapping
     protect(&pcb->as);
-
-    Area kstack = {.start = pcb->stack,
-                   .end = pcb->stack + sizeof(pcb->stack)};
 
     // Below sequence for creating stack and loader
     // is so important for the overwritting problem.
@@ -199,6 +197,8 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
      *void* stack_ptr = create_stack(user_stack, argv, envp);
      */
 
+    Area kstack = {.start = pcb->stack,
+                   .end = pcb->stack + sizeof(pcb->stack)};
     void *entry = (void*)loader(pcb, file_name);
     pcb->cp = ucontext(&pcb->as, kstack, entry);
     //pcb->cp->GPRx = (uintptr_t)stack_ptr;
