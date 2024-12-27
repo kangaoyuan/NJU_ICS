@@ -48,15 +48,12 @@ void unprotect(AddrSpace *as) {
 }
 
 void __am_get_cur_as(Context *c) {
-    printf("before set context cr3, conext->cr3 == %x, cpu.CR3 == %x\n", c->cr3, get_cr3());
     c->cr3 = (vme_enable ? (void*)get_cr3() : NULL);
 }
 
 void __am_switch(Context *c) {
     if (vme_enable && c->cr3 != NULL) {
-        printf("before set cpu cr3, conext->cr3 == %x, cpu.CR3 == %x\n", c->cr3, get_cr3());
         set_cr3(c->cr3);
-        printf("after set cput cr3, conext->cr3 == %x, cpu.CR3 == %x\n", c->cr3, get_cr3());
     }
 }
 
