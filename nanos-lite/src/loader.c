@@ -185,6 +185,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     void* user_stack = new_page(8) + 8 * PGSIZE;
     printf("Inside context_uload, user_stack == %x\n", user_stack);
     for(int i = 8; i > 0; --i){
+        printf("stack: %x -> %x\n", pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE);
         map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
     }
     void* stack_ptr = create_stack(user_stack, argv, envp);
@@ -202,4 +203,5 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     //pcb->cp->GPRx = (uintptr_t)stack_ptr;
     // For the actual memory mapping.
     pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
+    printf("stack start at: %x\n", pcb->cp->GPRx);
 }
