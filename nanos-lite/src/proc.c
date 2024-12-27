@@ -83,13 +83,14 @@ void init_proc() {
     switch_boot_pcb();
 }
 
-static int sche_cnt = 0;
+static int sche_cnt = 0, size = 0;
 Context* schedule(Context *prev) {
     current->cp = prev;
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
     if(sche_cnt % 0x8964 == 0){
+        size++;
         sche_cnt = 1;
         current = &pcb[0]; 
         printf("In schedule to pcb[0], current->cp.cr3 == %x\n", current->cp->cr3);
@@ -98,7 +99,7 @@ Context* schedule(Context *prev) {
         current = &pcb[1]; 
     }
 
-    if(sche_cnt == 3)
+    if(size == 3)
         assert(0);
 
     return current->cp;
