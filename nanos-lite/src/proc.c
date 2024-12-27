@@ -95,6 +95,9 @@ Context* schedule(Context *prev) {
         sche_cnt = 1;
         current = &pcb[0]; 
         printf("In schedule to pcb[0], current->cp.cr3 == %x\n", current->cp->cr3);
+        printf("In schedule to pcb[0], current->cp.eip == %x\n", current->cp->eip);
+        printf("In schedule to pcb[0], current->cp.esp == %x\n", current->cp->esp);
+        printf("In schedule to pcb[0], current->cp.eax == %x\n", current->cp->eax);
     } else {
         choose = 1;
         sche_cnt++;
