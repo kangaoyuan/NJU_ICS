@@ -102,6 +102,9 @@ Context* schedule(Context *prev) {
     printf("In schedule, context->esp == %x\n", prev->esp);
     printf("In schedule, context->eip == %x\n", prev->eip);
     current->cp = prev;
+    if(current == &pcb[0]){
+        current->cp->cr3 = NULL; 
+    }
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
