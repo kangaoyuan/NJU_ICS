@@ -129,8 +129,10 @@ Context* schedule(Context *prev) {
         printf("In schedule to pcb[1], current->cp.eip == %x\n\n", current->cp->eip);
     }
 
-    if(size == 3)
-        assert(0);
+    /*
+     *if(size == 3)
+     *    assert(0);
+     */
 
     return current->cp;
 }
