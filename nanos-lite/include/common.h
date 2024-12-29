@@ -4,6 +4,7 @@
 /* Uncomment these macros to enable corresponding functionality. */
 #define HAS_CTE
 #define HAS_VME
+#define HAS_TIMER_IRQ
 //#define MULTIPROGRAM
 //#define TIME_SHARING
 

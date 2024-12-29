@@ -27,11 +27,11 @@ static inline void check_bound(IOMap* map, paddr_t addr) {
 }
 
 static inline void invoke_callback(io_callback_t c, paddr_t offset, int len, bool is_write) {
-    if (c != NULL) {
-        c(offset, len, is_write);
-    }
+    assert(c);
+    c(offset, len, is_write);
 }
 
+// Firstly invoke_callback preaparing data to read.
 word_t map_read(paddr_t addr, int len, IOMap* map) {
     assert(len >= 1 && len <= 8);
     check_bound(map, addr);
@@ -43,6 +43,7 @@ word_t map_read(paddr_t addr, int len, IOMap* map) {
     return data;
 }
 
+// Firstly write to device and then the invoke_callback to work.
 void map_write(paddr_t addr, word_t data, int len, IOMap* map) {
     assert(len >= 1 && len <= 8);
     check_bound(map, addr);

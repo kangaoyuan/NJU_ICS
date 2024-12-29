@@ -13,6 +13,8 @@ static Context* do_event(Event e, Context* c) {
         c = schedule(c);
         break;
     case EVENT_IRQ_TIMER:
+        printf("In nanos, Got Timer Irq\n");
+        c = schedule(c);
         break;
     default:
         panic("Unhandled event ID = %d", e.event);

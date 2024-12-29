@@ -14,14 +14,21 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
     uint32_t lo = vaddr_read(idt + 8 * NO, 2);
     uint32_t hi = vaddr_read(idt + 8 * NO + 6, 2);
 
-    cpu.eflags.IF = false;
-
     rtl_push(s, &cpu.eflags.val);
     rtl_push(s, &cpu.cs);
     rtl_push(s, &ret_addr);
 
+    cpu.eflags.IF = false;
+
     rtl_j(s, (hi << 16) | lo);
 }
 
+#define IRQ_TIMER 32
 void query_intr(DecodeExecState *s) {
+    // Modified by timer handler
+    if(cpu.INTR) {
+        cpu.INTR = false; 
+        raise_intr(s, IRQ_TIMER, cpu.pc);
+        update_pc(s);
+    }
 }
