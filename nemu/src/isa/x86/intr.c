@@ -6,6 +6,7 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
      * That is, use ``NO'' to index the IDT.
      */
     if(NO >= cpu.idtr_limit){
+        printf("raise_intr: NO == %d\n", NO);
         assert(0); 
     }
 
