@@ -6,7 +6,6 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
      * That is, use ``NO'' to index the IDT.
      */
     if(NO >= cpu.idtr_limit){
-        printf("raise_intr: NO == %d\n", NO);
         assert(0); 
     }
 
@@ -27,7 +26,7 @@ void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
 #define IRQ_TIMER 32
 void query_intr(DecodeExecState *s) {
     // Modified by timer handler
-    if(cpu.INTR) {
+    if(cpu.INTR && cpu.eflags.IF) {
         cpu.INTR = false; 
         raise_intr(s, IRQ_TIMER, cpu.pc);
         update_pc(s);
