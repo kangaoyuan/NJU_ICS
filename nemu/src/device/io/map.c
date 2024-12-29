@@ -27,8 +27,8 @@ static inline void check_bound(IOMap* map, paddr_t addr) {
 }
 
 static inline void invoke_callback(io_callback_t c, paddr_t offset, int len, bool is_write) {
-    assert(c);
-    c(offset, len, is_write);
+    if(c != NULL)
+        c(offset, len, is_write);
 }
 
 // Firstly invoke_callback preaparing data to read.
