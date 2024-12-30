@@ -145,8 +145,5 @@ Context* schedule(Context *prev) {
          */
     }
 
-    if(size == 3)
-        assert(0);
-
     return current->cp;
 }
