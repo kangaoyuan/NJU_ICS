@@ -204,5 +204,6 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
     //pcb->cp->GPRx = (uintptr_t)stack_ptr;
     // For the actual memory mapping.
     pcb->cp->GPRx = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
+    pcb->cp->esp3 = (uintptr_t)(pcb->as.area.end - (user_stack - stack_ptr));
     printf("stack start at: %x\n", pcb->cp->GPRx);
 }

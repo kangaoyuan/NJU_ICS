@@ -1,5 +1,6 @@
 #include <klib.h>
 // CPU rings
+// Descriptor Privilege Level
 #define DPL_KERN       0x0     // Kernel (ring 0)
 #define DPL_USER       0x3     // User (ring 3)
 
@@ -148,8 +149,9 @@ typedef struct {
 // Task State Segment (TSS)
 typedef struct {
   uint32_t link;     // Unused
+                     // esp0 mapping to **ksp** concept 
   uint32_t esp0;     // Stack pointers and segment selectors
-  uint32_t ss0;      //   after an increase in privilege level
+  uint32_t ss0;      // after an increase in privilege level
   uint32_t padding[23];
 } __attribute__((packed)) TSS32;
 

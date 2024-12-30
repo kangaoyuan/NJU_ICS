@@ -64,6 +64,7 @@ typedef struct {
     uint32_t ss;
 
     bool INTR;
+    uint16_t TR;
     uint32_t CR0;
     uint32_t CR3;
 

@@ -81,9 +81,11 @@ Context* ucontext(AddrSpace *as, Area kstack, void *entry) {
     //Context* ucontext = kstack.end - sizeof(Context);
     *ucontext = (Context){
         .cr3 = as->ptr, 
+        .eflags = 0x200,
         .eip = (uintptr_t)entry, 
-        .cs = 0x8, 
-        .eflags = 0x200 
+        // Two selectors
+        .cs = USEL(3), 
+        .ss3 = USEL(4)
     };
     return ucontext;
 }

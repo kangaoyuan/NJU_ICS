@@ -2,6 +2,7 @@
 #include <x86/x86.h>
 #include <klib.h>
 
+#define NR_SEG         6
 #define NR_IRQ         256     // IDT size
 #define SEG_KCODE      1
 #define SEG_KDATA      2
@@ -72,6 +73,22 @@ bool cte_init(Context* (*handler)(Event, Context*)) {
 
     set_idt(idt, sizeof(idt));
 
+    // initialize TSS
+    static TSS32 tss = {};
+    tss.ss0 = KSEL(2);
+    // ltr to set cpu.TR
+    set_tr(KSEL(5));
+
+    // initialize GDT
+    static SegDesc gdt[NR_SEG] = {};
+    gdt[1] = SEG32(STA_X | STA_R, 0, 0xffffffff, DPL_KERN);
+    gdt[2] = SEG32(STA_W, 0, 0xffffffff, DPL_KERN);
+    gdt[3] = SEG32(STA_X | STA_R, 0, 0xffffffff, DPL_USER);
+    gdt[4] = SEG32(STA_W, 0, 0xffffffff, DPL_USER);
+    gdt[5] = SEG16(STS_T32A, &tss, sizeof(tss) - 1, DPL_KERN);
+    // lgdt to set cpu.gdtr content
+    set_gdt(gdt, sizeof(gdt[0]) * NR_SEG);
+
     return true;
 }
 
@@ -82,7 +99,7 @@ Context* kcontext(Area kstack, void (*entry)(void *), void *arg) {
     *kcontext = (Context){
         .cr3 = NULL,
         .eip = (uintptr_t)entry,
-        .cs  = 0x8,
+        .cs  = KSEL(1),
         .eflags = 0x200
     };
     return kcontext;
