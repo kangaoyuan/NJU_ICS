@@ -120,7 +120,7 @@ Context* schedule(Context *prev) {
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
-    if(sche_cnt % 0x8964 == 0){
+    if(sche_cnt % 0x64 == 0){
         size++;
         choose = 0;
         sche_cnt = 1;
@@ -145,10 +145,8 @@ Context* schedule(Context *prev) {
          */
     }
 
-    /*
-     *if(size == 3)
-     *    assert(0);
-     */
+    if(size == 3)
+        assert(0);
 
     return current->cp;
 }
