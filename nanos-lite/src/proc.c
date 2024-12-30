@@ -65,9 +65,13 @@ void init_proc() {
     //naive_uload(NULL, "/bin/pal");
     
     //context_kload(&pcb[0], hello_fun, NULL);
-    context_kload(&pcb[0], hello_fun, (void*)1);
+    //context_kload(&pcb[0], hello_fun, (void*)1);
     //context_kload(&pcb[1], hello_fun, (void*)2);
     
+    char * const argv_[] = {"/bin/hello", NULL};
+    char * const envp_[] = {NULL};
+    context_uload(&pcb[0], "/bin/hello", argv_, envp_);
+
     char * const argv[] = {"/bin/pal", "--skip", NULL};
     char * const envp[] = {NULL};
     context_uload(&pcb[1], "/bin/pal", argv, envp);
@@ -94,6 +98,7 @@ void init_proc() {
  *    uintptr_t eip, cs, eflags;
  *};
  */
+
 static int sche_cnt = 0, size = 0, choose = -1;
 Context* schedule(Context *prev) {
     /*
@@ -104,13 +109,16 @@ Context* schedule(Context *prev) {
      *printf("In schedule, context->eip == %x\n", prev->eip);
      */
     current->cp = prev;
-    if(current == &pcb[0]){
-        current->cp->cr3 = NULL; 
-    }
+    // For the hello_fun kernel stack switch.
+    /*
+     *if(current == &pcb[0]){
+     *    current->cp->cr3 = NULL; 
+     *}
+     */
 
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
-    if(sche_cnt % 0x3 == 0){
+    if(sche_cnt % 0x8964 == 0){
         size++;
         choose = 0;
         sche_cnt = 1;
