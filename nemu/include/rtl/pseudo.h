@@ -1,6 +1,8 @@
 #ifndef __RTL_PSEUDO_H__
 #define __RTL_PSEUDO_H__
 
+#include <rtl/rtl.h>
+
 #ifndef __RTL_RTL_H__
 #error "Should be only included by <rtl/rtl.h>"
 #endif

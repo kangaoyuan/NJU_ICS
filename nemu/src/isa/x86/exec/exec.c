@@ -1,5 +1,4 @@
 #include <cpu/exec.h>
-#include "../local-include/decode.h"
 #include "all-instr.h"
 
 static inline void set_width(DecodeExecState *s, int width) {
