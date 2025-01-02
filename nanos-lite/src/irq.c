@@ -4,6 +4,7 @@ void do_syscall(Context *c);
 Context* schedule(Context *prev);
 
 static Context* do_event(Event e, Context* c) {
+    static int timer_cnt = 0;
     switch (e.event) {
     case EVENT_SYSCALL:
         do_syscall(c);
@@ -13,7 +14,11 @@ static Context* do_event(Event e, Context* c) {
         c = schedule(c);
         break;
     case EVENT_IRQ_TIMER:
-        printf("In nanos, Got Timer Irq\n");
+        timer_cnt++;
+        if(timer_cnt % 0x64 == 0){
+            timer_cnt = 0;
+            printf("In nanos, Got Timer Irq\n");
+        }
         c = schedule(c);
         break;
     default:
