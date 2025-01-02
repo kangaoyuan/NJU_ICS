@@ -40,6 +40,11 @@ size_t events_read(void *buf, size_t offset __attribute__((unused)), size_t len)
     memset(buf, 0, len);
     keydown ? sprintf(buf, "kd %s\n", keyname[keycode]) : sprintf(buf, "ku %s\n", keyname[keycode]);
 
+    extern void set_fg(int key);
+    if(keydown && keycode >= AM_KEY_F1 && keycode <= AM_KEY_F3){
+        set_fg(keycode - 1); 
+    }
+
     return strlen(buf);
 }
 

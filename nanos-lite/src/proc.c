@@ -6,6 +6,7 @@
  *    uintptr_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
  *    uintptr_t irq;
  *    uintptr_t eip, cs, eflags;
+ *    uintptr_t esp3, ss3;
  *} Context;
  */
 /*
@@ -55,9 +56,11 @@ void hello_fun(void* arg){
 
 void init_proc() {
     Log("Initializing processes...");
-    printf("pcb_boot == %x\n", &pcb_boot);
-    printf("pcb[0] == %x\n", &pcb[0]);
-    printf("pcb[1] == %x\n", &pcb[1]);
+    /*
+     *printf("pcb_boot == %x\n", &pcb_boot);
+     *printf("pcb[0] == %x\n", &pcb[0]);
+     *printf("pcb[1] == %x\n", &pcb[1]);
+     */
     // load program here
 
     /*const char file_name[] = "/bin/exectuable_file";*/
@@ -72,20 +75,20 @@ void init_proc() {
     char * const envp_[] = {NULL};
     context_uload(&pcb[0], "/bin/hello", argv_, envp_);
 
-    /*
-     *char * const argv[] = {"/bin/pal", "--skip", NULL};
-     *char * const envp[] = {NULL};
-     *context_uload(&pcb[1], "/bin/pal", argv, envp);
-     */
+    char * const argv[] = {"/bin/pal", "--skip", NULL};
+    char * const envp[] = {NULL};
+    context_uload(&pcb[1], "/bin/pal", argv, envp);
 
     //char * const argv[] = {"/bin/menu", NULL};
-    char * const argv[] = {"/bin/nterm", NULL};
+    //char * const argv[] = {"/bin/nterm", NULL};
     //char * const argv[] = {"/bin/dummy", NULL};
     //char * const argv[] = {"/bin/exec-test", NULL};
     char * const empty[] = {NULL};
     //context_uload(&pcb[1], "/bin/pal", NULL, NULL);
+    context_uload(&pcb[2], "/bin/bird", empty, empty);
+    context_uload(&pcb[3], "/bin/nslider", empty, empty);
     //context_uload(&pcb[1], "/bin/menu", argv, empty);
-    context_uload(&pcb[1], "/bin/nterm", argv, empty);
+    //context_uload(&pcb[1], "/bin/nterm", argv, empty);
     //context_uload(&pcb[1], "/bin/dummy", argv, empty);
     //context_uload(&pcb[1], "/bin/exec-test", argv, empty);
     switch_boot_pcb();
@@ -101,7 +104,12 @@ void init_proc() {
  *};
  */
 
-static int sche_cnt = 0, size = 0, choose = -1;
+static int fg_pcb = 1;
+void set_fg(int key){
+    fg_pcb = key;
+}
+
+static int sche_cnt = 0, choose = -1;
 Context* schedule(Context *prev) {
     /*
      *printf("\nIn schedule, save context to current == %x\n", current);
@@ -121,7 +129,6 @@ Context* schedule(Context *prev) {
     //current = (current == &pcb[0] ? &pcb[1] : &pcb[0]);
 
     if(sche_cnt % 0x64 == 0){
-        size++;
         choose = 0;
         sche_cnt = 1;
         current = &pcb[0]; 
@@ -133,9 +140,10 @@ Context* schedule(Context *prev) {
          *printf("In schedule to pcb[0], current->cp.eip == %x\n\n", current->cp->eip);
          */
     } else {
-        choose = 1;
+        //choose = 1;
+        //current = &pcb[1]; 
         sche_cnt++;
-        current = &pcb[1]; 
+        current = &pcb[fg_pcb];
         /*
          *printf("Now, shedule: cnt == %x, pcb[%d]\n", sche_cnt, choose);
          *printf("In schedule, context(esp) == %x\n", current->cp);
