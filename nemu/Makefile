@@ -100,7 +100,7 @@ GEN_EXPR_CMD :=
 GEN_TEST_CASE :=
 endif
 
-$(BINARY): $(OBJS) $(TEST_EXPR)
+$(BINARY): $(OBJS) $(EXPR_FLAG)
 	$(call git_commit, "compile")
 	@echo + LD $@
 	@$(LD) -O2 -rdynamic $(SO_LDLAGS) -o $@ $^ $(LD_LIBS)
