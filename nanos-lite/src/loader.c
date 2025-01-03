@@ -187,9 +187,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
         printf("stack: %x -> %x\n", pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE);
         map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
     }
-    printf("before error!\n");
     void* stack_ptr = create_stack(user_stack, argv, envp);
-    printf("after error!\n");
 
     /*
      *void* stack_ptr = create_stack(heap.end, argv, envp);
@@ -201,7 +199,9 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
 
     Area kstack = {.start = pcb->stack,
                    .end = pcb->stack + sizeof(pcb->stack)};
+    printf("Before loader\n");
     void *entry = (void*)loader(pcb, file_name);
+    printf("Before ucontext\n");
     pcb->cp = ucontext(&pcb->as, kstack, entry);
     //pcb->cp->GPRx = (uintptr_t)stack_ptr;
     // For the actual memory mapping.
