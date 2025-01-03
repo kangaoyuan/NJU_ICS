@@ -73,15 +73,9 @@ int _write(int fd, void* buf, size_t count) {
     return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
+extern char  _end;
+static char* proc_brk = &_end;
 void* _sbrk(intptr_t increment) {
-    extern char _end;
-    static char* proc_brk = 0;
-    // Here, you can find an intersting tricky.
-    if(!proc_brk)
-        // Attention here, we need the & address-of operator to do.
-        proc_brk = &_end;
-
-    printf("Inside navy _sbrk(), proc_brk == %x\n", proc_brk);
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
     // Attention for the argument passed to the system call.
@@ -89,7 +83,6 @@ void* _sbrk(intptr_t increment) {
         return (void*)-1; 
     }
 
-    printf("Inside navy _sbrk(), increment == %x, req_brk == %x\n", increment, req_brk);
     if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
         proc_brk += increment;
         return (void*)pre_brk;
