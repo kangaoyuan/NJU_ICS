@@ -30,6 +30,7 @@ void free_page(void *p) {
 void map(AddrSpace* as, void* va, void* pa, int prot);
 int mm_brk(uintptr_t brk) {
     printf("brk == %x\n", brk);
+    printf("current->max_brk == %x\n", current->max_brk);
     if(brk > current->max_brk){
         uintptr_t vaddr = current->max_brk;
         uintptr_t vaddr_beg = vaddr & ~((1 << 12) - 1);

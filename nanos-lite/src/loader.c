@@ -199,9 +199,7 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
 
     Area kstack = {.start = pcb->stack,
                    .end = pcb->stack + sizeof(pcb->stack)};
-    printf("Before loader\n");
     void *entry = (void*)loader(pcb, file_name);
-    printf("Before ucontext\n");
     pcb->cp = ucontext(&pcb->as, kstack, entry);
     //pcb->cp->GPRx = (uintptr_t)stack_ptr;
     // For the actual memory mapping.
