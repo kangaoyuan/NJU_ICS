@@ -2,7 +2,6 @@
 #include "local-include/rtl.h"
 
 void raise_intr(DecodeExecState* s, word_t NO, vaddr_t ret_addr) {
-    printf("cpu triggers int\n");
     /* TODO: Trigger an interrupt/exception with ``NO''.
      * That is, use ``NO'' to index the IDT.
      */
