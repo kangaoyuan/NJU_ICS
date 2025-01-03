@@ -81,12 +81,15 @@ void* _sbrk(intptr_t increment) {
         // Attention here, we need the & address-of operator to do.
         proc_brk = &_end;
 
+    printf("Inside navy _sbrk(), proc_brk == %x\n", proc_brk);
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
     // Attention for the argument passed to the system call.
     if((char *)req_brk < &_end){
         return (void*)-1; 
     }
+
+    printf("Inside navy _sbrk(), increment == %x, req_brk == %x\n", increment, req_brk);
     if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
         proc_brk += increment;
         return (void*)pre_brk;
