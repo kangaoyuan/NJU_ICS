@@ -187,7 +187,9 @@ void context_uload(PCB *pcb, const char *file_name, char* const argv[], char* co
         printf("stack: %x -> %x\n", pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE);
         map(&pcb->as, pcb->as.area.end - i * PGSIZE, user_stack - i * PGSIZE, 0x7);
     }
+    printf("before error!\n");
     void* stack_ptr = create_stack(user_stack, argv, envp);
+    printf("after error!\n");
 
     /*
      *void* stack_ptr = create_stack(heap.end, argv, envp);
