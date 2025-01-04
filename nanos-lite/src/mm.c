@@ -29,6 +29,8 @@ void free_page(void *p) {
 // if brk exceed current->max_brk, we allocate new_page()
 void map(AddrSpace* as, void* va, void* pa, int prot);
 int mm_brk(uintptr_t brk) {
+    printf("mm_brk, brk == %x\n", brk);
+    printf("current->max_brk == %x\n", current->max_brk);
     if(brk > current->max_brk){
         uintptr_t vaddr = current->max_brk;
         uintptr_t vaddr_beg = vaddr & ~((1 << 12) - 1);

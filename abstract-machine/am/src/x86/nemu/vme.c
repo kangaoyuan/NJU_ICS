@@ -70,6 +70,9 @@ void map(AddrSpace *as, void *va, void *pa, int prot) {
     } 
 
     uint32_t* pg_pte = (uint32_t*)(pg_dir[va_dir] & ~((1 << 12) - 1)); 
+    if((pg_pte[va_tbl] & 1) == 1){
+        printf("Error: as == %x, va == %x, pa == %x.\n", as, va, pa); 
+    }
     assert((pg_pte[va_tbl] & 1) == 0);
     pg_pte[va_tbl] = ((uint32_t)pa & ~((1 << 12) - 1)) | 1;
 }

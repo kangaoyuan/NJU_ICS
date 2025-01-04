@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "syscall.h"
@@ -48,6 +49,14 @@
 #endif
 
 intptr_t _syscall_(intptr_t type, intptr_t a0, intptr_t a1, intptr_t a2) {
+    if(type == 9){
+        char tmp[69] = {};
+        sprintf(tmp, "navy, brk _syscall_, brk == %p\n", (char*)a0);
+        write(1, tmp, sizeof(tmp));
+        memset(tmp, 0, 69);
+        sprintf(tmp, "navy, brk _syscall_, brk == %lu\n", a0);
+        write(1, tmp, sizeof(tmp));
+    }
     register intptr_t _gpr1 asm(GPR1) = type;
     register intptr_t _gpr2 asm(GPR2) = a0;
     register intptr_t _gpr3 asm(GPR3) = a1;
@@ -73,21 +82,33 @@ int _write(int fd, void* buf, size_t count) {
     return _syscall_(SYS_write, fd, (intptr_t)buf, count);
 }
 
+extern char  _end;
+static char* proc_brk = &_end;
 void* _sbrk(intptr_t increment) {
-    extern char _end;
-    static char* proc_brk = 0;
-    // Here, you can find an intersting tricky.
-    if(!proc_brk)
-        // Attention here, we need the & address-of operator to do.
-        proc_brk = &_end;
-
+    char tmp[69] = {};
+    sprintf(tmp, "navy, proc_brk == %p\n", proc_brk);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
+    sprintf(tmp, "navy, increment == %p\n", (char*)increment);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
+    sprintf(tmp, "navy, increment == %lu\n", increment);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
+    sprintf(tmp, "navy, req_brk == %p\n", (char*)req_brk);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
+    sprintf(tmp, "navy, req_brk == %lu\n", req_brk);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
     // Attention for the argument passed to the system call.
     if((char *)req_brk < &_end){
         return (void*)-1; 
     }
-    if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
+
+    if(!_syscall_(SYS_brk, (intptr_t)req_brk, 0, 0)){
         proc_brk += increment;
         return (void*)pre_brk;
     } else {
