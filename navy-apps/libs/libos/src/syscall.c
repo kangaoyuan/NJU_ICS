@@ -108,7 +108,7 @@ void* _sbrk(intptr_t increment) {
         return (void*)-1; 
     }
 
-    if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
+    if(!_syscall_(SYS_brk, (intptr_t)req_brk, 0, 0)){
         proc_brk += increment;
         return (void*)pre_brk;
     } else {
