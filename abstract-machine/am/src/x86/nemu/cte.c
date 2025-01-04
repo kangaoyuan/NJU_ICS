@@ -33,6 +33,8 @@ Context* __am_irq_handle(Context* c) {
             ev.event = EVENT_IRQ_TIMER;
             break;
         case 0x80:
+            if(c->eax == 9)
+                printf("Int trap, a[1] == %x\n", c->ebx);
             ev.event = EVENT_SYSCALL;
             break;
         case 0x81:
