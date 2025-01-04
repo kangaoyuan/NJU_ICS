@@ -41,6 +41,7 @@ void do_syscall(Context* c) {
     }
     case SYS_brk:
         //c->GPRx = 0;
+        printf("nanos, brk == %x\n", a[1]);
         c->GPRx = mm_brk(a[1]);
         break;
     case SYS_open:

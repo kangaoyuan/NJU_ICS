@@ -77,7 +77,9 @@ extern char  _end;
 static char* proc_brk = &_end;
 void* _sbrk(intptr_t increment) {
     char tmp[69] = {};
-    sprintf(tmp, "prock_brk == %p\n", proc_brk);
+    sprintf(tmp, "proc_brk == %p\n", proc_brk);
+    write(1, tmp, sizeof(tmp));
+    sprintf(tmp, "increment == %lu\n", increment);
     write(1, tmp, sizeof(tmp));
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
@@ -86,6 +88,8 @@ void* _sbrk(intptr_t increment) {
         return (void*)-1; 
     }
 
+    sprintf(tmp, "req_brk == %lu\n", req_brk);
+    write(1, tmp, sizeof(tmp));
     if(!_syscall_(SYS_brk, (intptr_t)&req_brk, 0, 0)){
         proc_brk += increment;
         return (void*)pre_brk;
