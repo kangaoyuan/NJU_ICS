@@ -78,15 +78,17 @@ extern char  _end;
 static char* proc_brk = &_end;
 void* _sbrk(intptr_t increment) {
     char tmp[69] = {};
-    sprintf(tmp, "proc_brk == %p\n", proc_brk);
+    sprintf(tmp, "navy, proc_brk == %p\n", proc_brk);
     write(1, tmp, sizeof(tmp));
     memset(tmp, 0, 69);
-    sprintf(tmp, "increment == %lu\n", increment);
+    sprintf(tmp, "navy, increment == %p\n", (char*)increment);
+    sprintf(tmp, "navy, increment == %lu\n", increment);
     write(1, tmp, sizeof(tmp));
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
     memset(tmp, 0, 69);
-    sprintf(tmp, "req_brk == %lu\n", req_brk);
+    sprintf(tmp, "navy, req_brk == %p\n", (char*)req_brk);
+    sprintf(tmp, "navy, req_brk == %lu\n", req_brk);
     write(1, tmp, sizeof(tmp));
     // Attention for the argument passed to the system call.
     if((char *)req_brk < &_end){
