@@ -79,9 +79,12 @@ static inline void gen_rand_op() {
              gen_rand_expr();
              break;
          }
-     } else {
-         gen_rand_num();
-     }
+     } 
+     /*
+      *else {
+      *    gen_rand_num();
+      *}
+      */
      buf[strlen(buf)] = '\0';
  }
 
