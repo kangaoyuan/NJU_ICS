@@ -82,14 +82,19 @@ void* _sbrk(intptr_t increment) {
     write(1, tmp, sizeof(tmp));
     memset(tmp, 0, 69);
     sprintf(tmp, "navy, increment == %p\n", (char*)increment);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
     sprintf(tmp, "navy, increment == %lu\n", increment);
     write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
     intptr_t pre_brk = (intptr_t)proc_brk;
     intptr_t req_brk = (intptr_t)proc_brk + increment;
-    memset(tmp, 0, 69);
     sprintf(tmp, "navy, req_brk == %p\n", (char*)req_brk);
+    write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
     sprintf(tmp, "navy, req_brk == %lu\n", req_brk);
     write(1, tmp, sizeof(tmp));
+    memset(tmp, 0, 69);
     // Attention for the argument passed to the system call.
     if((char *)req_brk < &_end){
         return (void*)-1; 
